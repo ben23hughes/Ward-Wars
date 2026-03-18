@@ -1389,6 +1389,7 @@ async function toggleDeck() {
   const newDeck = getDeckIds();
   renderCards(currentFilter);
   showCardDetail(openCardId); // refresh overlay
+  updateBattlePageDeck();
 
   const token = localStorage.getItem('cc_token');
   if (token && newDeck.length === 4) {
@@ -1397,7 +1398,6 @@ async function toggleDeck() {
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
       body: JSON.stringify({ cardIds: newDeck }),
     });
-    updateBattlePageDeck();
   }
 }
 
