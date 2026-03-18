@@ -124,6 +124,77 @@ app.post('/api/cards/use', requireAuth, async (req, res) => {
   }
 });
 
+// ── Friends API ──────────────────────────────────────────────────────────────
+app.get('/api/users/search', requireAuth, async (req, res) => {
+  const q = (req.query.q || '').trim();
+  if (q.length < 2) return res.json([]);
+  try {
+    const users = await db.searchUsers(q, req.userId);
+    // attach friendship status for each result
+    const withStatus = await Promise.all(users.map(async u => {
+      const fs = await db.getFriendStatus(req.userId, u.id);
+      return { ...u, friendStatus: fs ? fs.status : null, iRequested: fs ? fs.requester_id === req.userId : false };
+    }));
+    res.json(withStatus);
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
+});
+
+app.get('/api/friends', requireAuth, async (req, res) => {
+  try {
+    const friends = await db.getFriends(req.userId);
+    res.json(friends);
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
+});
+
+app.get('/api/friends/requests', requireAuth, async (req, res) => {
+  try {
+    const requests = await db.getPendingRequests(req.userId);
+    res.json(requests);
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
+});
+
+app.post('/api/friends/request', requireAuth, async (req, res) => {
+  const { username } = req.body || {};
+  if (!username) return res.status(400).json({ error: 'Username required' });
+  try {
+    const target = await db.getUserByUsername(username);
+    if (!target) return res.status(404).json({ error: 'User not found' });
+    if (target.id === req.userId) return res.status(400).json({ error: 'Cannot friend yourself' });
+    await db.sendFriendRequest(req.userId, target.id);
+    res.json({ ok: true });
+  } catch (e) {
+    if (e.message.includes('unique') || e.message.includes('duplicate')) {
+      return res.status(400).json({ error: 'Request already sent' });
+    }
+    console.error(e); res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.post('/api/friends/accept', requireAuth, async (req, res) => {
+  const { userId } = req.body || {};
+  if (!userId) return res.status(400).json({ error: 'userId required' });
+  try {
+    await db.acceptFriendRequest(userId, req.userId);
+    res.json({ ok: true });
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
+});
+
+app.post('/api/friends/decline', requireAuth, async (req, res) => {
+  const { userId } = req.body || {};
+  if (!userId) return res.status(400).json({ error: 'userId required' });
+  try {
+    await db.removeFriend(req.userId, userId);
+    res.json({ ok: true });
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
+});
+
+app.delete('/api/friends/:userId', requireAuth, async (req, res) => {
+  try {
+    await db.removeFriend(req.userId, parseInt(req.params.userId));
+    res.json({ ok: true });
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
+});
+
 app.post('/api/logout', requireAuth, async (req, res) => {
   const token = (req.headers['authorization'] || '').replace('Bearer ', '');
   await db.deleteSession(token);

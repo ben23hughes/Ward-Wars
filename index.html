@@ -382,6 +382,56 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
 .rank-num{font-size:11px;color:rgba(255,255,255,.25);width:16px;text-align:center;flex-shrink:0;}
 
 /* ─────────────────────────────────────────
+   WARD / FRIENDS SCREEN
+───────────────────────────────────────── */
+.ward-page{display:flex;flex-direction:column;height:100%;overflow:hidden;}
+.ward-search-bar{display:flex;gap:8px;margin:12px 12px 0;}
+.ward-search-input{
+  flex:1;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.15);
+  border-radius:12px;padding:9px 12px;color:#fff;font-size:12px;outline:none;
+}
+.ward-search-input::placeholder{color:rgba(255,255,255,.3);}
+.ward-search-btn{
+  background:linear-gradient(180deg,var(--gold),#c8860a);border:none;
+  border-radius:12px;padding:9px 14px;color:#0a0e1a;font-family:'Cinzel',serif;
+  font-size:11px;font-weight:bold;cursor:pointer;
+}
+.ward-tabs{display:flex;margin:10px 12px 0;gap:6px;}
+.ward-tab{
+  flex:1;padding:7px;border:1px solid rgba(255,255,255,.1);border-radius:10px;
+  background:rgba(0,0,0,.3);color:rgba(255,255,255,.45);font-size:10px;
+  text-align:center;cursor:pointer;transition:all .15s;font-family:'Cinzel',serif;
+}
+.ward-tab.active{background:rgba(245,200,66,.12);border-color:rgba(245,200,66,.4);color:var(--gold);}
+.ward-list{flex:1;overflow-y:auto;padding:8px 12px 80px;}
+.ward-section-lbl{font-size:9px;color:rgba(255,255,255,.3);text-transform:uppercase;
+  letter-spacing:1.5px;margin:10px 0 6px;}
+.ward-empty{text-align:center;padding:40px 20px;color:rgba(255,255,255,.3);font-size:12px;}
+.ward-req-row{
+  display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;
+  background:rgba(0,0,0,.3);border:1px solid rgba(245,200,66,.2);margin-bottom:6px;
+}
+.ward-req-actions{display:flex;gap:6px;}
+.ward-req-accept{background:rgba(39,174,96,.25);border:1px solid rgba(39,174,96,.5);
+  color:#2ecc71;border-radius:8px;padding:5px 10px;font-size:10px;cursor:pointer;}
+.ward-req-decline{background:rgba(231,76,60,.15);border:1px solid rgba(231,76,60,.4);
+  color:#e74c3c;border-radius:8px;padding:5px 10px;font-size:10px;cursor:pointer;}
+.ward-friend-row{
+  display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;
+  background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.07);margin-bottom:6px;
+}
+.ward-friend-remove{background:none;border:1px solid rgba(255,255,255,.15);
+  color:rgba(255,255,255,.3);border-radius:8px;padding:4px 8px;font-size:9px;cursor:pointer;}
+.ward-search-result{
+  display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;
+  background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);margin-bottom:6px;
+}
+.ward-add-btn{background:rgba(245,200,66,.15);border:1px solid rgba(245,200,66,.4);
+  color:var(--gold);border-radius:8px;padding:5px 10px;font-size:10px;cursor:pointer;white-space:nowrap;}
+.ward-sent-lbl{font-size:9px;color:rgba(255,255,255,.3);font-style:italic;}
+.ward-already-lbl{font-size:9px;color:#2ecc71;}
+
+/* ─────────────────────────────────────────
    SHOP SCREEN
 ───────────────────────────────────────── */
 .shop-deal-banner{
@@ -859,18 +909,22 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
 
     <!-- ══ WARD ══ -->
     <div class="page" id="page-ward">
-      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:32px 24px;text-align:center;gap:16px;">
-        <div style="font-size:64px;filter:drop-shadow(0 0 20px rgba(245,200,66,0.4));">🏛️</div>
-        <div style="font-family:'Cinzel Decorative',serif;font-size:18px;color:var(--gold);">Ward System</div>
-        <div style="font-size:12px;color:rgba(255,255,255,0.45);line-height:1.7;max-width:260px;">
-          Create and join Wards to battle alongside your ward members, donate cards, and compete in Ward Wars.
+      <div class="ward-page">
+        <div style="margin:12px 12px 0;display:flex;align-items:center;justify-content:space-between;">
+          <div style="font-family:'Cinzel Decorative',serif;font-size:15px;color:var(--gold);">⛪ Ward</div>
+          <div id="ward-req-badge" style="display:none;background:#e74c3c;color:#fff;font-size:9px;border-radius:8px;padding:2px 7px;font-weight:bold;"></div>
         </div>
-        <div style="background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.2);border-radius:14px;padding:12px 20px;margin-top:4px;">
-          <div style="font-size:10px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;">Coming in Season 2</div>
+        <div class="ward-search-bar">
+          <input id="ward-search-input" class="ward-search-input" placeholder="Search by username…" maxlength="20"
+            onkeydown="if(event.key==='Enter')wardSearch()">
+          <button class="ward-search-btn" onclick="wardSearch()">Find</button>
         </div>
-        <button onclick="wardInvite()" style="margin-top:8px;background:linear-gradient(180deg,rgba(245,200,66,0.15),rgba(245,200,66,0.05));border:1px solid rgba(245,200,66,0.3);border-radius:14px;padding:12px 24px;color:var(--gold);font-family:'Cinzel',serif;font-size:12px;cursor:pointer;">
-          🔗 Share Game Link
-        </button>
+        <div class="ward-tabs">
+          <div class="ward-tab active" id="ward-tab-friends" onclick="wardShowTab('friends')">👥 Ward Members</div>
+          <div class="ward-tab" id="ward-tab-requests" onclick="wardShowTab('requests')">📨 Requests</div>
+          <div class="ward-tab" id="ward-tab-search" onclick="wardShowTab('search')">🔍 Search</div>
+        </div>
+        <div class="ward-list" id="ward-list"></div>
       </div>
     </div>
 
@@ -1076,7 +1130,7 @@ function renderArenaSection(trophies) {
   const el = document.getElementById('arena-section');
   if (!el) return;
   el.innerHTML = `
-    <div class="arena-card" style="--arena-color:${arena.color};--arena-glow:${arena.glow}">
+    <div class="arena-card" style="--arena-color:${arena.color};--arena-glow:${arena.glow};cursor:pointer;" onclick="openArenaPath()">
       <div class="arena-left">
         <div class="arena-num">Arena ${arena.id}</div>
         <div class="arena-name">${arena.name}</div>
@@ -1186,6 +1240,24 @@ function navTo(tab) {
   page.classList.add('page-fade');
   document.getElementById('tab-' + tab).classList.add('active');
   page.scrollTop = 0;
+  if (tab === 'ward') {
+    _wardTab = 'friends';
+    ['friends','requests','search'].forEach(t => {
+      document.getElementById('ward-tab-'+t).classList.toggle('active', t === 'friends');
+    });
+    wardLoadFriends();
+    wardLoadRequestsBadge();
+  }
+}
+
+async function wardLoadRequestsBadge() {
+  const token = localStorage.getItem('cc_token');
+  try {
+    const reqs = await fetch('/api/friends/requests', { headers: { Authorization: 'Bearer '+token } }).then(r => r.json());
+    const badge = document.getElementById('ward-req-badge');
+    if (reqs.length) { badge.style.display=''; badge.textContent=reqs.length; }
+    else badge.style.display='none';
+  } catch(e) {}
 }
 
 // ── CARD LEVEL SYSTEM ──
@@ -1410,16 +1482,178 @@ function showComingSoon(feature) {
   setTimeout(() => toast.remove(), 2200);
 }
 
-// ── WARD ──
-function wardInvite() {
-  const link = window.location.origin;
-  if (navigator.share) {
-    navigator.share({ title: 'Chapel Clash', text: 'Join my ward in Chapel Clash!', url: link });
-  } else if (navigator.clipboard) {
-    navigator.clipboard.writeText(link).then(() => showComingSoon('Link copied to clipboard ✓'));
-  } else {
-    showComingSoon('Ward invites');
+// ── WARD / FRIENDS ──
+let _wardTab = 'friends';
+let _wardSearchResults = [];
+
+function wardShowTab(tab) {
+  _wardTab = tab;
+  ['friends','requests','search'].forEach(t => {
+    document.getElementById('ward-tab-'+t).classList.toggle('active', t === tab);
+  });
+  if (tab === 'friends') wardLoadFriends();
+  else if (tab === 'requests') wardLoadRequests();
+  else wardRenderSearch([]);
+}
+
+async function wardLoadFriends() {
+  const token = localStorage.getItem('cc_token');
+  const list = document.getElementById('ward-list');
+  list.innerHTML = '<div class="ward-empty" style="color:rgba(255,255,255,.2)">Loading…</div>';
+  try {
+    const friends = await fetch('/api/friends', { headers: { Authorization: 'Bearer '+token } }).then(r => r.json());
+    if (!friends.length) {
+      list.innerHTML = '<div class="ward-empty">No ward members yet.<br>Search for players to add!</div>';
+      return;
+    }
+    list.innerHTML = '<div class="ward-section-lbl">Your Ward (' + friends.length + ')</div>' +
+      friends.map(f => `
+        <div class="ward-friend-row">
+          <div class="member-avatar">⛪</div>
+          <div class="member-info">
+            <div class="member-name">${escHtml(f.username)}</div>
+            <div class="member-role role-member">🏆 ${(f.trophies||0).toLocaleString()} trophies</div>
+          </div>
+          <button class="ward-friend-remove" onclick="wardRemoveFriend(${f.id},'${escHtml(f.username)}')">Remove</button>
+        </div>
+      `).join('');
+  } catch(e) {
+    list.innerHTML = '<div class="ward-empty">Failed to load. Try again.</div>';
   }
+}
+
+async function wardLoadRequests() {
+  const token = localStorage.getItem('cc_token');
+  const list = document.getElementById('ward-list');
+  list.innerHTML = '<div class="ward-empty" style="color:rgba(255,255,255,.2)">Loading…</div>';
+  try {
+    const reqs = await fetch('/api/friends/requests', { headers: { Authorization: 'Bearer '+token } }).then(r => r.json());
+    const badge = document.getElementById('ward-req-badge');
+    if (reqs.length) { badge.style.display=''; badge.textContent=reqs.length; }
+    else badge.style.display='none';
+    if (!reqs.length) {
+      list.innerHTML = '<div class="ward-empty">No pending requests.</div>';
+      return;
+    }
+    list.innerHTML = '<div class="ward-section-lbl">Incoming Requests</div>' +
+      reqs.map(r => `
+        <div class="ward-req-row">
+          <div class="member-avatar">⛪</div>
+          <div class="member-info" style="flex:1;">
+            <div class="member-name">${escHtml(r.username)}</div>
+            <div class="member-role role-member">🏆 ${(r.trophies||0).toLocaleString()}</div>
+          </div>
+          <div class="ward-req-actions">
+            <button class="ward-req-accept" onclick="wardAccept(${r.id})">Accept</button>
+            <button class="ward-req-decline" onclick="wardDecline(${r.id})">✕</button>
+          </div>
+        </div>
+      `).join('');
+  } catch(e) {
+    list.innerHTML = '<div class="ward-empty">Failed to load. Try again.</div>';
+  }
+}
+
+function wardRenderSearch(results) {
+  const list = document.getElementById('ward-list');
+  if (!results.length) {
+    list.innerHTML = '<div class="ward-empty">Search for a player by username to add them to your Ward.</div>';
+    return;
+  }
+  list.innerHTML = '<div class="ward-section-lbl">Results</div>' +
+    results.map(u => {
+      let action = '';
+      if (u.friendStatus === 'accepted') action = '<span class="ward-already-lbl">✓ In Ward</span>';
+      else if (u.friendStatus === 'pending' && u.iRequested) action = '<span class="ward-sent-lbl">Request sent</span>';
+      else if (u.friendStatus === 'pending' && !u.iRequested) action = `<button class="ward-req-accept" onclick="wardAccept(${u.id})">Accept</button>`;
+      else action = `<button class="ward-add-btn" onclick="wardSendRequest(${u.id},'${escHtml(u.username)}')">+ Add</button>`;
+      return `
+        <div class="ward-search-result">
+          <div class="member-avatar">⛪</div>
+          <div class="member-info" style="flex:1;">
+            <div class="member-name">${escHtml(u.username)}</div>
+            <div class="member-role role-member">🏆 ${(u.trophies||0).toLocaleString()}</div>
+          </div>
+          ${action}
+        </div>
+      `;
+    }).join('');
+}
+
+async function wardSearch() {
+  const q = document.getElementById('ward-search-input').value.trim();
+  if (q.length < 2) return;
+  wardShowTab('search');
+  const token = localStorage.getItem('cc_token');
+  const list = document.getElementById('ward-list');
+  list.innerHTML = '<div class="ward-empty" style="color:rgba(255,255,255,.2)">Searching…</div>';
+  try {
+    const results = await fetch('/api/users/search?q='+encodeURIComponent(q), { headers: { Authorization: 'Bearer '+token } }).then(r => r.json());
+    _wardSearchResults = results;
+    wardRenderSearch(results);
+  } catch(e) {
+    list.innerHTML = '<div class="ward-empty">Search failed. Try again.</div>';
+  }
+}
+
+async function wardSendRequest(userId, username) {
+  const token = localStorage.getItem('cc_token');
+  try {
+    const res = await fetch('/api/friends/request', {
+      method:'POST', headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
+      body: JSON.stringify({ username })
+    }).then(r => r.json());
+    if (res.error) { showToast('⚠️ ' + res.error); return; }
+    showToast('✉️ Request sent to ' + username);
+    // re-run search to update buttons
+    wardSearch();
+  } catch(e) { showToast('⚠️ Failed to send request'); }
+}
+
+async function wardAccept(userId) {
+  const token = localStorage.getItem('cc_token');
+  try {
+    await fetch('/api/friends/accept', {
+      method:'POST', headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
+      body: JSON.stringify({ userId })
+    });
+    showToast('✓ Added to your Ward!');
+    if (_wardTab === 'requests') wardLoadRequests();
+    else wardSearch();
+  } catch(e) { showToast('⚠️ Failed'); }
+}
+
+async function wardDecline(userId) {
+  const token = localStorage.getItem('cc_token');
+  try {
+    await fetch('/api/friends/decline', {
+      method:'POST', headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
+      body: JSON.stringify({ userId })
+    });
+    wardLoadRequests();
+  } catch(e) { showToast('⚠️ Failed'); }
+}
+
+async function wardRemoveFriend(userId, username) {
+  if (!confirm('Remove ' + username + ' from your Ward?')) return;
+  const token = localStorage.getItem('cc_token');
+  try {
+    await fetch('/api/friends/'+userId, { method:'DELETE', headers:{ Authorization:'Bearer '+token } });
+    showToast('Removed ' + username);
+    wardLoadFriends();
+  } catch(e) { showToast('⚠️ Failed'); }
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.85);border:1px solid rgba(255,255,255,.15);color:#fff;padding:8px 18px;border-radius:20px;font-size:12px;z-index:9999;pointer-events:none;';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
 }
 
 // ── LEAGUES ──

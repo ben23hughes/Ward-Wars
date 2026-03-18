@@ -107,4 +107,70 @@ module.exports = {
       await supabase.rpc('increment_card_uses', { uid: userId, cid: cardId });
     }
   },
+
+  // ── Friends ───────────────────────────────────────────────────────────────
+  async searchUsers(query, currentUserId) {
+    const { data } = await supabase
+      .from('users')
+      .select('id, username, trophies')
+      .ilike('username', `%${query}%`)
+      .neq('id', currentUserId)
+      .limit(10);
+    return data || [];
+  },
+
+  async sendFriendRequest(requesterId, receiverId) {
+    const { error } = await supabase
+      .from('friends')
+      .insert({ requester_id: requesterId, receiver_id: receiverId, status: 'pending' });
+    if (error) throw new Error(error.message);
+  },
+
+  async acceptFriendRequest(requesterId, receiverId) {
+    const { error } = await supabase
+      .from('friends')
+      .update({ status: 'accepted' })
+      .eq('requester_id', requesterId)
+      .eq('receiver_id', receiverId);
+    if (error) throw new Error(error.message);
+  },
+
+  async removeFriend(userId, otherId) {
+    await supabase.from('friends').delete()
+      .or(`and(requester_id.eq.${userId},receiver_id.eq.${otherId}),and(requester_id.eq.${otherId},receiver_id.eq.${userId})`);
+  },
+
+  async getFriends(userId) {
+    const { data } = await supabase
+      .from('friends')
+      .select('requester_id, receiver_id, users!friends_requester_id_fkey(id,username,trophies), users!friends_receiver_id_fkey(id,username,trophies)')
+      .eq('status', 'accepted')
+      .or(`requester_id.eq.${userId},receiver_id.eq.${userId}`);
+    if (!data) return [];
+    return data.map(row => {
+      const friend = row.requester_id === userId
+        ? row['users!friends_receiver_id_fkey']
+        : row['users!friends_requester_id_fkey'];
+      return friend;
+    }).filter(Boolean);
+  },
+
+  async getPendingRequests(userId) {
+    const { data } = await supabase
+      .from('friends')
+      .select('requester_id, users!friends_requester_id_fkey(id,username,trophies)')
+      .eq('receiver_id', userId)
+      .eq('status', 'pending');
+    if (!data) return [];
+    return data.map(row => row['users!friends_requester_id_fkey']).filter(Boolean);
+  },
+
+  async getFriendStatus(userId, otherId) {
+    const { data } = await supabase
+      .from('friends')
+      .select('status, requester_id')
+      .or(`and(requester_id.eq.${userId},receiver_id.eq.${otherId}),and(requester_id.eq.${otherId},receiver_id.eq.${userId})`)
+      .single();
+    return data || null;
+  },
 };
