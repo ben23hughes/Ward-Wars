@@ -521,6 +521,104 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
 .ach-name{font-size:7px;color:rgba(255,255,255,.5);text-align:center;line-height:1.2;}
 .achievement.unlocked{border-color:rgba(245,200,66,.3);}
 .achievement.locked{opacity:.4;}
+
+/* ── BATTLE MODE MODAL ── */
+#battle-modal{
+  position:fixed;inset:0;z-index:300;
+  background:rgba(0,0,0,0);display:none;
+  align-items:flex-end;justify-content:center;
+  transition:background .2s;
+}
+#battle-modal.open{display:flex;background:rgba(0,0,0,.75);}
+#battle-modal-box{
+  width:100%;max-width:420px;
+  background:linear-gradient(180deg,#0f2040,#080f1c);
+  border:1px solid rgba(245,200,66,.2);
+  border-radius:24px 24px 0 0;
+  padding:24px 16px 32px;
+  display:flex;flex-direction:column;align-items:center;gap:16px;
+  animation:slideUp .25s ease-out;
+  box-shadow:0 -8px 40px rgba(0,0,0,.6);
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+#bm-title{
+  font-family:'Cinzel Decorative',serif;font-size:16px;color:var(--gold);
+  text-shadow:0 0 16px rgba(245,200,66,.3);
+}
+#bm-options{display:flex;gap:12px;width:100%;}
+.bm-option{
+  flex:1;
+  background:linear-gradient(160deg,#162840,#0d1b2e);
+  border:1.5px solid rgba(255,255,255,.12);
+  border-radius:18px;padding:20px 12px 16px;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  cursor:pointer;position:relative;overflow:hidden;
+  transition:transform .15s,box-shadow .15s,border-color .15s;
+  box-shadow:0 4px 16px rgba(0,0,0,.4);
+}
+.bm-option:active{transform:scale(.97);}
+.bm-option.bm-online{border-color:rgba(245,200,66,.35);}
+.bm-option.bm-online:active{box-shadow:0 0 24px rgba(245,200,66,.3);}
+.bm-glow{
+  position:absolute;inset:0;border-radius:18px;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(245,200,66,.12),transparent);
+  pointer-events:none;
+}
+.bm-icon{font-size:42px;line-height:1;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5));}
+.bm-name{font-family:'Cinzel Decorative',serif;font-size:14px;color:#fff;}
+.bm-desc{font-size:10px;color:rgba(255,255,255,.45);text-align:center;line-height:1.4;}
+.bm-tag{
+  font-size:8px;color:rgba(255,255,255,.3);
+  background:rgba(255,255,255,.07);border-radius:10px;padding:3px 8px;
+}
+.bm-tag-online{background:rgba(245,200,66,.15);color:var(--gold);}
+#bm-close{
+  background:none;border:1px solid rgba(255,255,255,.15);border-radius:20px;
+  color:rgba(255,255,255,.4);font-family:'Cinzel',serif;font-size:11px;
+  padding:8px 24px;cursor:pointer;
+}
+#bm-close:active{background:rgba(255,255,255,.06);}
+
+/* ── MATCHMAKING SCREEN ── */
+#matchmaking-screen{
+  position:fixed;inset:0;z-index:400;
+  background:rgba(0,0,0,.92);
+  display:none;align-items:center;justify-content:center;
+}
+#matchmaking-screen.open{display:flex;}
+#mm-box{
+  display:flex;flex-direction:column;align-items:center;gap:16px;
+  padding:32px 24px;width:100%;max-width:340px;text-align:center;
+}
+#mm-spinner{
+  font-size:52px;
+  animation:mmSpin 1.2s linear infinite;
+  filter:drop-shadow(0 0 16px rgba(245,200,66,.5));
+}
+@keyframes mmSpin{0%{transform:rotate(-12deg)}50%{transform:rotate(12deg)}100%{transform:rotate(-12deg)}}
+#mm-state{font-family:'Cinzel Decorative',serif;font-size:16px;color:var(--gold);}
+#mm-sub{font-size:11px;color:rgba(255,255,255,.4);}
+#mm-opponent{
+  display:flex;align-items:center;gap:14px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(245,200,66,.2);
+  border-radius:16px;padding:14px 20px;
+  animation:fadeIn .3s ease-out;
+}
+#mm-opp-avatar{font-size:36px;}
+#mm-opp-name{font-size:14px;color:#fff;font-weight:bold;}
+#mm-opp-trophies{font-size:11px;color:var(--gold);margin-top:3px;}
+#mm-countdown{
+  font-family:'Cinzel Decorative',serif;font-size:56px;color:var(--gold);
+  text-shadow:0 0 30px rgba(245,200,66,.6);
+  animation:countPop .4s ease-out;
+}
+@keyframes countPop{from{transform:scale(1.5);opacity:.6}to{transform:scale(1);opacity:1}}
+#mm-cancel-btn{
+  background:none;border:1px solid rgba(255,255,255,.2);border-radius:20px;
+  color:rgba(255,255,255,.4);font-family:'Cinzel',serif;font-size:11px;
+  padding:8px 28px;cursor:pointer;margin-top:8px;
+}
+
 </style>
 </head>
 <body>
@@ -532,8 +630,8 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
     <div id="player-info">
       <div id="avatar">⛪<div id="level-badge">Lv 8</div></div>
       <div id="player-name-area">
-        <div id="player-name">Elder Player</div>
-        <div id="trophy-row"><span>🏆</span><span id="trophy-count">1,842</span></div>
+        <div id="player-name">–</div>
+        <div id="trophy-row"><span>🏆</span><span id="trophy-count">–</span></div>
       </div>
     </div>
     <div id="currencies">
@@ -556,9 +654,9 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
       <div id="season-banner">
         <div id="season-icon">🕍</div>
         <div id="season-text">
-          <div id="season-title">Season 3</div>
-          <div id="season-name">Year of Jubilee</div>
-          <div id="season-bar-wrap"><div id="season-bar"></div></div>
+          <div id="season-title">Season 1</div>
+          <div id="season-name">The Promised Land</div>
+          <div id="season-bar-wrap"><div id="season-bar" style="width:12%"></div></div>
         </div>
         <div id="season-reward">👑</div>
       </div>
@@ -566,28 +664,28 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
       <div id="chest-section">
         <div class="section-label">Scripture Cases</div>
         <div id="chest-row">
-          <div class="chest ready" onclick="openChest(this)">
+          <div class="chest locked">
             <span class="chest-slot-num">1</span>
             <div class="chest-icon">📦</div>
-            <div class="chest-type">Silver</div>
-            <div class="chest-timer">Open!</div>
+            <div class="chest-type">Empty</div>
+            <div class="chest-timer">🔒</div>
           </div>
-          <div class="chest" onclick="openChest(this)">
+          <div class="chest locked">
             <span class="chest-slot-num">2</span>
-            <div class="chest-icon">📫</div>
-            <div class="chest-type">Golden</div>
-            <div class="chest-timer">2:14:30</div>
+            <div class="chest-icon">📦</div>
+            <div class="chest-type">Empty</div>
+            <div class="chest-timer">🔒</div>
           </div>
           <div class="chest locked">
             <span class="chest-slot-num">3</span>
-            <div class="chest-icon">🗃️</div>
-            <div class="chest-type">Crystal</div>
+            <div class="chest-icon">📦</div>
+            <div class="chest-type">Empty</div>
             <div class="chest-timer">🔒</div>
           </div>
           <div class="chest locked">
             <span class="chest-slot-num">4</span>
             <div class="chest-icon">📦</div>
-            <div class="chest-type">Silver</div>
+            <div class="chest-type">Empty</div>
             <div class="chest-timer">🔒</div>
           </div>
         </div>
@@ -602,7 +700,7 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
           </div>
           <div id="arena-label">⚔ The Iron Rod ⚔</div>
         </div>
-        <a id="battle-btn" href="game.html?mode=multi">
+        <a id="battle-btn" href="#" onclick="event.preventDefault();showBattleModal()">
           <div id="battle-btn-inner">
             <span class="battle-swords">⚔️</span>
             <span id="battle-text">Battle!</span>
@@ -626,7 +724,7 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
       <div class="screen-header">
         <div>
           <div class="screen-title">My Cards</div>
-          <div class="screen-subtitle">8 cards collected · Avg cost 3.5 💧</div>
+          <div class="screen-subtitle" id="cards-subtitle">– cards · Avg cost – 💧</div>
         </div>
         <div class="filter-tabs">
           <button class="filter-tab active" onclick="filterCards('all',this)">All</button>
@@ -641,27 +739,18 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
 
     <!-- ══ WARD ══ -->
     <div class="page" id="page-ward">
-      <div class="ward-header">
-        <div class="ward-icon">🏛️</div>
-        <div class="ward-info">
-          <div class="ward-name">1st Ward</div>
-          <div class="ward-tag">#CC1STWARD</div>
-          <div class="ward-meta">
-            <div class="ward-meta-item">👥 18/20</div>
-            <div class="ward-meta-item">🏆 28,450</div>
-            <div class="ward-meta-item">⚔️ War Ready</div>
-          </div>
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:32px 24px;text-align:center;gap:16px;">
+        <div style="font-size:64px;filter:drop-shadow(0 0 20px rgba(245,200,66,0.4));">🏛️</div>
+        <div style="font-family:'Cinzel Decorative',serif;font-size:18px;color:var(--gold);">Ward System</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.45);line-height:1.7;max-width:260px;">
+          Create and join Wards to battle alongside your ward members, donate cards, and compete in Ward Wars.
         </div>
-        <button class="ward-join-btn">Invite</button>
-      </div>
-      <div class="ward-stats">
-        <div class="ward-stat-box"><div class="ward-stat-val">18</div><div class="ward-stat-lbl">Members</div></div>
-        <div class="ward-stat-box"><div class="ward-stat-val">47</div><div class="ward-stat-lbl">War Wins</div></div>
-        <div class="ward-stat-box"><div class="ward-stat-val">1,580</div><div class="ward-stat-lbl">Donations</div></div>
-      </div>
-      <div class="members-section">
-        <div class="section-label" style="margin-bottom:8px">Members</div>
-        <div id="member-list"></div>
+        <div style="background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.2);border-radius:14px;padding:12px 20px;margin-top:4px;">
+          <div style="font-size:10px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;">Coming in Season 2</div>
+        </div>
+        <button onclick="wardInvite()" style="margin-top:8px;background:linear-gradient(180deg,rgba(245,200,66,0.15),rgba(245,200,66,0.05));border:1px solid rgba(245,200,66,0.3);border-radius:14px;padding:12px 24px;color:var(--gold);font-family:'Cinzel',serif;font-size:12px;cursor:pointer;">
+          🔗 Share Game Link
+        </button>
       </div>
     </div>
 
@@ -674,7 +763,7 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
           <div class="deal-sub">500 Gold · 30 Gems · Magical Pack</div>
           <div class="deal-timer" id="deal-timer">Resets in 14:32:08</div>
         </div>
-        <button class="deal-btn">$4.99</button>
+        <button class="deal-btn" onclick="showComingSoon('In-app purchases')">$4.99</button>
       </div>
 
       <div class="shop-section">
@@ -710,7 +799,7 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
               <div class="gold-card-amount">1,000</div>
               <div class="gold-card-price">$0.99</div>
             </div>
-            <button class="buy-btn">Buy</button>
+            <button class="buy-btn" onclick="showComingSoon('In-app purchases')">Buy</button>
           </div>
           <div class="gold-card">
             <div class="gold-card-icon">💰</div>
@@ -718,7 +807,7 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
               <div class="gold-card-amount">10,000</div>
               <div class="gold-card-price">$7.99</div>
             </div>
-            <button class="buy-btn">Buy</button>
+            <button class="buy-btn" onclick="showComingSoon('In-app purchases')">Buy</button>
           </div>
           <div class="gold-card">
             <div class="gold-card-icon">💎</div>
@@ -726,7 +815,7 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
               <div class="gold-card-amount">80 Gems</div>
               <div class="gold-card-price">$1.99</div>
             </div>
-            <button class="buy-btn">Buy</button>
+            <button class="buy-btn" onclick="showComingSoon('In-app purchases')">Buy</button>
           </div>
           <div class="gold-card">
             <div class="gold-card-icon">💎</div>
@@ -734,7 +823,7 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
               <div class="gold-card-amount">500 Gems</div>
               <div class="gold-card-price">$9.99</div>
             </div>
-            <button class="buy-btn">Buy</button>
+            <button class="buy-btn" onclick="showComingSoon('In-app purchases')">Buy</button>
           </div>
         </div>
       </div>
@@ -745,11 +834,11 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
       <div class="profile-hero">
         <div class="profile-avatar">⛪<div class="profile-level" id="profile-level">Lv 1</div></div>
         <div class="profile-name" id="profile-name">–</div>
-        <div class="profile-tag">#CHAPELCLASH</div>
-        <div class="profile-league"><span class="league-badge">🥇</span><span class="league-name">Gold League III</span></div>
+        <div class="profile-tag" id="profile-tag">#CHAPELCLASH</div>
+        <div class="profile-league"><span class="league-badge" id="league-badge">🥇</span><span class="league-name" id="league-name">–</span></div>
         <div class="trophy-progress">
-          <div class="tp-row"><span class="tp-cur">🏆 1,842</span><span class="tp-next">Next: 2,000</span></div>
-          <div class="tp-bar"><div class="tp-fill"></div></div>
+          <div class="tp-row"><span class="tp-cur" id="tp-cur">🏆 0</span><span class="tp-next" id="tp-next">Next: 300</span></div>
+          <div class="tp-bar"><div class="tp-fill" id="tp-fill" style="width:0%"></div></div>
         </div>
       </div>
 
@@ -760,16 +849,10 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
         <div class="stat-box"><div class="stat-val" id="stat-trophies">–</div><div class="stat-lbl">Trophies</div></div>
       </div>
 
-      <div class="profile-section">
+      <div class="profile-section" id="fav-card-section">
         <div class="section-label" style="margin-bottom:8px">Favorite Card</div>
-        <div class="favorite-card-row">
-          <div class="fav-emoji">🧑‍⚕️</div>
-          <div class="fav-info">
-            <div class="fav-label">Most Played</div>
-            <div class="fav-name">Missionary</div>
-            <div class="fav-uses">Used in 89 battles</div>
-          </div>
-          <div style="font-size:10px;color:rgba(255,255,255,.3)">Lv 3 →</div>
+        <div class="favorite-card-row" id="fav-card-row">
+          <div style="width:100%;text-align:center;color:rgba(255,255,255,0.3);font-size:12px;padding:8px 0;">Play some battles to see your favorite card!</div>
         </div>
       </div>
 
@@ -831,41 +914,25 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
 <script>
 // ── DATA ──
 const ALL_CARDS = [
-  {id:'missionary', name:'Missionary',   emoji:'🧑‍⚕️', cost:3, hp:240, atk:75,  ability:'Converts on death', rarity:'common', inDeck:true,  level:3, have:84,  need:100},
-  {id:'scriptures', name:'Scriptures',   emoji:'📖',   cost:2, hp:140, atk:50,  ability:'Freezes target',    rarity:'common', inDeck:true,  level:2, have:52,  need:100},
-  {id:'moroni',     name:'Angel Moroni', emoji:'👼',   cost:5, hp:380, atk:120, ability:'Heals all allies',  rarity:'epic',   inDeck:true,  level:1, have:4,   need:10},
-  {id:'nauvoo',     name:'Nauvoo Guard', emoji:'🏔️',  cost:4, hp:320, atk:90,  ability:'AOE charge',        rarity:'rare',   inDeck:true,  level:2, have:18,  need:20},
-  {id:'prophet',    name:'Prophet',      emoji:'🧓',   cost:5, hp:550, atk:55,  ability:'Shields all allies',rarity:'epic',   inDeck:false, level:1, have:2,   need:10},
-  {id:'ctrKid',     name:'CTR Kid',      emoji:'🧒',   cost:3, hp:100, atk:60,  ability:'Spawns 3 at once',  rarity:'common', inDeck:false, level:1, have:30,  need:100},
-  {id:'jello',      name:'Jello',        emoji:'🍑',   cost:3, hp:160, atk:100, ability:'Splash damage',     rarity:'rare',   inDeck:false, level:1, have:5,   need:20},
-  {id:'beehive',    name:'Beehive',      emoji:'🐝',   cost:4, hp:420, atk:45,  ability:'Sends bee swarm',   rarity:'rare',   inDeck:false, level:1, have:8,   need:20},
+  {id:'missionary', name:'Missionary',   emoji:'🧑‍⚕️', cost:3, hp:240, atk:75,  ability:'Converts on death', rarity:'common', inDeck:true,  level:1, have:0, need:50},
+  {id:'scriptures', name:'Scriptures',   emoji:'📖',   cost:2, hp:140, atk:50,  ability:'Freezes target',    rarity:'common', inDeck:true,  level:1, have:0, need:50},
+  {id:'moroni',     name:'Angel Moroni', emoji:'👼',   cost:5, hp:380, atk:120, ability:'Heals all allies',  rarity:'epic',   inDeck:true,  level:1, have:0, need:10},
+  {id:'nauvoo',     name:'Nauvoo Guard', emoji:'🏔️',  cost:4, hp:320, atk:90,  ability:'AOE charge',        rarity:'rare',   inDeck:true,  level:1, have:0, need:20},
+  {id:'prophet',    name:'Prophet',      emoji:'🧓',   cost:5, hp:550, atk:55,  ability:'Shields all allies',rarity:'epic',   inDeck:false, level:1, have:0, need:10},
+  {id:'ctrKid',     name:'CTR Kid',      emoji:'🧒',   cost:3, hp:100, atk:60,  ability:'Spawns 3 at once',  rarity:'common', inDeck:false, level:1, have:0, need:50},
+  {id:'jello',      name:'Jello',        emoji:'🍑',   cost:3, hp:160, atk:100, ability:'Splash damage',     rarity:'rare',   inDeck:false, level:1, have:0, need:20},
+  {id:'beehive',    name:'Beehive',      emoji:'🐝',   cost:4, hp:420, atk:45,  ability:'Sends bee swarm',   rarity:'rare',   inDeck:false, level:1, have:0, need:20},
 ];
 
-const MEMBERS = [
-  {name:'Bishop Johnson', emoji:'👨‍⚖️', role:'Bishop',  trophies:'2,450', donations:320, me:false},
-  {name:'Elder Player',   emoji:'⛪',   role:'Elder',   trophies:'1,842', donations:180, me:true},
-  {name:'Sis. Williams',  emoji:'👩',   role:'Member',  trophies:'1,650', donations:95,  me:false},
-  {name:'Bro. Smith',     emoji:'👨',   role:'Member',  trophies:'1,230', donations:72,  me:false},
-  {name:'Deacon Jones',   emoji:'🧑',   role:'Member',  trophies:'890',   donations:41,  me:false},
-  {name:'Elder Harris',   emoji:'👨‍🦱', role:'Elder',   trophies:'2,100', donations:260, me:false},
-  {name:'Sis. Baker',     emoji:'👩‍🦰', role:'Member',  trophies:'1,420', donations:58,  me:false},
-  {name:'Bro. Nelson',    emoji:'🧔',   role:'Member',  trophies:'980',   donations:33,  me:false},
-];
 
-const BATTLES = [
-  {result:'win',  opp:'ApostateKing99',  crowns:'⭐⭐⭐', detail:'3-0 · Perfect!',    time:'2h ago'},
-  {result:'loss', opp:'Gadianton_Rob',   crowns:'⭐',     detail:'1-2 · Close one',   time:'4h ago'},
-  {result:'win',  opp:'KorihorFan',      crowns:'⭐⭐',    detail:'2-1 · Nice battle', time:'5h ago'},
-  {result:'win',  opp:'LamanteBoss',     crowns:'⭐⭐⭐', detail:'3-0 · Destroyed!',  time:'7h ago'},
-  {result:'loss', opp:'AntiChrist42',    crowns:'⭐',     detail:'0-3 · Rough day',   time:'Yesterday'},
-];
+// Battle history will be fetched from backend in a future update
 
 const ACHIEVEMENTS = [
-  {icon:'⚔️',  name:'First Blood',     unlocked:true},
-  {icon:'🏆',  name:'Trophy Hunter',   unlocked:true},
-  {icon:'👑',  name:'3-Crown Win',     unlocked:true},
-  {icon:'🧑‍⚕️',name:'Missionary Work',  unlocked:true},
-  {icon:'📖',  name:'Scripture Study', unlocked:true},
+  {icon:'⚔️',  name:'First Blood',     unlocked:false},
+  {icon:'🏆',  name:'Trophy Hunter',   unlocked:false},
+  {icon:'👑',  name:'3-Crown Win',     unlocked:false},
+  {icon:'🧑‍⚕️',name:'Missionary Work',  unlocked:false},
+  {icon:'📖',  name:'Scripture Study', unlocked:false},
   {icon:'🕍',  name:'Temple Builder',  unlocked:false},
   {icon:'🌟',  name:'Perfect Season',  unlocked:false},
   {icon:'⛪',  name:'Ward Champion',   unlocked:false},
@@ -903,6 +970,10 @@ function renderCards(filter) {
       <div class="card-upgrade-text">${c.have}/${c.need}</div>
     </div>
   `).join('');
+  // Update subtitle with real counts
+  const avgCost = (ALL_CARDS.reduce((s,c) => s + c.cost, 0) / ALL_CARDS.length).toFixed(1);
+  const sub = document.getElementById('cards-subtitle');
+  if (sub) sub.textContent = `${ALL_CARDS.length} cards · Avg cost ${avgCost} 💧`;
 }
 
 function filterCards(filter, btn) {
@@ -926,38 +997,10 @@ function closeCardDetail(e) {
   if (e.target.id === 'card-detail') document.getElementById('card-detail').classList.remove('open');
 }
 
-// ── WARD SCREEN ──
-function renderMembers() {
-  const sorted = [...MEMBERS].sort((a,b) => parseInt(b.trophies.replace(',','')) - parseInt(a.trophies.replace(',','')));
-  document.getElementById('member-list').innerHTML = sorted.map((m, i) => `
-    <div class="member-row">
-      <div class="rank-num">${i+1}</div>
-      <div class="member-avatar">${m.emoji}</div>
-      <div class="member-info">
-        <div class="member-name">${m.name}${m.me ? ' <span style="font-size:8px;color:var(--green)">(You)</span>' : ''}</div>
-        <div class="member-role role-${m.role.toLowerCase()}">${m.role}</div>
-      </div>
-      <div class="member-right">
-        <div class="member-trophies">🏆 ${m.trophies}</div>
-        <div class="member-donations">🤝 ${m.donations} donated</div>
-      </div>
-    </div>
-  `).join('');
-}
-
 // ── PROFILE SCREEN ──
 function renderProfile() {
-  document.getElementById('battle-log').innerHTML = BATTLES.map(b => `
-    <div class="log-row">
-      <div class="log-result ${b.result}">${b.result === 'win' ? 'WIN' : 'LOSS'}</div>
-      <div class="log-info">
-        <div class="log-opp">vs ${b.opp}</div>
-        <div class="log-detail">${b.detail}</div>
-      </div>
-      <div class="log-crowns">${b.crowns}</div>
-      <div class="log-time">${b.time}</div>
-    </div>
-  `).join('');
+  document.getElementById('battle-log').innerHTML =
+    '<div style="text-align:center;color:rgba(255,255,255,0.3);font-size:12px;padding:20px 0;">No battles yet — hit Battle to get started! ⚔️</div>';
 
   document.getElementById('achievements').innerHTML = ACHIEVEMENTS.map(a => `
     <div class="achievement ${a.unlocked ? 'unlocked' : 'locked'}">
@@ -965,21 +1008,6 @@ function renderProfile() {
       <div class="ach-name">${a.name}</div>
     </div>
   `).join('');
-}
-
-// ── CHEST TIMER ──
-function startChestTimers() {
-  const chest = document.querySelector('.chest:not(.ready):not(.locked)');
-  if (!chest) return;
-  const timerEl = chest.querySelector('.chest-timer');
-  let [h,m,s] = timerEl.textContent.split(':').map(Number);
-  let total = h*3600 + m*60 + s;
-  setInterval(() => {
-    if (total <= 0) { timerEl.textContent = 'Open!'; chest.classList.add('ready'); return; }
-    total--;
-    const rh = Math.floor(total/3600), rm = Math.floor((total%3600)/60), rs = total%60;
-    timerEl.textContent = `${rh}:${String(rm).padStart(2,'0')}:${String(rs).padStart(2,'0')}`;
-  }, 1000);
 }
 
 function openChest(el) {
@@ -1003,7 +1031,73 @@ function startDealTimer() {
 
 // ── SHOP ──
 function buyPack(type) {
-  alert(`📦 Opening ${type} pack...\n(Shop coming soon!)`);
+  showComingSoon('Scripture Packs');
+}
+
+function showComingSoon(feature) {
+  const toast = document.createElement('div');
+  toast.textContent = `⚒️ ${feature} coming soon!`;
+  toast.style.cssText = `
+    position:fixed;bottom:90px;left:50%;transform:translateX(-50%);
+    background:rgba(15,30,53,0.97);border:1px solid rgba(245,200,66,0.4);
+    color:#fff;padding:10px 18px;border-radius:20px;font-size:12px;
+    font-family:'Cinzel',serif;z-index:999;white-space:nowrap;
+    box-shadow:0 4px 20px rgba(0,0,0,0.5);
+  `;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2200);
+}
+
+// ── WARD ──
+function wardInvite() {
+  const link = window.location.origin;
+  if (navigator.share) {
+    navigator.share({ title: 'Chapel Clash', text: 'Join my ward in Chapel Clash!', url: link });
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(link).then(() => showComingSoon('Link copied to clipboard ✓'));
+  } else {
+    showComingSoon('Ward invites');
+  }
+}
+
+// ── LEAGUES ──
+const LEAGUES = [
+  { name:'Bronze III',  badge:'🥉', min:0,    next:100  },
+  { name:'Bronze II',   badge:'🥉', min:100,  next:200  },
+  { name:'Bronze I',    badge:'🥉', min:200,  next:300  },
+  { name:'Silver III',  badge:'🪙', min:300,  next:450  },
+  { name:'Silver II',   badge:'🪙', min:450,  next:600  },
+  { name:'Silver I',    badge:'🪙', min:600,  next:750  },
+  { name:'Gold III',    badge:'🥇', min:750,  next:1000 },
+  { name:'Gold II',     badge:'🥇', min:1000, next:1300 },
+  { name:'Gold I',      badge:'🥇', min:1300, next:1600 },
+  { name:'Crystal III', badge:'💎', min:1600, next:2000 },
+  { name:'Crystal II',  badge:'💎', min:2000, next:2400 },
+  { name:'Crystal I',   badge:'💎', min:2400, next:2800 },
+  { name:'Master',      badge:'👑', min:2800, next:3500 },
+  { name:'Legend',      badge:'🌟', min:3500, next:null  },
+];
+
+function getLeague(trophies) {
+  for (let i = LEAGUES.length - 1; i >= 0; i--) {
+    if (trophies >= LEAGUES[i].min) return LEAGUES[i];
+  }
+  return LEAGUES[0];
+}
+
+function updateProfileLeague(trophies) {
+  const league = getLeague(trophies);
+  document.getElementById('league-badge').textContent = league.badge;
+  document.getElementById('league-name').textContent = league.name;
+  document.getElementById('tp-cur').textContent = '🏆 ' + trophies.toLocaleString();
+  if (league.next) {
+    document.getElementById('tp-next').textContent = 'Next: ' + league.next.toLocaleString();
+    const pct = Math.min(100, Math.round((trophies - league.min) / (league.next - league.min) * 100));
+    document.getElementById('tp-fill').style.width = pct + '%';
+  } else {
+    document.getElementById('tp-next').textContent = 'Max League!';
+    document.getElementById('tp-fill').style.width = '100%';
+  }
 }
 
 // ── AUTH ──
@@ -1022,18 +1116,21 @@ function buyPack(type) {
     document.getElementById('level-badge').textContent = 'Lv ' + user.level;
     document.getElementById('profile-name').textContent = user.username;
     document.getElementById('profile-level').textContent = 'Lv ' + user.level;
+    document.getElementById('profile-tag').textContent = '#' + user.username.toUpperCase();
     const total = user.wins + user.losses;
     const winRate = total > 0 ? Math.round(user.wins / total * 100) + '%' : '–';
     document.getElementById('stat-wins').textContent = user.wins;
     document.getElementById('stat-losses').textContent = user.losses;
     document.getElementById('stat-winrate').textContent = winRate;
     document.getElementById('stat-trophies').textContent = user.trophies.toLocaleString();
+    updateProfileLeague(user.trophies);
   } catch(e) {
     window.location.href = 'login.html';
   }
 })();
 
 async function logout() {
+  if (!confirm('Are you sure you want to log out?')) return;
   const token = localStorage.getItem('cc_token');
   if (token) await fetch('/api/logout', { method: 'POST', headers: { Authorization: 'Bearer ' + token } }).catch(()=>{});
   localStorage.removeItem('cc_token');
@@ -1043,14 +1140,119 @@ async function logout() {
 
 // ── INIT ──
 renderCards('all');
-renderMembers();
 renderProfile();
-startChestTimers();
 startDealTimer();
+
+
+// ── BATTLE MODAL ──
+const BOT_NAMES = [
+  'SisterMoreoni99','BroNephite42','EternalProgress','CTRElite','GadiantonRob',
+  'LamanteBoss','IronRodWarrior','ZionBuilder','TitleOfLiberty','SwordOfLaban',
+  'ProphetSmith1','BookOfBattle','ArmyOfHelaman','StriplingWrrior','MoroniDefends',
+];
+
+function showBattleModal() {
+  document.getElementById('battle-modal').classList.add('open');
+}
+function hideBattleModal() {
+  document.getElementById('battle-modal').classList.remove('open');
+}
+
+function startLocal() {
+  hideBattleModal();
+  window.location.href = 'game.html';
+}
+
+function startOnline() {
+  hideBattleModal();
+  const screen = document.getElementById('matchmaking-screen');
+  screen.classList.add('open');
+  document.getElementById('mm-state').textContent = 'Searching for opponent...';
+  document.getElementById('mm-sub').textContent = 'Finding a worthy adversary';
+  document.getElementById('mm-opponent').style.display = 'none';
+  document.getElementById('mm-countdown').style.display = 'none';
+  document.getElementById('mm-cancel-btn').style.display = 'block';
+
+  const delay = 2000 + Math.random() * 2500;
+  const oppName = BOT_NAMES[Math.floor(Math.random() * BOT_NAMES.length)];
+  const oppTrophies = 800 + Math.floor(Math.random() * 1200);
+
+  const searchTimer = setTimeout(() => {
+    document.getElementById('mm-state').textContent = '\u2694\uFE0F Opponent Found!';
+    document.getElementById('mm-sub').textContent = 'Prepare for battle...';
+    document.getElementById('mm-opp-name').textContent = oppName;
+    document.getElementById('mm-opp-trophies').textContent = '\uD83C\uDFC6 ' + oppTrophies.toLocaleString();
+    document.getElementById('mm-opponent').style.display = 'flex';
+    document.getElementById('mm-cancel-btn').style.display = 'none';
+
+    let count = 3;
+    const countEl = document.getElementById('mm-countdown');
+    countEl.style.display = 'block';
+    countEl.textContent = count;
+    const countTimer = setInterval(() => {
+      count--;
+      if (count <= 0) {
+        clearInterval(countTimer);
+        screen.classList.remove('open');
+        window.location.href = 'game.html';
+      } else {
+        countEl.textContent = count;
+      }
+    }, 1000);
+  }, delay);
+
+  document.getElementById('mm-cancel-btn').onclick = () => {
+    clearTimeout(searchTimer);
+    screen.classList.remove('open');
+  };
+}
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
 }
 </script>
+
+<!-- BATTLE MODE MODAL -->
+<div id="battle-modal" onclick="if(event.target===this)hideBattleModal()">
+  <div id="battle-modal-box">
+    <div id="bm-title">Choose Battle Mode</div>
+    <div id="bm-options">
+      <div class="bm-option" onclick="startLocal()">
+        <div class="bm-icon">&#x1F91D;</div>
+        <div class="bm-name">Local</div>
+        <div class="bm-desc">Play on this device against a bot</div>
+        <div class="bm-tag">No trophies at stake</div>
+      </div>
+      <div class="bm-option bm-online" onclick="startOnline()">
+        <div class="bm-glow"></div>
+        <div class="bm-icon">&#x1F310;</div>
+        <div class="bm-name">Online</div>
+        <div class="bm-desc">Find a random opponent</div>
+        <div class="bm-tag bm-tag-online">&#x1F3C6; Trophies at stake!</div>
+      </div>
+    </div>
+    <button id="bm-close" onclick="hideBattleModal()">&#x2715; Cancel</button>
+  </div>
+</div>
+
+<!-- MATCHMAKING SCREEN -->
+<div id="matchmaking-screen">
+  <div id="mm-box">
+    <div id="mm-spinner">&#x2694;&#xFE0F;</div>
+    <div id="mm-state">Searching for opponent...</div>
+    <div id="mm-sub">Finding a worthy adversary</div>
+    <div id="mm-opponent">
+      <div id="mm-opp-avatar">&#x1F608;</div>
+      <div>
+        <div id="mm-opp-name"></div>
+        <div id="mm-opp-trophies"></div>
+      </div>
+    </div>
+    <div id="mm-countdown"></div>
+    <button id="mm-cancel-btn">Cancel</button>
+  </div>
+</div>
+
 </body>
 </html>
+<!-- injected after -->
