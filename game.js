@@ -152,7 +152,7 @@ const TOWER_DEF={
 //  STATE
 // ══════════════════════════
 let elixir=5,enemyElixir=5;
-let selectedCard=null,hand=[0,1,2,3],pDeckIdx=4,nextCard=PLAYER_POOL[3];
+let selectedCard=null,hand=[0,1,2,3],nextCard=0;
 let troops=[],projectiles=[],towers={};
 let playerCrowns=0,enemyCrowns=0,gameTime=180;
 let gameOver=false,gameStarted=false;
@@ -173,6 +173,19 @@ function _cardLevel(cardId) {
 }
 function _lvMult(cardId) { return 1 + (_cardLevel(cardId) - 1) * 0.15; }
 
+// ── Build player deck from saved deck in localStorage ──
+function buildPlayerDeck() {
+  const deckIds = _ccCards.filter(r => r.in_deck).map(r => r.card_id);
+  const indices = deckIds.map(id => CARDS.findIndex(c => c.id === id)).filter(i => i >= 0);
+  if (indices.length === 4) return indices;
+  // fallback: first 4 player cards
+  return [0, 1, 2, 3];
+}
+
+// playerDeck is set fresh each game in resetState()
+let playerDeck = [0, 1, 2, 3];
+let pCycleIdx = 0; // next index into playerDeck to cycle in
+
 // ══════════════════════════
 //  INIT
 // ══════════════════════════
@@ -187,7 +200,11 @@ function startGame(){
   intervals.push(setInterval(tickTimer,1000));
 }
 function resetState(){
-  elixir=5;enemyElixir=5;selectedCard=null;hand=[0,1,2,3];pDeckIdx=4;nextCard=PLAYER_POOL[3];
+  playerDeck = buildPlayerDeck();
+  pCycleIdx = 0;
+  elixir=5;enemyElixir=5;selectedCard=null;
+  hand=[...playerDeck]; // start with all 4 deck cards in hand
+  nextCard=playerDeck[pCycleIdx];
   troops=[];projectiles=[];playerCrowns=0;enemyCrowns=0;gameTime=180;gameOver=false;
   Object.keys(TOWER_DEF).forEach(k=>towers[k]={...TOWER_DEF[k],alive:true,lastShot:0});
   document.querySelectorAll('.troop,.projectile,.dmg-text,.aoe-ring,.heal-burst').forEach(el=>el.remove());
@@ -196,7 +213,7 @@ function resetState(){
   });
   renderHand();renderNextCard();updatePlayerElixirUI();updateEnemyElixirUI();
   updateCrowns();updateTowerHPs();
-  const t=document.getElementById('timer');t.textContent='3:00';t.classList.remove('urgent');
+  const t=document.getElementById('timer');t.textContent='3:00';t.classList.remove('urgent','double-elixir');
 }
 
 // ══════════════════════════
@@ -445,7 +462,14 @@ function getTowerCenter(k){
 function findTowerTarget(troop){
   const sides=troop.side==='player'?['e-left','e-right']:['p-left','p-right'];
   const king=troop.side==='player'?'e-king':'p-king';
-  for(const k of sides)if(towers[k]?.alive)return getTowerCenter(k);
+  let closest=null,closestDist=Infinity;
+  for(const k of sides){
+    if(!towers[k]?.alive)continue;
+    const c=getTowerCenter(k);
+    const d=dist(troop,c);
+    if(d<closestDist){closestDist=d;closest=c;}
+  }
+  if(closest)return closest;
   if(towers[king]?.alive)return getTowerCenter(king);
   return null;
 }
@@ -578,8 +602,16 @@ function enemyAI(){
 // ══════════════════════════
 //  ELIXIR
 // ══════════════════════════
-function tickPlayerElixir(){if(gameOver||!gameStarted)return;if(elixir<10){elixir++;updatePlayerElixirUI();}}
-function tickEnemyElixir(){if(gameOver||!gameStarted)return;if(enemyElixir<10){enemyElixir++;updateEnemyElixirUI();}}
+function tickPlayerElixir(){
+  if(gameOver||!gameStarted)return;
+  if(elixir<10){elixir++;updatePlayerElixirUI();}
+  if(gameTime<=60&&elixir<10){elixir++;updatePlayerElixirUI();} // double elixir
+}
+function tickEnemyElixir(){
+  if(gameOver||!gameStarted)return;
+  if(enemyElixir<10){enemyElixir++;updateEnemyElixirUI();}
+  if(gameTime<=60&&enemyElixir<10){enemyElixir++;updateEnemyElixirUI();} // double elixir
+}
 function updatePlayerElixirUI(){
   document.getElementById('elixir-label').textContent='🙏 '+elixir;
   for(let i=0;i<10;i++)document.getElementById(`ep${i}`).classList.toggle('filled',i<elixir);
@@ -612,7 +644,9 @@ function selectCard(slot){
   renderHand();
 }
 function cycleCard(slot){
-  hand[slot]=nextCard;pDeckIdx=(pDeckIdx+1)%PLAYER_POOL.length;nextCard=PLAYER_POOL[pDeckIdx];
+  hand[slot]=nextCard;
+  pCycleIdx=(pCycleIdx+1)%playerDeck.length;
+  nextCard=playerDeck[pCycleIdx];
   renderHand();renderNextCard();
 }
 
@@ -672,7 +706,12 @@ function tickTimer(){
   if(gameOver||!gameStarted)return;gameTime--;
   const m=Math.floor(gameTime/60),s=gameTime%60;
   const el=document.getElementById('timer');el.textContent=`${m}:${s.toString().padStart(2,'0')}`;
-  if(gameTime<=30)el.classList.add('urgent');if(gameTime<=0)endGame();
+  if(gameTime===60){
+    el.classList.add('double-elixir');
+    showToast('⚡ Double Elixir! ⚡');
+  }
+  if(gameTime<=30)el.classList.add('urgent');
+  if(gameTime<=0)endGame();
 }
 
 // ══════════════════════════
