@@ -171,19 +171,6 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:12px 12px;gap:14px;
 }
-#arena-preview{
-  width:100%;height:100px;border-radius:16px;
-  background:linear-gradient(180deg,#1c3a20 0%,#2a5a28 30%,#c4a060 30%,#c4a060 70%,#2a5a28 70%,#1c3a20 100%);
-  border:2px solid rgba(245,200,66,.2);
-  box-shadow:0 8px 32px rgba(0,0,0,.6);
-  position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;
-}
-#arena-preview::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 18px,rgba(0,0,0,.04) 18px,rgba(0,0,0,.04) 19px);}
-#arena-towers{display:flex;justify-content:space-between;align-items:center;width:100%;padding:0 16px;position:relative;z-index:2;}
-.mini-tower-body{width:28px;height:34px;border-radius:4px 4px 2px 2px;display:flex;align-items:center;justify-content:center;font-size:14px;border:1px solid rgba(255,255,255,.2);box-shadow:0 3px 8px rgba(0,0,0,.5);}
-.player-t{background:linear-gradient(160deg,#3a6fbe,#1a3a8e,#0f2460);}
-.enemy-t{background:linear-gradient(160deg,#8a2a2a,#5a1010,#3a0808);}
-.mini-king{width:36px;height:42px;font-size:18px;}
 
 #battle-btn{
   width:100%;background:linear-gradient(180deg,#ff8c00,#e65c00,#c24000);
@@ -847,13 +834,6 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
       </div>
 
       <div id="battle-area">
-        <div id="arena-preview">
-          <div id="arena-towers">
-            <div><div class="mini-tower-body enemy-t">🔥</div></div>
-            <div><div class="mini-tower-body enemy-t mini-king">😈</div></div>
-            <div><div class="mini-tower-body enemy-t">🔥</div></div>
-          </div>
-        </div>
         <a id="battle-btn" href="#" onclick="event.preventDefault();showBattleModal()">
           <div id="battle-btn-inner">
             <span class="battle-swords">⚔️</span>
@@ -1136,25 +1116,6 @@ function renderArenaSection(trophies) {
       </div>
     </div>
   `;
-  updateArenaPreview(arena);
-}
-
-function updateArenaPreview(arena) {
-  const preview = document.getElementById('arena-preview');
-  if (!preview) return;
-  const themes = {
-    1:'linear-gradient(180deg,#1a0838 0%,#2e1060 30%,#7a3aaa 30%,#6a2a9a 70%,#2e1060 70%,#1a0838 100%)',
-    2:'linear-gradient(180deg,#062210 0%,#0d4a1a 30%,#7a5a10 30%,#8a6a18 70%,#0d4a1a 70%,#062210 100%)',
-    3:'linear-gradient(180deg,#01010a 0%,#03031a 30%,#0d0830 30%,#080520 70%,#03031a 70%,#01010a 100%)',
-    4:'linear-gradient(180deg,#0e0d0d 0%,#1a1818 30%,#3a3535 30%,#322e2e 70%,#1a1818 70%,#0e0d0d 100%)',
-    5:'linear-gradient(180deg,#2a1400 0%,#4a2800 30%,#9a7020 30%,#8a6010 70%,#4a2800 70%,#2a1400 100%)',
-    6:'linear-gradient(180deg,#06101e 0%,#0e1e30 30%,#2e3848 30%,#262e3e 70%,#0e1e30 70%,#06101e 100%)',
-    7:'linear-gradient(180deg,#2a1000 0%,#5a2a00 30%,#c06800 30%,#d07800 70%,#5a2a00 70%,#2a1000 100%)',
-    8:'linear-gradient(180deg,#c8b860 0%,#e8d880 30%,#fffce0 30%,#fff8d0 70%,#e8d880 70%,#c8b860 100%)',
-  };
-  preview.style.background = themes[arena.id] || themes[1];
-  preview.style.borderColor = arena.color;
-  preview.style.boxShadow = `0 8px 32px rgba(0,0,0,0.6), 0 0 20px ${arena.glow}`;
 }
 
 function openArenaPath() {
