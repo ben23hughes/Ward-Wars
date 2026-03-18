@@ -1072,12 +1072,14 @@ const CHAR_SVGS = {
 // ── Build troop HTML using SVG sprites ──────────────────────
 function buildTroopHTML(card, troopId, isMini) {
   const cid = card.id || 'missionary';
-  const svg = CHAR_SVGS[cid] || CHAR_SVGS.missionary;
+  const raw = CHAR_SVGS[cid] || CHAR_SVGS.missionary;
+  // Strip outer <svg> tag so we can re-stamp correct dimensions
+  const inner = raw.replace(/<svg[^>]*>/,'').replace(/<\/svg>\s*$/,'');
 
   if (isMini) {
     return `
-      <div class="t-sprite t-char-${cid}" style="width:28px;height:36px;overflow:hidden;">
-        <svg viewBox="0 0 46 62" xmlns="http://www.w3.org/2000/svg" width="28" height="36">${svg.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg>
+      <div class="t-sprite t-char-${cid}" style="position:absolute;top:0;left:0;width:28px;height:36px;">
+        <svg viewBox="0 0 46 62" xmlns="http://www.w3.org/2000/svg" width="28" height="36">${inner}</svg>
       </div>
       <div class="t-shadow"></div>
       <div class="troop-hp"><div class="troop-hp-fill" id="thp-${troopId}"></div></div>`;
@@ -1085,7 +1087,7 @@ function buildTroopHTML(card, troopId, isMini) {
 
   return `
     <div class="t-sprite t-char-${cid}">
-      ${svg}
+      <svg viewBox="0 0 46 62" xmlns="http://www.w3.org/2000/svg" width="46" height="62">${inner}</svg>
     </div>
     <div class="t-shadow"></div>
     <div class="troop-hp"><div class="troop-hp-fill" id="thp-${troopId}"></div></div>`;

@@ -91,6 +91,20 @@ module.exports = {
     await supabase.from('user_cards').insert(rows);
   },
 
+  async backfillUserCards(userId, existingCards) {
+    const ALL_IDS = [
+      'missionary','scriptures','moroni','nauvoo','prophet','ctrKid','jello','beehive',
+      'holyGhost','striplingWarrior','captainMoroni','liahona','brotherOfJared','ammon',
+      'threeNephites','seersStone','samuelLamanite','titleOfLiberty','teancum','antiNephiLehi',
+      'josephSmith','destroyingAngel',
+    ];
+    const have = new Set(existingCards.map(r => r.card_id));
+    const missing = ALL_IDS.filter(id => !have.has(id));
+    if (!missing.length) return;
+    const rows = missing.map(id => ({ user_id: userId, card_id: id, uses: 0, in_deck: false }));
+    await supabase.from('user_cards').insert(rows);
+  },
+
   async getUserCards(userId) {
     const { data } = await supabase
       .from('user_cards')

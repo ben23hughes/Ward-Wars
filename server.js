@@ -88,6 +88,9 @@ app.get('/api/cards', requireAuth, async (req, res) => {
     if (!cards.length) {
       await db.initUserCards(req.userId);
       cards = await db.getUserCards(req.userId);
+    } else {
+      await db.backfillUserCards(req.userId, cards);
+      if (cards.length < 22) cards = await db.getUserCards(req.userId);
     }
     res.json(cards);
   } catch (e) {

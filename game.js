@@ -339,6 +339,33 @@ function addShieldOrb(tr){
 }
 
 // ══════════════════════════
+//  RIVER / BRIDGES
+// ══════════════════════════
+const BRIDGE_HALF_W = 36;          // half-width of each bridge in px
+const BRIDGE_L_PCT  = 0.13;        // left  bridge center (% of arena width)
+const BRIDGE_R_PCT  = 0.87;        // right bridge center
+const RIVER_HALF    = 11;          // half the river height in px
+
+function _bridgeCenters(aw){ return [aw*BRIDGE_L_PCT, aw*BRIDGE_R_PCT]; }
+function _inBridge(x, aw){ return _bridgeCenters(aw).some(bx=>Math.abs(x-bx)<BRIDGE_HALF_W); }
+function _nearestBridge(x, aw){ const [lb,rb]=_bridgeCenters(aw); return Math.abs(x-lb)<Math.abs(x-rb)?lb:rb; }
+
+function applyRiverConstraint(t, nx, ny, spd, dt, aw, ah){
+  const riverY   = ah * 0.5;
+  const isPlayer = t.side === 'player';
+  const edge     = isPlayer ? riverY - RIVER_HALF : riverY + RIVER_HALF;
+  // Only trigger when crossing from own half to enemy half
+  const crossing = isPlayer ? (t.y >= edge && ny < edge) : (t.y <= edge && ny > edge);
+  if(!crossing) return {x:nx, y:ny};
+  if(_inBridge(nx, aw)) return {x:nx, y:ny}; // bridge — allowed through
+  // Not in a bridge: pin at river edge, redirect to nearest bridge
+  const bx   = _nearestBridge(t.x, aw);
+  const bdx  = bx - t.x;
+  const step = Math.min(Math.abs(bdx), spd * dt * 1.5);
+  return { x: t.x + Math.sign(bdx)*step, y: edge };
+}
+
+// ══════════════════════════
 //  MOVE TROOPS
 // ══════════════════════════
 function moveTroops(dt){
@@ -375,13 +402,18 @@ function moveTroops(dt){
         }
       } else {
         const spd=(t.slowed?0.5:1)*56*t.card.spd;
-        t.x=Math.max(23,Math.min(aw-23,t.x+(dx/d)*spd*dt));
-        t.y=Math.max(55,Math.min(ah-10,t.y+(dy/d)*spd*dt));
+        const nx=t.x+(dx/d)*spd*dt, ny=t.y+(dy/d)*spd*dt;
+        const c=applyRiverConstraint(t,nx,ny,spd,dt,aw,ah);
+        t.x=Math.max(23,Math.min(aw-23,c.x));
+        t.y=Math.max(55,Math.min(ah-10,c.y));
         moving=true;
       }
     } else {
       const spd=(t.slowed?0.5:1)*44*t.card.spd;
-      t.y+=(t.side==='player'?-spd:spd)*dt;
+      const ny=t.y+(t.side==='player'?-spd:spd)*dt;
+      const c=applyRiverConstraint(t,t.x,ny,spd,dt,aw,ah);
+      t.x=Math.max(23,Math.min(aw-23,c.x));
+      t.y=Math.max(55,Math.min(ah-10,c.y));
       moving=true;
     }
 
@@ -673,23 +705,129 @@ function cycleCard(slot){
 }
 
 // ══════════════════════════
-//  DEPLOY
+//  DEPLOY — drag & drop
 // ══════════════════════════
+let dragSlot = null;       // card slot being dragged
+let dragGhost = null;      // floating ghost element
+let dragMoved = false;     // did the touch actually move (vs a tap)?
+
+function _deployAt(slot, clientX, clientY) {
+  const arena = document.getElementById('arena');
+  const rect = arena.getBoundingClientRect();
+  const x = clientX - rect.left;
+  const y = clientY - rect.top;
+  if (y < arena.offsetHeight / 2) return false; // must be player half
+  const ci = hand[slot];
+  if (CARDS[ci].cost > elixir) return false;
+  elixir -= CARDS[ci].cost; updatePlayerElixirUI();
+  spawnTroop(ci, x, y, 'player');
+  playedCardIds.add(CARDS[ci].id);
+  if (MULTIPLAYER && mpWs && mpWs.readyState === 1) {
+    mpWs.send(JSON.stringify({ type:'play', cardId: CARDS[ci].id,
+      pct_x: x / arena.offsetWidth, pct_y: y / arena.offsetHeight }));
+  }
+  cycleCard(slot);
+  return true;
+}
+
+function _startDrag(slot, clientX, clientY) {
+  if (!gameStarted || gameOver) return;
+  if (CARDS[hand[slot]].cost > elixir) return;
+  dragSlot = slot; dragMoved = false;
+  // build ghost
+  dragGhost = document.createElement('div');
+  dragGhost.className = 'drag-ghost';
+  dragGhost.innerHTML = _cardSvg(CARDS[hand[slot]], 52, 68);
+  document.getElementById('game-wrapper').appendChild(dragGhost);
+  _moveDrag(clientX, clientY);
+  document.getElementById('drop-hint').classList.add('active');
+}
+
+function _moveDrag(clientX, clientY) {
+  if (!dragGhost) return;
+  dragMoved = true;
+  dragGhost.style.left = (clientX - 32) + 'px';
+  dragGhost.style.top  = (clientY - 72) + 'px';
+  // tint based on valid zone
+  const arena = document.getElementById('arena');
+  const rect = arena.getBoundingClientRect();
+  const inPlayerHalf = clientY > rect.top + arena.offsetHeight / 2 && clientY < rect.bottom;
+  dragGhost.classList.toggle('drag-valid', inPlayerHalf);
+  dragGhost.classList.toggle('drag-invalid', !inPlayerHalf);
+}
+
+function _endDrag(clientX, clientY) {
+  if (dragSlot === null) return;
+  document.getElementById('drop-hint').classList.remove('active');
+  if (dragGhost) { dragGhost.remove(); dragGhost = null; }
+  if (dragMoved) {
+    const deployed = _deployAt(dragSlot, clientX, clientY);
+    if (!deployed) { /* invalid drop — card stays in hand */ }
+  } else {
+    // treat as a tap — use old select logic
+    selectCard(dragSlot);
+  }
+  dragSlot = null;
+  selectedCard = null;
+  renderHand();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('arena').addEventListener('click',function(e){
-    if(selectedCard===null||!gameStarted||gameOver)return;
-    const rect=this.getBoundingClientRect();
-    const x=e.clientX-rect.left,y=e.clientY-rect.top;
-    if(y<this.offsetHeight/2){selectedCard=null;document.getElementById('drop-hint').classList.remove('active');renderHand();return;}
-    const ci=hand[selectedCard];if(CARDS[ci].cost>elixir)return;
-    elixir-=CARDS[ci].cost;updatePlayerElixirUI();
-    spawnTroop(ci,x,y,'player');
-    playedCardIds.add(CARDS[ci].id);
-    if (MULTIPLAYER && mpWs && mpWs.readyState === 1) {
-      mpWs.send(JSON.stringify({ type:'play', cardId: CARDS[ci].id, pct_x: x/this.offsetWidth, pct_y: y/this.offsetHeight }));
+  // Touch drag on cards
+  document.getElementById('card-hand').addEventListener('touchstart', e => {
+    const card = e.target.closest('.card');
+    if (!card) return;
+    const slot = parseInt(card.id.split('-')[1]);
+    if (isNaN(slot)) return;
+    e.preventDefault();
+    _startDrag(slot, e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: false });
+
+  document.addEventListener('touchmove', e => {
+    if (dragSlot === null) return;
+    e.preventDefault();
+    _moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: false });
+
+  document.addEventListener('touchend', e => {
+    if (dragSlot === null) return;
+    const t = e.changedTouches[0];
+    _endDrag(t.clientX, t.clientY);
+  });
+
+  // Mouse drag fallback (desktop)
+  document.getElementById('card-hand').addEventListener('mousedown', e => {
+    const card = e.target.closest('.card');
+    if (!card) return;
+    const slot = parseInt(card.id.split('-')[1]);
+    if (isNaN(slot)) return;
+    _startDrag(slot, e.clientX, e.clientY);
+  });
+
+  document.addEventListener('mousemove', e => {
+    if (dragSlot === null) return;
+    _moveDrag(e.clientX, e.clientY);
+  });
+
+  document.addEventListener('mouseup', e => {
+    if (dragSlot === null) return;
+    _endDrag(e.clientX, e.clientY);
+  });
+
+  // Keep old arena-click for tap flow (when drag wasn't used)
+  document.getElementById('arena').addEventListener('click', function(e) {
+    if (selectedCard === null || !gameStarted || gameOver) return;
+    const rect = this.getBoundingClientRect();
+    const x = e.clientX - rect.left, y = e.clientY - rect.top;
+    if (y < this.offsetHeight / 2) {
+      selectedCard = null;
+      document.getElementById('drop-hint').classList.remove('active');
+      renderHand(); return;
     }
-    cycleCard(selectedCard);selectedCard=null;
-    document.getElementById('drop-hint').classList.remove('active');renderHand();
+    if (!_deployAt(selectedCard, e.clientX, e.clientY)) return;
+    selectedCard = null;
+    document.getElementById('drop-hint').classList.remove('active');
+    renderHand();
   });
 });
 
