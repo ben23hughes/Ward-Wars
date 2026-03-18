@@ -462,16 +462,17 @@ function getTowerCenter(k){
 function findTowerTarget(troop){
   const sides=troop.side==='player'?['e-left','e-right']:['p-left','p-right'];
   const king=troop.side==='player'?'e-king':'p-king';
+  const sidesAlive=sides.filter(k=>towers[k]?.alive);
+  // King is accessible once at least one side tower is destroyed
+  const kingAccessible=sidesAlive.length<2&&towers[king]?.alive;
+  const candidates=[...sidesAlive,...(kingAccessible?[king]:[])];
   let closest=null,closestDist=Infinity;
-  for(const k of sides){
-    if(!towers[k]?.alive)continue;
+  for(const k of candidates){
     const c=getTowerCenter(k);
     const d=dist(troop,c);
     if(d<closestDist){closestDist=d;closest=c;}
   }
-  if(closest)return closest;
-  if(towers[king]?.alive)return getTowerCenter(king);
-  return null;
+  return closest;
 }
 function findTarget(troop){
   let cl=null,cd=122;
@@ -549,7 +550,13 @@ function dealDamage(troop,dmg,isPlayerAtk){
   showDmgText(troop.x,troop.y,dmg,'dmg');
   if(troop.hp<=0)troop.alive=false;
 }
-function updateTroopHpBar(t){const el=document.getElementById(`thp-${t.id}`);if(el)el.style.width=(t.hp/t.maxHp*100)+'%';}
+function _hpColor(pct){return pct>0.5?'#2ecc71':pct>0.25?'#f39c12':'#e74c3c';}
+function updateTroopHpBar(t){
+  const el=document.getElementById(`thp-${t.id}`);if(!el)return;
+  const pct=t.hp/t.maxHp;
+  el.style.width=(pct*100)+'%';
+  el.style.background=_hpColor(pct);
+}
 function dealDamageTower(key,dmg,isPlayerAtk){
   const t=towers[key];if(!t?.alive)return;
   t.hp=Math.max(0,t.hp-dmg);updateTowerHPs();
@@ -613,8 +620,13 @@ function tickEnemyElixir(){
   if(gameTime<=60&&enemyElixir<10){enemyElixir++;updateEnemyElixirUI();} // double elixir
 }
 function updatePlayerElixirUI(){
-  document.getElementById('elixir-label').textContent='🙏 '+elixir;
-  for(let i=0;i<10;i++)document.getElementById(`ep${i}`).classList.toggle('filled',i<elixir);
+  const dbl=gameTime<=60;
+  document.getElementById('elixir-label').textContent=(dbl?'⚡':'🙏')+' '+elixir;
+  for(let i=0;i<10;i++){
+    const pip=document.getElementById(`ep${i}`);
+    pip.classList.toggle('filled',i<elixir);
+    pip.classList.toggle('double',dbl&&i<elixir);
+  }
   renderHand();
 }
 function updateEnemyElixirUI(){
@@ -625,18 +637,28 @@ function updateEnemyElixirUI(){
 // ══════════════════════════
 //  CARDS UI
 // ══════════════════════════
+function _cardSvg(card, w, h) {
+  if (typeof CHAR_SVGS !== 'undefined' && CHAR_SVGS[card.id]) {
+    return CHAR_SVGS[card.id].replace('<svg ', `<svg width="${w}" height="${h}" `);
+  }
+  return `<span style="font-size:${Math.floor(h*0.5)}px;line-height:1">${card.emoji}</span>`;
+}
 function renderHand(){
   hand.forEach((ci,slot)=>{
     const card=CARDS[ci],el=document.getElementById(`card-${slot}`);if(!el)return;
-    el.querySelector('.card-emoji').textContent=card.emoji;
+    const emojiEl=el.querySelector('.card-emoji');
+    emojiEl.innerHTML=_cardSvg(card,42,54);
     el.querySelector('.card-name').textContent=card.name;
-    el.querySelector('.card-ability').textContent=card.abilityTxt;
     el.querySelector('.card-cost').textContent=card.cost;
     el.classList.toggle('cant-afford',card.cost>elixir);
     el.classList.toggle('selected',selectedCard===slot);
   });
 }
-function renderNextCard(){document.getElementById('next-emoji').textContent=CARDS[nextCard].emoji;}
+function renderNextCard(){
+  const card=CARDS[nextCard];
+  const el=document.getElementById('next-emoji');
+  el.innerHTML=_cardSvg(card,32,42);
+}
 function selectCard(slot){
   if(CARDS[hand[slot]].cost>elixir)return;
   selectedCard=(selectedCard===slot)?null:slot;
@@ -727,8 +749,10 @@ function updateTowerHPs(){
   const defs=[['p-left','php-left','php-left-txt',600],['p-right','php-right','php-right-txt',600],['p-king','php-king','php-king-txt',1200],['e-left','ehp-left','ehp-left-txt',600],['e-right','ehp-right','ehp-right-txt',600],['e-king','ehp-king','ehp-king-txt',1200]];
   for(const[key,barId,txtId,max]of defs){
     const t=towers[key];if(!t)continue;
+    const pct=t.hp/max;
     const bar=document.getElementById(barId),txt=document.getElementById(txtId);
-    if(bar)bar.style.width=(t.hp/max*100)+'%';if(txt)txt.textContent=Math.max(0,t.hp);
+    if(bar){bar.style.width=(pct*100)+'%';bar.style.background=_hpColor(pct);}
+    if(txt)txt.textContent=Math.max(0,t.hp);
   }
 }
 
