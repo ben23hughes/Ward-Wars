@@ -1541,11 +1541,6 @@ function closeArenaPath() {
 }
 
 // ── BATTLE MODAL ──
-const BOT_NAMES = [
-  'SisterMoreoni99','BroNephite42','EternalProgress','CTRElite','GadiantonRob',
-  'LamanteBoss','IronRodWarrior','ZionBuilder','TitleOfLiberty','SwordOfLaban',
-  'ProphetSmith1','BookOfBattle','ArmyOfHelaman','StriplingWrrior','MoroniDefends',
-];
 
 function showBattleModal() {
   document.getElementById('battle-modal').classList.add('open');
@@ -1561,46 +1556,7 @@ function startLocal() {
 
 function startOnline() {
   hideBattleModal();
-  const screen = document.getElementById('matchmaking-screen');
-  screen.classList.add('open');
-  document.getElementById('mm-state').textContent = 'Searching for opponent...';
-  document.getElementById('mm-sub').textContent = 'Finding a worthy adversary';
-  document.getElementById('mm-opponent').style.display = 'none';
-  document.getElementById('mm-countdown').style.display = 'none';
-  document.getElementById('mm-cancel-btn').style.display = 'block';
-
-  const delay = 2000 + Math.random() * 2500;
-  const oppName = BOT_NAMES[Math.floor(Math.random() * BOT_NAMES.length)];
-  const oppTrophies = 800 + Math.floor(Math.random() * 1200);
-
-  const searchTimer = setTimeout(() => {
-    document.getElementById('mm-state').textContent = '\u2694\uFE0F Opponent Found!';
-    document.getElementById('mm-sub').textContent = 'Prepare for battle...';
-    document.getElementById('mm-opp-name').textContent = oppName;
-    document.getElementById('mm-opp-trophies').textContent = '\uD83C\uDFC6 ' + oppTrophies.toLocaleString();
-    document.getElementById('mm-opponent').style.display = 'flex';
-    document.getElementById('mm-cancel-btn').style.display = 'none';
-
-    let count = 3;
-    const countEl = document.getElementById('mm-countdown');
-    countEl.style.display = 'block';
-    countEl.textContent = count;
-    const countTimer = setInterval(() => {
-      count--;
-      if (count <= 0) {
-        clearInterval(countTimer);
-        screen.classList.remove('open');
-        window.location.href = 'game.html';
-      } else {
-        countEl.textContent = count;
-      }
-    }, 1000);
-  }, delay);
-
-  document.getElementById('mm-cancel-btn').onclick = () => {
-    clearTimeout(searchTimer);
-    screen.classList.remove('open');
-  };
+  window.location.href = 'game.html?mode=multi';
 }
 
 if ('serviceWorker' in navigator) {
@@ -1642,22 +1598,6 @@ if ('serviceWorker' in navigator) {
 </div>
 
 <!-- MATCHMAKING SCREEN -->
-<div id="matchmaking-screen">
-  <div id="mm-box">
-    <div id="mm-spinner">&#x2694;&#xFE0F;</div>
-    <div id="mm-state">Searching for opponent...</div>
-    <div id="mm-sub">Finding a worthy adversary</div>
-    <div id="mm-opponent">
-      <div id="mm-opp-avatar">&#x1F608;</div>
-      <div>
-        <div id="mm-opp-name"></div>
-        <div id="mm-opp-trophies"></div>
-      </div>
-    </div>
-    <div id="mm-countdown"></div>
-    <button id="mm-cancel-btn">Cancel</button>
-  </div>
-</div>
 
 </body>
 </html>

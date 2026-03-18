@@ -161,6 +161,21 @@ let troops=[],projectiles=[],towers={};
 let playerCrowns=0,enemyCrowns=0,gameTime=180;
 let gameOver=false,gameStarted=false;
 let animFrame,lastTick=0,troopId=0,projId=0,intervals=[];
+const playedCardIds = new Set(); // tracks cards used this game
+
+// ── Load user card levels from localStorage ──
+const _ccCards = JSON.parse(localStorage.getItem('cc_cards') || '[]');
+const _userCardMap = {};
+_ccCards.forEach(r => { _userCardMap[r.card_id] = r; });
+function _cardLevel(cardId) {
+  const uses = _userCardMap[cardId]?.uses || 0;
+  if (uses >= 100) return 5;
+  if (uses >= 60)  return 4;
+  if (uses >= 30)  return 3;
+  if (uses >= 10)  return 2;
+  return 1;
+}
+function _lvMult(cardId) { return 1 + (_cardLevel(cardId) - 1) * 0.15; }
 
 // ══════════════════════════
 //  INIT
@@ -211,9 +226,14 @@ function spawnTroop(cardIdx,x,y,side,isMini){
   el.style.cssText=`left:${x-23}px;top:${y-55}px`;
   arena.appendChild(el);
 
+  // Apply level multiplier for player cards
+  const mult = side==='player' ? _lvMult(card.id) : 1;
+  const scaledHp  = Math.round(card.hp  * mult);
+  const scaledAtk = Math.round(card.atk * mult);
+
   const t={
-    id:troopId++,el,side,card:{...card},
-    hp:card.hp,maxHp:card.hp,x,y,
+    id:troopId++,el,side,card:{...card,atk:scaledAtk},
+    hp:scaledHp,maxHp:scaledHp,x,y,
     lastAtk:0,target:null,alive:true,
     frozen:false,frozenUntil:0,
     slowed:false,slowedUntil:0,
@@ -612,6 +632,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ci=hand[selectedCard];if(CARDS[ci].cost>elixir)return;
     elixir-=CARDS[ci].cost;updatePlayerElixirUI();
     spawnTroop(ci,x,y,'player');
+    playedCardIds.add(CARDS[ci].id);
     if (MULTIPLAYER && mpWs && mpWs.readyState === 1) {
       mpWs.send(JSON.stringify({ type:'play', cardId: CARDS[ci].id, pct_x: x/this.offsetWidth, pct_y: y/this.offsetHeight }));
     }
@@ -694,6 +715,18 @@ function checkWin(){
 }
 function endGame(win,reason){
   if(gameOver)return;gameOver=true;gameStarted=false;
+  if (MULTIPLAYER && mpWs && mpWs.readyState === 1) {
+    mpWs.send(JSON.stringify({ type:'game_over', crowns: playerCrowns, opp_crowns: enemyCrowns }));
+  }
+  // Report card uses to server
+  const token = localStorage.getItem('cc_token');
+  if (token && playedCardIds.size > 0) {
+    fetch('/api/cards/use', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ cardIds: [...playedCardIds] }),
+    }).catch(()=>{});
+  }
   cancelAnimationFrame(animFrame);intervals.forEach(clearInterval);intervals=[];
   const w=(win!==undefined)?win:(playerCrowns>enemyCrowns);
   const titles=w?['🏆 Hallelujah!','⛪ Zion Stands!','👼 Righteousness Wins!']:['💀 Thou Art Fallen','😈 The Adversary Wins','📖 Study Harder'];
