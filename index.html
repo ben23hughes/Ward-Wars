@@ -141,20 +141,6 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
 /* ─────────────────────────────────────────
    BATTLE SCREEN
 ───────────────────────────────────────── */
-#season-banner{
-  margin:10px 12px 0;
-  background:linear-gradient(135deg,rgba(30,58,95,.85),rgba(10,20,50,.9));
-  border:1px solid rgba(245,200,66,.25);border-radius:14px;padding:10px 14px;
-  display:flex;align-items:center;gap:12px;box-shadow:0 4px 16px rgba(0,0,0,.4);
-  flex-shrink:0;
-}
-#season-icon{font-size:30px;filter:drop-shadow(0 0 8px rgba(245,200,66,.6));}
-#season-text{flex:1;}
-#season-title{font-size:10px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px;}
-#season-name{font-family:'Cinzel Decorative',serif;font-size:13px;color:var(--gold);margin-top:1px;}
-#season-bar-wrap{height:5px;background:rgba(0,0,0,.4);border-radius:3px;margin-top:5px;overflow:hidden;}
-#season-bar{height:100%;width:42%;background:linear-gradient(90deg,var(--gold),var(--dark-gold));border-radius:3px;box-shadow:0 0 6px var(--gold);}
-#season-reward{font-size:26px;filter:drop-shadow(0 0 6px rgba(126,184,247,.7));}
 
 #chest-section{margin:10px 12px 0;flex-shrink:0;}
 .section-label{font-size:9px;color:rgba(255,255,255,.35);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;padding-left:2px;}
@@ -198,7 +184,6 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
 .player-t{background:linear-gradient(160deg,#3a6fbe,#1a3a8e,#0f2460);}
 .enemy-t{background:linear-gradient(160deg,#8a2a2a,#5a1010,#3a0808);}
 .mini-king{width:36px;height:42px;font-size:18px;}
-#arena-label{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.15);padding:2px 10px;font-size:8px;border-radius:10px;color:rgba(255,255,255,.5);white-space:nowrap;z-index:3;}
 
 #battle-btn{
   width:100%;background:linear-gradient(180deg,#ff8c00,#e65c00,#c24000);
@@ -823,16 +808,6 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
 
     <!-- ══ BATTLE ══ -->
     <div class="page active page-fade" id="page-battle">
-      <div id="season-banner">
-        <div id="season-icon">🕍</div>
-        <div id="season-text">
-          <div id="season-title">Season 1</div>
-          <div id="season-name">The Promised Land</div>
-          <div id="season-bar-wrap"><div id="season-bar" style="width:12%"></div></div>
-        </div>
-        <div id="season-reward">👑</div>
-      </div>
-
       <div id="chest-section">
         <div class="section-label">Scripture Cases</div>
         <div id="chest-row">
@@ -878,7 +853,6 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
             <div><div class="mini-tower-body enemy-t mini-king">😈</div></div>
             <div><div class="mini-tower-body enemy-t">🔥</div></div>
           </div>
-          <div id="arena-label">⚔ The Iron Rod ⚔</div>
         </div>
         <a id="battle-btn" href="#" onclick="event.preventDefault();showBattleModal()">
           <div id="battle-btn-inner">
