@@ -79,11 +79,12 @@ body{background:var(--bg);color:white;font-family:'Cinzel',serif;height:100dvh;o
   width:48px;height:58px;
   border-radius:6px 6px 3px 3px;
   display:flex;align-items:center;justify-content:center;
-  font-size:26px;
   border:2px solid rgba(255,255,255,0.2);
   position:relative;
+  overflow:visible;
   box-shadow:0 6px 18px rgba(0,0,0,0.6), inset 0 -4px 10px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.1);
 }
+.tower-svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:visible;}
 /* 3d tower top edge */
 .tower-body::before{
   content:'';position:absolute;top:-5px;left:2px;right:2px;height:5px;
@@ -104,7 +105,7 @@ body{background:var(--bg);color:white;font-family:'Cinzel',serif;height:100dvh;o
 .tower-hp-text{font-size:9px;margin-top:12px;color:rgba(255,255,255,0.75);}
 .tower.player .tower-body{background:linear-gradient(160deg,#3a6fbe,#1a3a8e,#0f2460);}
 .tower.enemy .tower-body{background:linear-gradient(160deg,#8a2a2a,#5a1010,#3a0808);}
-.tower.king .tower-body{width:60px;height:70px;font-size:32px;}
+.tower.king .tower-body{width:60px;height:70px;}
 #tower-p-left{bottom:14%;left:7%;}
 #tower-p-right{bottom:14%;right:7%;}
 #tower-p-king{bottom:4%;left:50%;transform:translateX(-50%);}
@@ -361,10 +362,10 @@ body{background:var(--bg);color:white;font-family:'Cinzel',serif;height:100dvh;o
    ARENA THEMES — Plan of Salvation
 ═══════════════════════════════════════ */
 
-/* Arena 1: Pre-Mortal Life — purple spirit mist */
-.arena-1 #arena{background:linear-gradient(180deg,#1a0838 0%,#2e1060 28%,#7a3aaa 28%,#6a2a9a 72%,#2e1060 72%,#1a0838 100%);}
-.arena-1 #arena::before{background:radial-gradient(ellipse 80% 50% at 50% 50%,rgba(180,100,255,0.18) 0%,transparent 70%),repeating-linear-gradient(90deg,transparent,transparent 18px,rgba(200,150,255,0.05) 18px,rgba(200,150,255,0.05) 19px);}
-.arena-1 .lane-label{color:rgba(200,150,255,0.7);border-color:rgba(180,100,255,0.3);background:rgba(20,0,50,0.7);}
+/* Arena 1: Zion's Gate — bright green grass courtyard */
+.arena-1 #arena{background:linear-gradient(180deg,#1a5018 0%,#226a20 28%,#9a8030 28%,#b09040 72%,#226a20 72%,#1a5018 100%);}
+.arena-1 #arena::before{background:radial-gradient(ellipse 70% 40% at 50% 25%,rgba(80,220,80,0.1) 0%,transparent 70%),radial-gradient(ellipse 70% 40% at 50% 75%,rgba(80,200,80,0.1) 0%,transparent 70%),repeating-linear-gradient(90deg,transparent,transparent 18px,rgba(120,220,90,0.06) 18px,rgba(120,220,90,0.06) 19px);}
+.arena-1 .lane-label{color:rgba(200,255,150,0.75);border-color:rgba(140,220,90,0.35);background:rgba(0,25,0,0.65);}
 
 /* Arena 2: Garden of Eden — rich paradise green */
 .arena-2 #arena{background:linear-gradient(180deg,#062210 0%,#0d4a1a 28%,#7a5a10 28%,#8a6a18 72%,#0d4a1a 72%,#062210 100%);}

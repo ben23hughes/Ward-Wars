@@ -350,6 +350,24 @@ function _bridgeCenters(aw){ return [aw*BRIDGE_L_PCT, aw*BRIDGE_R_PCT]; }
 function _inBridge(x, aw){ return _bridgeCenters(aw).some(bx=>Math.abs(x-bx)<BRIDGE_HALF_W); }
 function _nearestBridge(x, aw){ const [lb,rb]=_bridgeCenters(aw); return Math.abs(x-lb)<Math.abs(x-rb)?lb:rb; }
 
+// Returns a bridge entry waypoint if the troop needs to cross and isn't yet aligned with a bridge.
+// Returns null if no rerouting needed (already across, target is on same side, or already in bridge lane).
+function _bridgeWaypoint(t, aw, ah){
+  const riverY   = ah * 0.5;
+  const isPlayer = t.side === 'player';
+  // Only reroute while still on own side of river
+  const onOwnSide = isPlayer ? (t.y > riverY + RIVER_HALF) : (t.y < riverY - RIVER_HALF);
+  if(!onOwnSide) return null;
+  // Only reroute if target is on the other side (or no target — troop marches forward)
+  const needsCross = t.target
+    ? (isPlayer ? t.target.y < riverY : t.target.y > riverY)
+    : true;
+  if(!needsCross) return null;
+  // Already horizontally aligned with a bridge — no lateral routing needed
+  if(_inBridge(t.x, aw)) return null;
+  return { x: _nearestBridge(t.x, aw), y: isPlayer ? riverY - RIVER_HALF : riverY + RIVER_HALF };
+}
+
 function applyRiverConstraint(t, nx, ny, spd, dt, aw, ah){
   const riverY   = ah * 0.5;
   const isPlayer = t.side === 'player';
@@ -388,11 +406,13 @@ function moveTroops(dt){
     else t.target=findTarget(t);
 
     let moving=false;
+    const wp=_bridgeWaypoint(t,aw,ah);
     if(t.target){
-      const dx=t.target.x-t.x,dy=t.target.y-t.y;
+      const tgtX=wp?wp.x:t.target.x, tgtY=wp?wp.y:t.target.y;
+      const dx=tgtX-t.x, dy=tgtY-t.y;
       const d=Math.sqrt(dx*dx+dy*dy);
       const atkRange=t.card.isRange?84:44;
-      if(d<=atkRange){
+      if(!wp && d<=atkRange){
         const cd=1000/t.card.spd;
         if(now-t.lastAtk>cd){
           t.lastAtk=now;
@@ -400,7 +420,7 @@ function moveTroops(dt){
           if(t.card.isRange)fireProjectile(t,t.target);
           else dealDamage(t.target,effectiveAtk(t),t.side==='player');
         }
-      } else {
+      } else if(d>0.5){
         const spd=(t.slowed?0.5:1)*56*t.card.spd;
         const nx=t.x+(dx/d)*spd*dt, ny=t.y+(dy/d)*spd*dt;
         const c=applyRiverConstraint(t,nx,ny,spd,dt,aw,ah);
@@ -410,10 +430,17 @@ function moveTroops(dt){
       }
     } else {
       const spd=(t.slowed?0.5:1)*44*t.card.spd;
-      const ny=t.y+(t.side==='player'?-spd:spd)*dt;
-      const c=applyRiverConstraint(t,t.x,ny,spd,dt,aw,ah);
-      t.x=Math.max(23,Math.min(aw-23,c.x));
-      t.y=Math.max(55,Math.min(ah-10,c.y));
+      if(wp){
+        const dx=wp.x-t.x, dy=wp.y-t.y;
+        const d=Math.sqrt(dx*dx+dy*dy)||1;
+        t.x=Math.max(23,Math.min(aw-23, t.x+(dx/d)*spd*dt));
+        t.y=Math.max(55,Math.min(ah-10, t.y+(dy/d)*spd*dt));
+      } else {
+        const ny=t.y+(t.side==='player'?-spd:spd)*dt;
+        const c=applyRiverConstraint(t,t.x,ny,spd,dt,aw,ah);
+        t.x=Math.max(23,Math.min(aw-23,c.x));
+        t.y=Math.max(55,Math.min(ah-10,c.y));
+      }
       moving=true;
     }
 
