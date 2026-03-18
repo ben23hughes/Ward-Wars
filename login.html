@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0e1a">
+<title>Chapel Clash — Sign In</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{--gold:#f5c842;--dark-gold:#c49a1a;--faith:#7eb8f7;--crimson:#c0392b;--green:#2ecc71;}
+html,body{height:100%;background:#0a0e1a;font-family:'Cinzel',serif;color:#fff;display:flex;align-items:center;justify-content:center;}
+body{
+  background:
+    radial-gradient(ellipse 120% 60% at 50% 0%, #1a3a6e 0%, transparent 65%),
+    radial-gradient(ellipse 80% 50% at 20% 100%, #1a0a2e 0%, transparent 60%),
+    linear-gradient(180deg,#0a0e1a,#0d1b2e 50%,#111a30);
+}
+
+#card{
+  width:100%;max-width:360px;margin:0 16px;
+  background:linear-gradient(160deg,#1e3a5f,#0d1b2e);
+  border:1px solid rgba(245,200,66,0.25);
+  border-radius:20px;
+  padding:32px 24px 28px;
+  box-shadow:0 8px 40px rgba(0,0,0,0.6);
+}
+
+.logo{text-align:center;margin-bottom:24px;}
+.logo-icon{font-size:48px;display:block;margin-bottom:6px;filter:drop-shadow(0 0 12px rgba(245,200,66,0.5));}
+.logo-title{font-family:'Cinzel Decorative',serif;font-size:20px;color:var(--gold);
+  text-shadow:0 0 20px rgba(245,200,66,0.4);}
+
+.tabs{display:flex;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);margin-bottom:24px;}
+.tab{flex:1;padding:10px;text-align:center;font-size:12px;letter-spacing:0.5px;cursor:pointer;
+  background:rgba(0,0,0,0.3);color:rgba(255,255,255,0.5);border:none;font-family:'Cinzel',serif;
+  transition:all 0.2s;}
+.tab.active{background:rgba(245,200,66,0.15);color:var(--gold);}
+
+label{display:block;font-size:10px;color:rgba(255,255,255,0.5);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+input{
+  width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);
+  background:rgba(0,0,0,0.4);color:#fff;font-family:'Cinzel',serif;font-size:14px;
+  margin-bottom:16px;outline:none;
+  transition:border-color 0.2s;
+}
+input:focus{border-color:rgba(245,200,66,0.5);}
+input::placeholder{color:rgba(255,255,255,0.2);}
+
+.btn{
+  width:100%;padding:14px;border:none;border-radius:14px;cursor:pointer;
+  font-family:'Cinzel Decorative',serif;font-size:16px;letter-spacing:0.5px;
+  background:linear-gradient(180deg,#ff8c00,#e65c00,#c24000);
+  color:#fff;box-shadow:0 4px 0 #8b2a00, 0 6px 20px rgba(230,92,0,0.4);
+  transition:transform 0.1s,box-shadow 0.1s;
+  position:relative;overflow:hidden;
+}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #8b2a00, 0 2px 8px rgba(230,92,0,0.3);}
+.btn::before{
+  content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent);
+  animation:shine 2.5s ease-in-out infinite;
+}
+@keyframes shine{0%{left:-60%}60%,100%{left:120%}}
+
+#error{
+  color:var(--crimson);font-size:12px;text-align:center;
+  margin-bottom:14px;min-height:18px;line-height:1.4;
+}
+#success{color:var(--green);font-size:12px;text-align:center;margin-bottom:14px;min-height:18px;}
+</style>
+</head>
+<body>
+<div id="card">
+  <div class="logo">
+    <span class="logo-icon">⛪</span>
+    <div class="logo-title">Chapel Clash</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" id="tab-login" onclick="showTab('login')">Sign In</button>
+    <button class="tab" id="tab-register" onclick="showTab('register')">Create Account</button>
+  </div>
+
+  <div id="error"></div>
+  <div id="success"></div>
+
+  <div id="form-login">
+    <label for="login-user">Username</label>
+    <input id="login-user" type="text" placeholder="Your username" autocomplete="username">
+    <label for="login-pass">Password</label>
+    <input id="login-pass" type="password" placeholder="Your password" autocomplete="current-password">
+    <button class="btn" onclick="login()">Go and Do!</button>
+  </div>
+
+  <div id="form-register" style="display:none">
+    <label for="reg-user">Username</label>
+    <input id="reg-user" type="text" placeholder="Choose a username" autocomplete="username">
+    <label for="reg-pass">Password</label>
+    <input id="reg-pass" type="password" placeholder="Choose a password" autocomplete="new-password">
+    <button class="btn" onclick="register()">Join the Ward!</button>
+  </div>
+</div>
+
+<script>
+// If already logged in, go home
+if (localStorage.getItem('cc_token')) {
+  fetch('/api/me', { headers: { Authorization: 'Bearer ' + localStorage.getItem('cc_token') } })
+    .then(r => r.ok ? window.location.href = 'index.html' : null)
+    .catch(() => {});
+}
+
+function showTab(t) {
+  document.getElementById('form-login').style.display = t === 'login' ? '' : 'none';
+  document.getElementById('form-register').style.display = t === 'register' ? '' : 'none';
+  document.getElementById('tab-login').classList.toggle('active', t === 'login');
+  document.getElementById('tab-register').classList.toggle('active', t === 'register');
+  clearMessages();
+}
+function clearMessages() {
+  document.getElementById('error').textContent = '';
+  document.getElementById('success').textContent = '';
+}
+function showError(msg) { document.getElementById('error').textContent = msg; document.getElementById('success').textContent = ''; }
+function showSuccess(msg) { document.getElementById('success').textContent = msg; document.getElementById('error').textContent = ''; }
+
+async function login() {
+  clearMessages();
+  const username = document.getElementById('login-user').value.trim();
+  const password = document.getElementById('login-pass').value;
+  if (!username || !password) { showError('Please fill in both fields.'); return; }
+  const res = await fetch('/api/login', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password })
+  });
+  const data = await res.json();
+  if (!res.ok) { showError(data.error); return; }
+  localStorage.setItem('cc_token', data.token);
+  localStorage.setItem('cc_user', JSON.stringify(data.user));
+  window.location.href = 'index.html';
+}
+
+async function register() {
+  clearMessages();
+  const username = document.getElementById('reg-user').value.trim();
+  const password = document.getElementById('reg-pass').value;
+  if (!username || !password) { showError('Please fill in both fields.'); return; }
+  const res = await fetch('/api/register', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password })
+  });
+  const data = await res.json();
+  if (!res.ok) { showError(data.error); return; }
+  localStorage.setItem('cc_token', data.token);
+  localStorage.setItem('cc_user', JSON.stringify(data.user));
+  window.location.href = 'index.html';
+}
+
+// Enter key support
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  if (document.getElementById('form-login').style.display !== 'none') login();
+  else register();
+});
+</script>
+</body>
+</html>

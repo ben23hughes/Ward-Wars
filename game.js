@@ -1,4 +1,85 @@
 // ══════════════════════════
+//  MULTIPLAYER
+// ══════════════════════════
+const MULTIPLAYER = new URLSearchParams(window.location.search).get('mode') === 'multi';
+let mpWs = null;
+let mpReady = false;
+
+if (MULTIPLAYER) {
+  const token = localStorage.getItem('cc_token');
+  if (!token) { window.location.href = 'login.html'; }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('overlay-title').textContent = '⚔️ Finding Opponent…';
+    document.getElementById('overlay-msg').textContent = 'Searching for a worthy adversary…\n\nYou will be matched with another player automatically.';
+    document.getElementById('start-btn').style.display = 'none';
+  });
+
+  const wsProto = location.protocol === 'https:' ? 'wss' : 'ws';
+  mpWs = new WebSocket(`${wsProto}://${location.host}`);
+
+  mpWs.onopen = () => mpWs.send(JSON.stringify({ type: 'auth', token }));
+
+  mpWs.onmessage = (event) => {
+    const msg = JSON.parse(event.data);
+
+    if (msg.type === 'auth_ok') {
+      mpWs.send(JSON.stringify({ type: 'queue' }));
+    }
+    else if (msg.type === 'auth_fail') {
+      localStorage.removeItem('cc_token');
+      window.location.href = 'login.html';
+    }
+    else if (msg.type === 'queued') {
+      const el = document.getElementById('overlay-msg');
+      if (el) el.textContent = 'In queue… waiting for an opponent.\n\nHave another player open this page to be matched instantly!';
+    }
+    else if (msg.type === 'matched') {
+      mpReady = true;
+      const titleEl = document.getElementById('overlay-title');
+      const msgEl   = document.getElementById('overlay-msg');
+      const btn      = document.getElementById('start-btn');
+      if (titleEl) titleEl.textContent = '⚔️ Opponent Found!';
+      if (msgEl) msgEl.textContent =
+        `You face: ${msg.opponentName}\n\nDeploy faithful troops on YOUR half!\n\n🧑‍⚕️ Missionary — Converts on death\n📖 Scriptures — Freezes target\n👼 Angel Moroni — Heals allies\n🏔️ Nauvoo Guard — AOE charge\n🧓 Prophet — Shields allies\n🧒 CTR Kid — Spawns 3 at once\n🍑 Jello — Splash damage\n🐝 Beehive — Bee swarm\n\n⛪ Chapel = 1 crown  |  🕍 Temple = Victory`;
+      if (btn) { btn.style.display = ''; }
+    }
+    else if (msg.type === 'opp_play') {
+      receiveOpponentPlay(msg.cardId, msg.pct_x, msg.pct_y);
+    }
+    else if (msg.type === 'opp_left') {
+      if (!gameOver) endGame(true, 'Opponent fled the battlefield!');
+    }
+    else if (msg.type === 'result') {
+      const delta = msg.trophyDelta >= 0 ? '+' + msg.trophyDelta : String(msg.trophyDelta);
+      const msgEl = document.getElementById('overlay-msg');
+      if (msgEl) msgEl.textContent += '\n\nTrophies: ' + delta;
+    }
+  };
+
+  mpWs.onerror = () => {
+    const el = document.getElementById('overlay-title');
+    if (el) el.textContent = '⚠️ Connection Error';
+    const msg = document.getElementById('overlay-msg');
+    if (msg) msg.textContent = 'Could not connect to server. Make sure the server is running.';
+  };
+}
+
+function receiveOpponentPlay(cardId, pct_x, pct_y) {
+  if (!gameStarted || gameOver) return;
+  const cardIdx = CARDS.findIndex(c => c.id === cardId);
+  if (cardIdx < 0) return;
+  const card = CARDS[cardIdx];
+  enemyElixir = Math.max(0, enemyElixir - card.cost);
+  updateEnemyElixirUI();
+  const aw = arenaW(), ah = arenaH();
+  // Mirror vertically: opponent's bottom half is our top half
+  const x = pct_x * aw;
+  const y = (1 - pct_y) * ah;
+  spawnTroop(cardIdx, x, y, 'enemy');
+}
+
+// ══════════════════════════
 //  CHARACTER SPRITE BUILDER
 // ══════════════════════════
 function buildTroopHTML(card, troopId, isMini){
@@ -91,7 +172,7 @@ function startGame(){
   requestAnimationFrame(loop);
   intervals.push(setInterval(tickPlayerElixir,2600));
   intervals.push(setInterval(tickEnemyElixir,2400));
-  intervals.push(setInterval(enemyAI,3200));
+  if (!MULTIPLAYER) intervals.push(setInterval(enemyAI,3200));
   intervals.push(setInterval(tickTimer,1000));
 }
 function resetState(){
@@ -531,6 +612,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const ci=hand[selectedCard];if(CARDS[ci].cost>elixir)return;
     elixir-=CARDS[ci].cost;updatePlayerElixirUI();
     spawnTroop(ci,x,y,'player');
+    if (MULTIPLAYER && mpWs && mpWs.readyState === 1) {
+      mpWs.send(JSON.stringify({ type:'play', cardId: CARDS[ci].id, pct_x: x/this.offsetWidth, pct_y: y/this.offsetHeight }));
+    }
     cycleCard(selectedCard);selectedCard=null;
     document.getElementById('drop-hint').classList.remove('active');renderHand();
   });

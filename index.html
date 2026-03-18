@@ -538,12 +538,13 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
     </div>
     <div id="currencies">
       <div class="currency gold-cur">
-        <span>💰</span><span class="currency-val">12,450</span>
+        <span>💰</span><span class="currency-val" id="gold-val">–</span>
         <div id="plus-btn">+</div>
       </div>
       <div class="currency gem-cur">
-        <span>💎</span><span class="currency-val">88</span>
+        <span>💎</span><span class="currency-val" id="gem-val">–</span>
       </div>
+      <button onclick="logout()" style="background:none;border:none;font-size:16px;cursor:pointer;color:rgba(255,255,255,0.4);padding:4px 6px;" title="Logout">🚪</button>
     </div>
   </div>
 
@@ -601,7 +602,7 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
           </div>
           <div id="arena-label">⚔ The Iron Rod ⚔</div>
         </div>
-        <a id="battle-btn" href="game.html">
+        <a id="battle-btn" href="game.html?mode=multi">
           <div id="battle-btn-inner">
             <span class="battle-swords">⚔️</span>
             <span id="battle-text">Battle!</span>
@@ -742,8 +743,8 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
     <!-- ══ PROFILE ══ -->
     <div class="page" id="page-profile">
       <div class="profile-hero">
-        <div class="profile-avatar">⛪<div class="profile-level">Lv 8</div></div>
-        <div class="profile-name">Elder Player</div>
+        <div class="profile-avatar">⛪<div class="profile-level" id="profile-level">Lv 1</div></div>
+        <div class="profile-name" id="profile-name">–</div>
         <div class="profile-tag">#CHAPELCLASH</div>
         <div class="profile-league"><span class="league-badge">🥇</span><span class="league-name">Gold League III</span></div>
         <div class="trophy-progress">
@@ -753,10 +754,10 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
       </div>
 
       <div class="stats-grid">
-        <div class="stat-box green"><div class="stat-val">142</div><div class="stat-lbl">Wins</div></div>
-        <div class="stat-box red"><div class="stat-val">98</div><div class="stat-lbl">Losses</div></div>
-        <div class="stat-box gold"><div class="stat-val">59%</div><div class="stat-lbl">Win Rate</div></div>
-        <div class="stat-box"><div class="stat-val">1,980</div><div class="stat-lbl">Best Trophies</div></div>
+        <div class="stat-box green"><div class="stat-val" id="stat-wins">–</div><div class="stat-lbl">Wins</div></div>
+        <div class="stat-box red"><div class="stat-val" id="stat-losses">–</div><div class="stat-lbl">Losses</div></div>
+        <div class="stat-box gold"><div class="stat-val" id="stat-winrate">–</div><div class="stat-lbl">Win Rate</div></div>
+        <div class="stat-box"><div class="stat-val" id="stat-trophies">–</div><div class="stat-lbl">Trophies</div></div>
       </div>
 
       <div class="profile-section">
@@ -1003,6 +1004,41 @@ function startDealTimer() {
 // ── SHOP ──
 function buyPack(type) {
   alert(`📦 Opening ${type} pack...\n(Shop coming soon!)`);
+}
+
+// ── AUTH ──
+(async function() {
+  const token = localStorage.getItem('cc_token');
+  if (!token) { window.location.href = 'login.html'; return; }
+  try {
+    const res = await fetch('/api/me', { headers: { Authorization: 'Bearer ' + token } });
+    if (!res.ok) { localStorage.removeItem('cc_token'); window.location.href = 'login.html'; return; }
+    const user = await res.json();
+    localStorage.setItem('cc_user', JSON.stringify(user));
+    document.getElementById('player-name').textContent = user.username;
+    document.getElementById('trophy-count').textContent = user.trophies.toLocaleString();
+    document.getElementById('gold-val').textContent = user.gold.toLocaleString();
+    document.getElementById('gem-val').textContent = user.gems.toLocaleString();
+    document.getElementById('level-badge').textContent = 'Lv ' + user.level;
+    document.getElementById('profile-name').textContent = user.username;
+    document.getElementById('profile-level').textContent = 'Lv ' + user.level;
+    const total = user.wins + user.losses;
+    const winRate = total > 0 ? Math.round(user.wins / total * 100) + '%' : '–';
+    document.getElementById('stat-wins').textContent = user.wins;
+    document.getElementById('stat-losses').textContent = user.losses;
+    document.getElementById('stat-winrate').textContent = winRate;
+    document.getElementById('stat-trophies').textContent = user.trophies.toLocaleString();
+  } catch(e) {
+    window.location.href = 'login.html';
+  }
+})();
+
+async function logout() {
+  const token = localStorage.getItem('cc_token');
+  if (token) await fetch('/api/logout', { method: 'POST', headers: { Authorization: 'Bearer ' + token } }).catch(()=>{});
+  localStorage.removeItem('cc_token');
+  localStorage.removeItem('cc_user');
+  window.location.href = 'login.html';
 }
 
 // ── INIT ──
