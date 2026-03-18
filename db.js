@@ -213,28 +213,33 @@ module.exports = {
   },
 
   async getFriends(userId) {
-    const { data } = await supabase
+    const { data: rows } = await supabase
       .from('friends')
-      .select('requester_id, receiver_id, users!friends_requester_id_fkey(id,username,trophies), users!friends_receiver_id_fkey(id,username,trophies)')
+      .select('requester_id, receiver_id')
       .eq('status', 'accepted')
       .or(`requester_id.eq.${userId},receiver_id.eq.${userId}`);
-    if (!data) return [];
-    return data.map(row => {
-      const friend = row.requester_id === userId
-        ? row['users!friends_receiver_id_fkey']
-        : row['users!friends_requester_id_fkey'];
-      return friend;
-    }).filter(Boolean);
+    if (!rows || !rows.length) return [];
+    const friendIds = rows.map(r => r.requester_id === userId ? r.receiver_id : r.requester_id);
+    const { data: users } = await supabase
+      .from('users')
+      .select('id, username, trophies')
+      .in('id', friendIds);
+    return users || [];
   },
 
   async getPendingRequests(userId) {
-    const { data } = await supabase
+    const { data: rows } = await supabase
       .from('friends')
-      .select('requester_id, users!friends_requester_id_fkey(id,username,trophies)')
+      .select('requester_id')
       .eq('receiver_id', userId)
       .eq('status', 'pending');
-    if (!data) return [];
-    return data.map(row => row['users!friends_requester_id_fkey']).filter(Boolean);
+    if (!rows || !rows.length) return [];
+    const requesterIds = rows.map(r => r.requester_id);
+    const { data: users } = await supabase
+      .from('users')
+      .select('id, username, trophies')
+      .in('id', requesterIds);
+    return users || [];
   },
 
   async getFriendStatus(userId, otherId) {
