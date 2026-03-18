@@ -76,7 +76,12 @@ module.exports = {
   // ── Cards ────────────────────────────────────────────────────────────────
   async initUserCards(userId) {
     const DEFAULT_DECK = ['missionary', 'scriptures', 'moroni', 'nauvoo'];
-    const ALL_IDS = ['missionary','scriptures','moroni','nauvoo','prophet','ctrKid','jello','beehive'];
+    const ALL_IDS = [
+      'missionary','scriptures','moroni','nauvoo','prophet','ctrKid','jello','beehive',
+      'holyGhost','striplingWarrior','captainMoroni','liahona','brotherOfJared','ammon',
+      'threeNephites','seersStone','samuelLamanite','titleOfLiberty','teancum','antiNephiLehi',
+      'josephSmith','destroyingAngel',
+    ];
     const rows = ALL_IDS.map(id => ({
       user_id: userId,
       card_id: id,
@@ -102,10 +107,77 @@ module.exports = {
     }
   },
 
-  async incrementCardUses(userId, cardIds) {
-    for (const cardId of [...new Set(cardIds)]) {
-      await supabase.rpc('increment_card_uses', { uid: userId, cid: cardId });
+  // ── Chests ───────────────────────────────────────────────────────────────────
+  async addChest(userId, type) {
+    const { data, error } = await supabase
+      .from('chests').insert({ user_id: userId, type }).select().single();
+    if (error) throw new Error(error.message);
+    return data;
+  },
+
+  async getPendingChests(userId) {
+    const { data } = await supabase
+      .from('chests').select('*').eq('user_id', userId).order('created_at');
+    return data || [];
+  },
+
+  async _awardChestRewards(userId, type) {
+    const { data: cards } = await supabase
+      .from('user_cards').select('card_id').eq('user_id', userId);
+    const cardIds = (cards || []).map(c => c.card_id);
+    const CONFIGS = {
+      wood:    { count: 1, min: 1, max: 1 },
+      silver:  { count: 2, min: 1, max: 2 },
+      gold:    { count: 3, min: 2, max: 3 },
+      magical: { count: 4, min: 4, max: 8 },
+    };
+    const cfg = CONFIGS[type] || CONFIGS.wood;
+    const shuffled = [...cardIds].sort(() => Math.random() - 0.5);
+    const picked = shuffled.slice(0, Math.min(cfg.count, cardIds.length));
+    const rewards = [];
+    for (const cardId of picked) {
+      const amount = cfg.min + Math.floor(Math.random() * (cfg.max - cfg.min + 1));
+      await supabase.rpc('add_card_copies', { uid: userId, cid: cardId, amount });
+      rewards.push({ cardId, amount });
     }
+    return rewards;
+  },
+
+  async openChest(userId, chestId) {
+    const { data: chest } = await supabase
+      .from('chests').select('*').eq('id', chestId).eq('user_id', userId).single();
+    if (!chest) throw new Error('Chest not found');
+    const rewards = await this._awardChestRewards(userId, chest.type);
+    await supabase.from('chests').delete().eq('id', chestId);
+    return { type: chest.type, rewards };
+  },
+
+  async openInstantChest(userId, type) {
+    const rewards = await this._awardChestRewards(userId, type);
+    return { type, rewards };
+  },
+
+  async claimDailyChest(userId) {
+    const today = new Date().toISOString().slice(0, 10);
+    const { data: user } = await supabase
+      .from('users').select('last_daily').eq('id', userId).single();
+    if (user?.last_daily === today) throw new Error('Already claimed today');
+    await supabase.from('users').update({ last_daily: today }).eq('id', userId);
+    return this._awardChestRewards(userId, 'gold');
+  },
+
+  async deductGold(userId, amount) {
+    const { data: user } = await supabase
+      .from('users').select('gold').eq('id', userId).single();
+    if (!user || user.gold < amount) throw new Error('Not enough gold');
+    await supabase.from('users').update({ gold: user.gold - amount }).eq('id', userId);
+  },
+
+  async deductGems(userId, amount) {
+    const { data: user } = await supabase
+      .from('users').select('gems').eq('id', userId).single();
+    if (!user || user.gems < amount) throw new Error('Not enough gems');
+    await supabase.from('users').update({ gems: user.gems - amount }).eq('id', userId);
   },
 
   // ── Friends ───────────────────────────────────────────────────────────────

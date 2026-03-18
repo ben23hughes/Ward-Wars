@@ -195,6 +195,60 @@ app.delete('/api/friends/:userId', requireAuth, async (req, res) => {
   } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
 });
 
+// ── Chests & Shop API ─────────────────────────────────────────────────────────
+app.get('/api/chests', requireAuth, async (req, res) => {
+  try { res.json(await db.getPendingChests(req.userId)); }
+  catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
+});
+
+app.post('/api/chests/:id/open', requireAuth, async (req, res) => {
+  try {
+    const result = await db.openChest(req.userId, parseInt(req.params.id));
+    res.json(result);
+  } catch (e) { res.status(400).json({ error: e.message }); }
+});
+
+app.post('/api/chest/win', requireAuth, async (req, res) => {
+  try {
+    const chests = await db.getPendingChests(req.userId);
+    if (chests.length >= 4) return res.json({ full: true });
+    const chest = await db.addChest(req.userId, 'wood');
+    res.json({ chest });
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
+});
+
+app.post('/api/daily', requireAuth, async (req, res) => {
+  try {
+    const rewards = await db.claimDailyChest(req.userId);
+    const user = await db.getUserById(req.userId);
+    res.json({ rewards, user: publicUser(user) });
+  } catch (e) {
+    if (e.message === 'Already claimed today') return res.status(400).json({ error: e.message });
+    console.error(e); res.status(500).json({ error: 'Server error' });
+  }
+});
+
+const PACK_COSTS = {
+  silver:  { gold: 100, gems: 0 },
+  gold:    { gold: 500, gems: 0 },
+  magical: { gold: 0,   gems: 40 },
+};
+app.post('/api/shop/pack', requireAuth, async (req, res) => {
+  const { type } = req.body || {};
+  const cost = PACK_COSTS[type];
+  if (!cost) return res.status(400).json({ error: 'Invalid pack type' });
+  try {
+    if (cost.gold) await db.deductGold(req.userId, cost.gold);
+    if (cost.gems) await db.deductGems(req.userId, cost.gems);
+    const result = await db.openInstantChest(req.userId, type);
+    const user = await db.getUserById(req.userId);
+    res.json({ ...result, user: publicUser(user) });
+  } catch (e) {
+    if (e.message.includes('Not enough')) return res.status(400).json({ error: e.message });
+    console.error(e); res.status(500).json({ error: 'Server error' });
+  }
+});
+
 app.post('/api/logout', requireAuth, async (req, res) => {
   const token = (req.headers['authorization'] || '').replace('Bearer ', '');
   await db.deleteSession(token);
@@ -273,7 +327,15 @@ wss.on('connection', (ws) => {
         await db.recordGame(player.userId, opp.userId, won ? player.userId : opp.userId, msg.crowns, msg.opp_crowns);
         const delta = won ? 30 : -20;
         await db.updateTrophies(player.userId, delta);
-        ws.send(JSON.stringify({ type: 'result', won, trophyDelta: delta }));
+        let chestAdded = false;
+        if (won) {
+          const pending = await db.getPendingChests(player.userId);
+          if (pending.length < 4) {
+            await db.addChest(player.userId, 'wood');
+            chestAdded = true;
+          }
+        }
+        ws.send(JSON.stringify({ type: 'result', won, trophyDelta: delta, chestAdded }));
       } catch (e) {
         console.error('game_over error:', e);
       }

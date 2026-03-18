@@ -267,6 +267,13 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
 .card-item.in-deck{border-color:var(--gold);box-shadow:0 0 10px rgba(245,200,66,.3);}
 .card-item.in-deck::after{content:'✓';position:absolute;top:4px;right:6px;font-size:9px;color:var(--gold);}
 .card-emoji-lg{font-size:28px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));}
+.card-art{display:flex;align-items:center;justify-content:center;height:68px;filter:drop-shadow(0 2px 5px rgba(0,0,0,.6));}
+.card-item.locked{opacity:0.55;filter:grayscale(0.7);}
+.card-item.locked .card-art{opacity:0.5;}
+.card-lock-overlay{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);border-radius:12px;pointer-events:none;z-index:2;}
+.card-lock-icon{font-size:18px;}
+.card-lock-arena{font-size:7px;color:rgba(255,255,255,0.8);text-align:center;margin-top:2px;}
+.card-unlock-label{font-size:7px;color:rgba(255,200,66,0.7);text-align:center;line-height:1.2;}
 .card-name-sm{font-size:8px;color:rgba(255,255,255,.85);text-align:center;line-height:1.2;}
 .card-level{
   background:linear-gradient(180deg,var(--gold),var(--dark-gold));
@@ -296,7 +303,7 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
   display:flex;flex-direction:column;align-items:center;gap:12px;
   box-shadow:0 0 40px rgba(245,200,66,.2);
 }
-#cd-emoji{font-size:52px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.6));}
+#cd-emoji{font-size:52px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.6));display:flex;align-items:center;justify-content:center;}
 #cd-name{font-family:'Cinzel Decorative',serif;font-size:18px;color:var(--gold);}
 #cd-ability{font-size:11px;color:#ffe082;font-style:italic;}
 .cd-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;width:100%;}
@@ -380,6 +387,8 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
 .member-donations{font-size:8px;color:rgba(255,255,255,.35);}
 .me-indicator{font-size:8px;color:var(--green);margin-top:1px;}
 .rank-num{font-size:11px;color:rgba(255,255,255,.25);width:16px;text-align:center;flex-shrink:0;}
+
+.crm-reward-row{display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);border-radius:10px;}
 
 /* ─────────────────────────────────────────
    WARD / FRIENDS SCREEN
@@ -852,6 +861,7 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
             <div class="chest-timer">🔒</div>
           </div>
         </div>
+        <button onclick="claimDaily()" style="margin:8px 0 0;width:100%;background:linear-gradient(135deg,rgba(245,200,66,0.12),rgba(245,200,66,0.06));border:1px solid rgba(245,200,66,0.3);border-radius:12px;padding:9px;color:var(--gold);font-family:'Cinzel',serif;font-size:10px;cursor:pointer;letter-spacing:0.5px;">🌅 Daily Gold Chest</button>
       </div>
 
 
@@ -1210,6 +1220,27 @@ const ALL_CARDS = [
   {id:'ctrKid',     name:'CTR Kid',      emoji:'🧒',   cost:3, hp:100, atk:60,  ability:'Spawns 3 at once',  rarity:'common', inDeck:false, level:1, have:0, need:50},
   {id:'jello',      name:'Jello',        emoji:'🍑',   cost:3, hp:160, atk:100, ability:'Splash damage',     rarity:'rare',   inDeck:false, level:1, have:0, need:20},
   {id:'beehive',    name:'Beehive',      emoji:'🐝',   cost:4, hp:420, atk:45,  ability:'Sends bee swarm',   rarity:'rare',   inDeck:false, level:1, have:0, need:20},
+  // ── Arena 2 ──
+  {id:'holyGhost',        name:'Holy Ghost',         emoji:'🕊️', cost:3, hp:180, atk:55,  ability:'Goes invisible briefly', rarity:'rare',      unlockArena:2, inDeck:false, level:1, have:0, need:50},
+  {id:'striplingWarrior', name:'Stripling Warrior',  emoji:'⚔️', cost:2, hp:160, atk:70,  ability:'Revives once on death',  rarity:'rare',      unlockArena:2, inDeck:false, level:1, have:0, need:50},
+  // ── Arena 3 ──
+  {id:'captainMoroni',    name:'Captain Moroni',     emoji:'🚩', cost:5, hp:500, atk:100, ability:'Buffs all allies',       rarity:'epic',      unlockArena:3, inDeck:false, level:1, have:0, need:10},
+  {id:'liahona',          name:'Liahona',            emoji:'🧭', cost:3, hp:120, atk:40,  ability:'Speeds up allies',       rarity:'rare',      unlockArena:3, inDeck:false, level:1, have:0, need:50},
+  // ── Arena 4 ──
+  {id:'brotherOfJared',   name:'Brother of Jared',   emoji:'💎', cost:4, hp:300, atk:80,  ability:'Blinds enemies',         rarity:'epic',      unlockArena:4, inDeck:false, level:1, have:0, need:10},
+  {id:'ammon',            name:'Ammon',              emoji:'🗡️',cost:4, hp:280, atk:130, ability:'Stuns on hit',           rarity:'epic',      unlockArena:4, inDeck:false, level:1, have:0, need:10},
+  // ── Arena 5 ──
+  {id:'threeNephites',    name:'Three Nephites',     emoji:'👥', cost:4, hp:150, atk:65,  ability:'Respawns once',          rarity:'legendary', unlockArena:5, inDeck:false, level:1, have:0, need:4},
+  {id:'seersStone',       name:"Seer's Stone",       emoji:'🔮', cost:2, hp:100, atk:35,  ability:'Reveals invisible',      rarity:'rare',      unlockArena:5, inDeck:false, level:1, have:0, need:50},
+  // ── Arena 6 ──
+  {id:'samuelLamanite',   name:'Samuel the Lamanite',emoji:'🏹', cost:3, hp:200, atk:85,  ability:'Immune to first hit',    rarity:'epic',      unlockArena:6, inDeck:false, level:1, have:0, need:10},
+  {id:'titleOfLiberty',   name:'Title of Liberty',   emoji:'🏴', cost:4, hp:350, atk:75,  ability:'Rallies nearby allies',  rarity:'epic',      unlockArena:6, inDeck:false, level:1, have:0, need:10},
+  // ── Arena 7 ──
+  {id:'teancum',          name:'Teancum',            emoji:'🎯', cost:3, hp:180, atk:150, ability:'Targets towers',         rarity:'legendary', unlockArena:7, inDeck:false, level:1, have:0, need:4},
+  {id:'antiNephiLehi',    name:'Anti-Nephi-Lehi',    emoji:'🕊️',cost:3, hp:450, atk:0,   ability:'Reflects damage',        rarity:'rare',      unlockArena:7, inDeck:false, level:1, have:0, need:50},
+  // ── Arena 8 ──
+  {id:'josephSmith',      name:'Joseph Smith',        emoji:'📜', cost:6, hp:600, atk:90,  ability:'Summons extras on spawn',rarity:'legendary', unlockArena:8, inDeck:false, level:1, have:0, need:4},
+  {id:'destroyingAngel',  name:'Destroying Angel',   emoji:'⚡', cost:5, hp:250, atk:200, ability:'Huge AoE strike',        rarity:'legendary', unlockArena:8, inDeck:false, level:1, have:0, need:4},
 ];
 
 
@@ -1261,25 +1292,26 @@ async function wardLoadRequestsBadge() {
 }
 
 // ── CARD LEVEL SYSTEM ──
-const LEVEL_THRESHOLDS = [0, 10, 30, 60, 100]; // uses needed for Lv 1-5
-function getCardLevel(uses) {
+// Copies needed to reach each level: Lv1=0, Lv2=2, Lv3=6, Lv4=16, Lv5=36
+const LEVEL_THRESHOLDS = [0, 2, 6, 16, 36];
+function getCardLevel(copies) {
   for (let i = LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
-    if (uses >= LEVEL_THRESHOLDS[i]) return i + 1;
+    if (copies >= LEVEL_THRESHOLDS[i]) return i + 1;
   }
   return 1;
 }
-function getLevelProgress(uses) {
-  const lv = getCardLevel(uses);
-  if (lv >= 5) return { pct: 100, text: 'Max Level', usesLeft: 0 };
+function getLevelProgress(copies) {
+  const lv = getCardLevel(copies);
+  if (lv >= 5) return { pct: 100, text: 'Max Level', copiesLeft: 0 };
   const min = LEVEL_THRESHOLDS[lv - 1];
   const max = LEVEL_THRESHOLDS[lv];
-  const pct = Math.round((uses - min) / (max - min) * 100);
-  return { pct, text: `${uses - min} / ${max - min} uses to Lv ${lv + 1}`, usesLeft: max - uses };
+  const pct = Math.round((copies - min) / (max - min) * 100);
+  return { pct, text: `${copies - min} / ${max - min} copies to Lv ${lv + 1}`, copiesLeft: max - copies };
 }
 function levelMultiplier(level) { return 1 + (level - 1) * 0.15; }
 
 // ── CARDS SCREEN ──
-let userCardData = {}; // card_id → {uses, in_deck}
+let userCardData = {}; // card_id → {copies, in_deck}
 let currentFilter = 'all';
 let openCardId = null;
 
@@ -1307,20 +1339,24 @@ function renderCards(filter) {
     : ALL_CARDS.filter(c => c.rarity === filter);
 
   grid.innerHTML = list.map(c => {
-    const ud = userCardData[c.id] || { uses: 0, in_deck: false };
+    const ud = userCardData[c.id] || { copies: 0, in_deck: false };
     const inDeck = deckIds.includes(c.id);
-    const lv = getCardLevel(ud.uses);
-    const prog = getLevelProgress(ud.uses);
+    const lv = getCardLevel(ud.copies);
+    const prog = getLevelProgress(ud.copies);
     const mult = levelMultiplier(lv);
+    const arenaId = parseInt(localStorage.getItem('cc_arena') || '1');
+    const isLocked = c.unlockArena && c.unlockArena > arenaId;
+    const lockArena = isLocked ? ARENAS.find(a => a.id === c.unlockArena) : null;
     return `
-      <div class="card-item ${inDeck ? 'in-deck' : ''}" onclick="showCardDetail('${c.id}')">
+      <div class="card-item ${inDeck ? 'in-deck' : ''} ${isLocked ? 'locked' : ''}" onclick="${isLocked ? `showLockedCard('${c.id}')` : `showCardDetail('${c.id}')`}">
         <span class="card-cost-badge">${c.cost}</span>
         ${inDeck ? '<span class="card-deck-check">✓</span>' : ''}
-        <div class="card-emoji-lg">${c.emoji}</div>
+        ${isLocked ? `<div class="card-lock-overlay"><div class="card-lock-icon">🔒</div><div class="card-lock-arena">${lockArena ? lockArena.emoji : ''} Arena ${c.unlockArena}</div></div>` : ''}
+        <div class="card-art">${(typeof CHAR_SVGS !== 'undefined' && CHAR_SVGS[c.id]) ? CHAR_SVGS[c.id].replace('<svg ', '<svg width="52" height="68" ') : `<span style="font-size:28px;line-height:1">${c.emoji}</span>`}</div>
         <div class="card-name-sm">${c.name}</div>
-        <div class="card-level">Lv ${lv}</div>
-        <div class="card-upgrade-bar"><div class="card-upgrade-fill" style="width:${prog.pct}%"></div></div>
-        <div class="card-upgrade-text">${ud.uses} uses</div>
+        ${isLocked ? `<div class="card-unlock-label">${lockArena ? lockArena.name : ''}</div>` : `<div class="card-level">Lv ${lv}</div>`}
+        ${isLocked ? '' : `<div class="card-upgrade-bar"><div class="card-upgrade-fill" style="width:${prog.pct}%"></div></div>
+        <div class="card-upgrade-text">${lv >= 5 ? 'MAX' : `${ud.copies} copies`}</div>`}
       </div>`;
   }).join('');
 
@@ -1340,19 +1376,31 @@ function filterCards(filter, btn) {
   renderCards(filter);
 }
 
+function showLockedCard(id) {
+  const c = ALL_CARDS.find(x => x.id === id);
+  if (!c) return;
+  const arena = ARENAS.find(a => a.id === c.unlockArena);
+  alert(`🔒 ${c.name} unlocks at ${arena ? arena.emoji + ' ' + arena.name : 'Arena ' + c.unlockArena} (${arena ? arena.min + ' trophies' : ''})`);
+}
+
 function showCardDetail(id) {
   const c = ALL_CARDS.find(x => x.id === id);
   if (!c) return;
   openCardId = id;
-  const ud = userCardData[id] || { uses: 0, in_deck: false };
+  const ud = userCardData[id] || { copies: 0, in_deck: false };
   const deckIds = getDeckIds();
   const inDeck = deckIds.includes(id);
-  const lv = getCardLevel(ud.uses);
-  const prog = getLevelProgress(ud.uses);
+  const lv = getCardLevel(ud.copies);
+  const prog = getLevelProgress(ud.copies);
   const mult = levelMultiplier(lv);
   const nextMult = lv < 5 ? levelMultiplier(lv + 1) : null;
 
-  document.getElementById('cd-emoji').textContent = c.emoji;
+  const cdEmoji = document.getElementById('cd-emoji');
+  if (typeof CHAR_SVGS !== 'undefined' && CHAR_SVGS[c.id]) {
+    cdEmoji.innerHTML = CHAR_SVGS[c.id].replace('<svg ', '<svg width="88" height="116" ');
+  } else {
+    cdEmoji.textContent = c.emoji;
+  }
   document.getElementById('cd-name').textContent = c.name;
   const rarityEl = document.getElementById('cd-rarity');
   rarityEl.textContent = c.rarity.toUpperCase();
@@ -1444,14 +1492,6 @@ function renderProfile() {
   `).join('');
 }
 
-function openChest(el) {
-  if (el.classList.contains('locked') || !el.classList.contains('ready')) return;
-  el.classList.remove('ready');
-  el.querySelector('.chest-icon').textContent = '✨';
-  el.querySelector('.chest-type').textContent = 'Opened!';
-  el.querySelector('.chest-timer').textContent = '—';
-}
-
 // ── DEAL TIMER ──
 function startDealTimer() {
   let total = 14*3600 + 32*60 + 8;
@@ -1464,8 +1504,129 @@ function startDealTimer() {
 }
 
 // ── SHOP ──
-function buyPack(type) {
-  showComingSoon('Scripture Packs');
+async function buyPack(type) {
+  const token = localStorage.getItem('cc_token');
+  if (!token) { showComingSoon('Login to buy packs'); return; }
+  try {
+    const res = await fetch('/api/shop/pack', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ type }),
+    });
+    const data = await res.json();
+    if (data.error) { showToast('⚠️ ' + data.error); return; }
+    if (data.user) {
+      const stored = JSON.parse(localStorage.getItem('cc_user') || '{}');
+      localStorage.setItem('cc_user', JSON.stringify({ ...stored, gold: data.user.gold, gems: data.user.gems }));
+      const goldEl = document.getElementById('gold-count');
+      const gemsEl = document.getElementById('gems-count');
+      if (goldEl) goldEl.textContent = (data.user.gold || 0).toLocaleString();
+      if (gemsEl) gemsEl.textContent = (data.user.gems || 0).toLocaleString();
+    }
+    await loadUserCards();
+    showChestRewardModal(type, data.rewards);
+  } catch(e) { showToast('⚠️ Purchase failed'); }
+}
+
+// ── CHEST SYSTEM ──
+const CHEST_META = {
+  wood:    { icon: '📦', label: 'Wood',    color: '#a0522d' },
+  silver:  { icon: '🗃️', label: 'Silver',  color: '#95a5a6' },
+  gold:    { icon: '🏆', label: 'Gold',    color: '#f5c842' },
+  magical: { icon: '✨', label: 'Magical', color: '#9b59b6' },
+};
+
+async function loadChests() {
+  const token = localStorage.getItem('cc_token');
+  if (!token) return;
+  try {
+    const chests = await fetch('/api/chests', { headers: { Authorization: 'Bearer ' + token } }).then(r => r.json());
+    renderChestRow(chests);
+  } catch(e) {}
+}
+
+function renderChestRow(chests) {
+  const row = document.getElementById('chest-row');
+  if (!row) return;
+  const slots = [];
+  for (let i = 0; i < 4; i++) {
+    const chest = chests[i];
+    if (chest) {
+      const m = CHEST_META[chest.type] || CHEST_META.wood;
+      slots.push(`
+        <div class="chest ready" onclick="openChestById(${chest.id})" style="border-color:${m.color};box-shadow:0 0 10px ${m.color}44">
+          <span class="chest-slot-num">${i+1}</span>
+          <div class="chest-icon">${m.icon}</div>
+          <div class="chest-type" style="color:${m.color}">${m.label}</div>
+          <div class="chest-timer" style="color:${m.color}">Tap!</div>
+        </div>`);
+    } else {
+      slots.push(`
+        <div class="chest locked">
+          <span class="chest-slot-num">${i+1}</span>
+          <div class="chest-icon">📦</div>
+          <div class="chest-type">Empty</div>
+          <div class="chest-timer">🔒</div>
+        </div>`);
+    }
+  }
+  row.innerHTML = slots.join('');
+}
+
+async function openChestById(id) {
+  const token = localStorage.getItem('cc_token');
+  try {
+    const data = await fetch('/api/chests/' + id + '/open', {
+      method: 'POST', headers: { Authorization: 'Bearer ' + token }
+    }).then(r => r.json());
+    if (data.error) { showToast('⚠️ ' + data.error); return; }
+    await loadChests();
+    await loadUserCards();
+    showChestRewardModal(data.type, data.rewards);
+  } catch(e) { showToast('⚠️ Failed to open chest'); }
+}
+
+async function claimDaily() {
+  const token = localStorage.getItem('cc_token');
+  if (!token) return;
+  try {
+    const data = await fetch('/api/daily', {
+      method: 'POST', headers: { Authorization: 'Bearer ' + token }
+    }).then(r => r.json());
+    if (data.error) { showToast('Already claimed today! Come back tomorrow. 🌅'); return; }
+    await loadUserCards();
+    await loadChests();
+    showChestRewardModal('gold', data.rewards);
+  } catch(e) { showToast('⚠️ Failed to claim daily'); }
+}
+
+const _allCardsMap = {};
+function _ensureCardsMap() {
+  if (Object.keys(_allCardsMap).length) return;
+  if (typeof ALL_CARDS !== 'undefined') ALL_CARDS.forEach(c => { _allCardsMap[c.id] = c; });
+}
+
+function showChestRewardModal(type, rewards) {
+  _ensureCardsMap();
+  const m = CHEST_META[type] || CHEST_META.wood;
+  document.getElementById('crm-icon').textContent = m.icon;
+  document.getElementById('crm-title').textContent = m.label + ' Chest Opened!';
+  document.getElementById('crm-rewards').innerHTML = (rewards || []).map(r => {
+    const card = _allCardsMap[r.cardId];
+    return `<div class="crm-reward-row">
+      <span style="font-size:22px">${card ? card.emoji : '🃏'}</span>
+      <div>
+        <div style="font-size:11px;color:#fff;font-weight:600">${card ? card.name : r.cardId}</div>
+        <div style="font-size:10px;color:var(--gold)">+${r.amount} ${r.amount === 1 ? 'copy' : 'copies'}</div>
+      </div>
+    </div>`;
+  }).join('');
+  const modal = document.getElementById('chest-reward-modal');
+  modal.style.display = 'flex';
+}
+
+function closeChestRewardModal() {
+  document.getElementById('chest-reward-modal').style.display = 'none';
 }
 
 function showComingSoon(feature) {
@@ -1738,6 +1899,7 @@ async function logout() {
 // ── INIT ──
 renderCards('all');
 loadUserCards();
+loadChests();
 renderProfile();
 startDealTimer();
 
@@ -1799,6 +1961,16 @@ if ('serviceWorker' in navigator) {
 </script>
 
 
+<!-- CHEST REWARD MODAL -->
+<div id="chest-reward-modal" onclick="if(event.target===this)closeChestRewardModal()" style="display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:linear-gradient(135deg,#0f1e35,#1a2a50);border:1px solid rgba(245,200,66,0.4);border-radius:20px;padding:24px 20px;max-width:300px;width:90%;display:flex;flex-direction:column;align-items:center;gap:14px;box-shadow:0 8px 40px rgba(0,0,0,0.7);">
+    <div id="crm-icon" style="font-size:52px;filter:drop-shadow(0 0 16px rgba(245,200,66,0.6))"></div>
+    <div id="crm-title" style="font-family:'Cinzel Decorative',serif;font-size:14px;color:var(--gold);text-align:center;"></div>
+    <div id="crm-rewards" style="width:100%;display:flex;flex-direction:column;gap:8px;"></div>
+    <button onclick="closeChestRewardModal()" style="background:linear-gradient(180deg,var(--gold),#c8860a);border:none;border-radius:12px;padding:10px 30px;color:#0a0e1a;font-family:'Cinzel',serif;font-size:12px;font-weight:bold;cursor:pointer;margin-top:4px;">Awesome!</button>
+  </div>
+</div>
+
 <!-- ARENA PATH MODAL -->
 <div id="arena-path-modal" onclick="if(event.target===this)closeArenaPath()">
   <div id="arena-path-box">
@@ -1834,5 +2006,6 @@ if ('serviceWorker' in navigator) {
 <!-- MATCHMAKING SCREEN -->
 
 </body>
+<script src="sprites.js"></script>
 </html>
 <!-- injected after -->

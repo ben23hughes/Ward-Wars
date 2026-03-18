@@ -79,46 +79,7 @@ function receiveOpponentPlay(cardId, pct_x, pct_y) {
   spawnTroop(cardIdx, x, y, 'enemy');
 }
 
-// ══════════════════════════
-//  CHARACTER SPRITE BUILDER
-// ══════════════════════════
-function buildTroopHTML(card, troopId, isMini){
-  const cid = card.id || 'missionary';
-  const isSmall = (cid==='ctrKid'||cid==='miniLaman');
-  const headEmoji = CHAR_FACE[cid] || '😐';
-  const bodyIcon  = CHAR_BODY[cid] || '';
-
-  if(isSmall){
-    return `
-      <div class="t-sprite t-char-${cid}">
-        <div class="t-head" style="width:18px;height:18px;font-size:10px">${headEmoji}</div>
-        <div class="t-neck" style="width:7px;height:4px"></div>
-        <div class="t-body" style="width:22px;height:16px;font-size:9px">${bodyIcon}</div>
-      </div>
-      <div class="t-shadow"></div>
-      <div class="troop-hp"><div class="troop-hp-fill" id="thp-${troopId}"></div></div>`;
-  }
-  return `
-    <div class="t-sprite t-char-${cid}">
-      <div class="t-head">${headEmoji}</div>
-      <div class="t-neck"></div>
-      <div class="t-body">${bodyIcon}</div>
-    </div>
-    <div class="t-shadow"></div>
-    <div class="troop-hp"><div class="troop-hp-fill" id="thp-${troopId}"></div></div>`;
-}
-
-const CHAR_FACE = {
-  missionary:'😊', scriptures:'🙏', moroni:'✨', nauvoo:'⚔️',
-  prophet:'🧓',    ctrKid:'😁',    jello:'🍑',  beehive:'🐝',
-  apostate:'😤',   temptation:'😏', deceiver:'😈', antiChrist:'👿',
-  korihor:'🤑',    laman:'😠',      gadianton:'🗡️', nehor:'💰',
-  miniLaman:'😬',
-};
-const CHAR_BODY = {
-  missionary:'👔', moroni:'🌟', nauvoo:'🛡️', beehive:'🍯',
-  jello:'💦',      korihor:'💼', gadianton:'🗡️', nehor:'💎',
-};
+// buildTroopHTML is defined in sprites.js (loaded before this file)
 
 // ══════════════════════════
 //  CARD DEFINITIONS
@@ -139,10 +100,45 @@ const CARDS = [
   {id:'korihor',    name:'Korihor',      emoji:'🤵',  cost:5,hp:500,atk:60, spd:0.7, isRange:false,ability:'korihor',    abilityTxt:'Weakens nearby foes'},
   {id:'laman',      name:'Laman',        emoji:'😠',  cost:2,hp:110,atk:55, spd:1.4, isRange:false,ability:'laman',      abilityTxt:'Splits on death'},
   {id:'gadianton',  name:'Gadianton',    emoji:'🗡️', cost:3,hp:180,atk:110,spd:0.95,isRange:true, ability:'gadianton',  abilityTxt:'Always hits towers'},
-  {id:'nehor',      name:'Nehor',        emoji:'💰',  cost:4,hp:440,atk:50, spd:0.8, isRange:false,ability:'nehor',      abilityTxt:'Taunts enemies'},
+  {id:'nehor',      name:'Nehor',        emoji:'💰',  cost:4,hp:440,atk:50, spd:0.8, isRange:false,ability:'nehor',      abilityTxt:'Taunts enemies',           unlockArena:1},
+  // ── Arena 2 unlocks ──
+  {id:'holyGhost',        name:'Holy Ghost',        emoji:'🕊️', cost:3,hp:180,atk:55, spd:1.4, isRange:true, ability:'holyGhost',       abilityTxt:'Goes invisible briefly', unlockArena:2},
+  {id:'striplingWarrior', name:'Stripling Warrior',  emoji:'⚔️', cost:2,hp:160,atk:70, spd:1.3, isRange:false,ability:'striplingWarrior', abilityTxt:'Revives once on death',  unlockArena:2},
+  // ── Arena 3 unlocks ──
+  {id:'captainMoroni',    name:'Captain Moroni',     emoji:'🚩', cost:5,hp:500,atk:100,spd:0.8, isRange:false,ability:'captainMoroni',    abilityTxt:'Buffs all allies',       unlockArena:3},
+  {id:'liahona',          name:'Liahona',            emoji:'🧭', cost:3,hp:120,atk:40, spd:1.2, isRange:true, ability:'liahona',          abilityTxt:'Speeds up allies',       unlockArena:3},
+  // ── Arena 4 unlocks ──
+  {id:'brotherOfJared',   name:'Brother of Jared',   emoji:'💎', cost:4,hp:300,atk:80, spd:0.9, isRange:true, ability:'brotherOfJared',   abilityTxt:'Blinds enemies',         unlockArena:4},
+  {id:'ammon',            name:'Ammon',              emoji:'🗡️',cost:4,hp:280,atk:130,spd:1.1, isRange:false,ability:'ammon',            abilityTxt:'Stuns on hit',           unlockArena:4},
+  // ── Arena 5 unlocks ──
+  {id:'threeNephites',    name:'Three Nephites',     emoji:'👥', cost:4,hp:150,atk:65, spd:1.2, isRange:false,ability:'threeNephites',    abilityTxt:'Respawns once',          unlockArena:5},
+  {id:'seersStone',       name:"Seer's Stone",       emoji:'🔮', cost:2,hp:100,atk:35, spd:1.5, isRange:true, ability:'seersStone',       abilityTxt:'Reveals invisible',      unlockArena:5},
+  // ── Arena 6 unlocks ──
+  {id:'samuelLamanite',   name:'Samuel the Lamanite',emoji:'🏹', cost:3,hp:200,atk:85, spd:0.95,isRange:true, ability:'samuelLamanite',   abilityTxt:'Immune to first hit',    unlockArena:6},
+  {id:'titleOfLiberty',   name:'Title of Liberty',   emoji:'🏴', cost:4,hp:350,atk:75, spd:0.85,isRange:false,ability:'titleOfLiberty',   abilityTxt:'Rallies nearby allies',  unlockArena:6},
+  // ── Arena 7 unlocks ──
+  {id:'teancum',          name:'Teancum',            emoji:'🎯', cost:3,hp:180,atk:150,spd:1.1, isRange:true, ability:'teancum',          abilityTxt:'Targets towers',         unlockArena:7},
+  {id:'antiNephiLehi',    name:'Anti-Nephi-Lehi',    emoji:'🕊️',cost:3,hp:450,atk:0,  spd:0.7, isRange:false,ability:'antiNephiLehi',    abilityTxt:'Reflects damage',        unlockArena:7},
+  // ── Arena 8 unlocks ──
+  {id:'josephSmith',      name:'Joseph Smith',        emoji:'📜', cost:6,hp:600,atk:90, spd:0.6, isRange:true, ability:'josephSmith',      abilityTxt:'Summons extras on spawn',unlockArena:8},
+  {id:'destroyingAngel',  name:'Destroying Angel',   emoji:'⚡', cost:5,hp:250,atk:200,spd:1.0, isRange:true, ability:'destroyingAngel',  abilityTxt:'Huge AoE strike',        unlockArena:8},
+  // ── Enemy arena 2 ──
+  {id:'rameumptom',       name:'Rameumptom',         emoji:'🏛️',cost:4,hp:400,atk:70, spd:0.8, isRange:false,ability:'rameumptom',       abilityTxt:'Taunts all enemies',     unlockArena:2},
+  // ── Enemy arena 3 ──
+  {id:'sherem',           name:'Sherem',             emoji:'🧑‍💼',cost:3,hp:200,atk:80,spd:1.1, isRange:true, ability:'sherem',           abilityTxt:'Debuffs target',         unlockArena:3},
+  // ── Enemy arena 4 ──
+  {id:'secretCombination',name:'Secret Combination', emoji:'🤫', cost:3,hp:150,atk:60, spd:1.3, isRange:false,ability:'secretCombination',abilityTxt:'Spawns hidden units',     unlockArena:4},
+  // ── Enemy arena 5 ──
+  {id:'kishkumen',        name:'Kishkumen',          emoji:'🥷', cost:3,hp:200,atk:130,spd:1.2, isRange:false,ability:'kishkumen',        abilityTxt:'Goes invisible',         unlockArena:5},
+  // ── Enemy arena 6 ──
+  {id:'amlici',           name:'Amlici',             emoji:'👑', cost:5,hp:450,atk:85, spd:0.85,isRange:false,ability:'amlici',           abilityTxt:'Buffs nearby enemies',   unlockArena:6},
+  // ── Enemy arena 7 ──
+  {id:'morianton',        name:'Morianton',          emoji:'🪓', cost:3,hp:230,atk:95, spd:1.0, isRange:false,ability:'morianton',        abilityTxt:'Flees when low HP',      unlockArena:7},
+  // ── Enemy arena 8 ──
+  {id:'zerahemnah',       name:'Zerahemnah',         emoji:'💀', cost:5,hp:550,atk:110,spd:0.9, isRange:false,ability:'zerahemnah',       abilityTxt:'Gains power from fallen',unlockArena:8},
 ];
-const PLAYER_POOL=[0,1,2,3,4,5,6,7];
-const ENEMY_POOL =[8,9,10,11,12,13,14,15];
+const PLAYER_POOL=[0,1,2,3,4,5,6,7,16,17,18,19,20,21,22,23,24,25,26,27,28,29];
+const ENEMY_POOL =[8,9,10,11,12,13,14,15,30,31,32,33,34,35,36];
 const TOWER_DEF={
   'p-left': {side:'player',hp:600, maxHp:600, atk:80, rateMs:1400},
   'p-right':{side:'player',hp:600, maxHp:600, atk:80, rateMs:1400},
@@ -168,11 +164,11 @@ const _ccCards = JSON.parse(localStorage.getItem('cc_cards') || '[]');
 const _userCardMap = {};
 _ccCards.forEach(r => { _userCardMap[r.card_id] = r; });
 function _cardLevel(cardId) {
-  const uses = _userCardMap[cardId]?.uses || 0;
-  if (uses >= 100) return 5;
-  if (uses >= 60)  return 4;
-  if (uses >= 30)  return 3;
-  if (uses >= 10)  return 2;
+  const copies = _userCardMap[cardId]?.copies || 0;
+  if (copies >= 36) return 5;
+  if (copies >= 16) return 4;
+  if (copies >= 6)  return 3;
+  if (copies >= 2)  return 2;
   return 1;
 }
 function _lvMult(cardId) { return 1 + (_cardLevel(cardId) - 1) * 0.15; }
@@ -718,13 +714,13 @@ function endGame(win,reason){
   if (MULTIPLAYER && mpWs && mpWs.readyState === 1) {
     mpWs.send(JSON.stringify({ type:'game_over', crowns: playerCrowns, opp_crowns: enemyCrowns }));
   }
-  // Report card uses to server
+  // Award chest for solo wins
   const token = localStorage.getItem('cc_token');
-  if (token && playedCardIds.size > 0) {
-    fetch('/api/cards/use', {
+  const _won = (win !== undefined) ? win : playerCrowns > enemyCrowns;
+  if (token && _won && !MULTIPLAYER) {
+    fetch('/api/chest/win', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
-      body: JSON.stringify({ cardIds: [...playedCardIds] }),
+      headers: { Authorization: 'Bearer ' + token },
     }).catch(()=>{});
   }
   cancelAnimationFrame(animFrame);intervals.forEach(clearInterval);intervals=[];
