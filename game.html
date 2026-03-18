@@ -37,8 +37,8 @@
       <div class="crown-count">
         <span class="crown" id="pc0">👑</span><span class="crown" id="pc1">👑</span><span class="crown" id="pc2">👑</span>
       </div>
-      <button id="exit-btn" onclick="exitGame()" title="Exit">✕</button>
     </div>
+    <button id="exit-btn" onclick="exitGame()" title="Exit">✕</button>
 
     <!-- Enemy towers -->
     <div class="tower enemy" id="tower-e-left">
@@ -124,10 +124,25 @@
 
 <script src="game.js"></script>
 <script>
+// Apply arena theme from home screen
+(function(){
+  const a = localStorage.getItem('cc_arena') || '1';
+  document.getElementById('game-wrapper').classList.add('arena-' + a);
+  const labels = {
+    '1':'🌌 Pre-Mortal Realm 🌌',
+    '2':'🌿 The Garden Path 🌿',
+    '3':'⭐ Path of Stars ⭐',
+    '4':'⛓️ Spirit Prison ⛓️',
+    '5':'✨ Paradisical Path ✨',
+    '6':'🌙 Moonlit Path 🌙',
+    '7':'☀️ Celestial Glory ☀️',
+    '8':'👑 Path of Exaltation 👑',
+  };
+  const el = document.querySelector('.lane-label');
+  if (el && labels[a]) el.textContent = labels[a];
+})();
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js');
-  });
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
 }
 </script>
 </body>

@@ -35,7 +35,7 @@ body{background:var(--bg);color:white;font-family:'Cinzel',serif;height:100dvh;o
 .crown{font-size:14px;filter:grayscale(1) brightness(0.3);}
 .crown.earned{filter:none;}
 #timer{background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:4px 12px;font-size:14px;font-family:'Cinzel Decorative',serif;}
-#exit-btn{pointer-events:all;position:absolute;top:6px;right:10px;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:rgba(255,255,255,0.7);font-size:14px;width:28px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;font-family:sans-serif;}
+#exit-btn{position:absolute;top:6px;right:10px;z-index:25;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:rgba(255,255,255,0.7);font-size:14px;width:28px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;font-family:sans-serif;}
 #exit-btn:active{background:rgba(180,40,40,0.6);color:white;}
 #timer.urgent{color:var(--crimson);animation:blink 0.5s infinite alternate;}
 @keyframes blink{from{opacity:1}to{opacity:0.4}}
@@ -338,3 +338,52 @@ body{background:var(--bg);color:white;font-family:'Cinzel',serif;height:100dvh;o
 #overlay p{text-align:center;color:rgba(255,255,255,0.72);font-size:11px;line-height:1.9;max-width:300px;}
 #overlay button{font-family:'Cinzel Decorative',serif;font-size:14px;background:linear-gradient(180deg,var(--gold),var(--dark-gold));color:#1a0f00;border:none;padding:12px 30px;border-radius:30px;cursor:pointer;box-shadow:0 4px 20px rgba(245,200,66,0.4);}
 #overlay button:active{transform:scale(0.96);}
+
+/* ═══════════════════════════════════════
+   ARENA THEMES — Plan of Salvation
+═══════════════════════════════════════ */
+
+/* Arena 1: Pre-Mortal Life — purple spirit mist */
+.arena-1 #arena{background:linear-gradient(180deg,#1a0838 0%,#2e1060 28%,#7a3aaa 28%,#6a2a9a 72%,#2e1060 72%,#1a0838 100%);}
+.arena-1 #arena::before{background:radial-gradient(ellipse 80% 50% at 50% 50%,rgba(180,100,255,0.18) 0%,transparent 70%),repeating-linear-gradient(90deg,transparent,transparent 18px,rgba(200,150,255,0.05) 18px,rgba(200,150,255,0.05) 19px);}
+.arena-1 .lane-label{color:rgba(200,150,255,0.7);border-color:rgba(180,100,255,0.3);background:rgba(20,0,50,0.7);}
+
+/* Arena 2: Garden of Eden — rich paradise green */
+.arena-2 #arena{background:linear-gradient(180deg,#062210 0%,#0d4a1a 28%,#7a5a10 28%,#8a6a18 72%,#0d4a1a 72%,#062210 100%);}
+.arena-2 #arena::before{background:radial-gradient(ellipse 60% 40% at 30% 50%,rgba(50,200,80,0.12) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 70% 50%,rgba(80,180,50,0.1) 0%,transparent 60%),repeating-linear-gradient(90deg,transparent,transparent 18px,rgba(100,200,80,0.04) 18px,rgba(100,200,80,0.04) 19px);}
+.arena-2 .lane-label{color:rgba(160,220,100,0.7);border-color:rgba(100,200,80,0.3);background:rgba(0,30,5,0.7);}
+
+/* Arena 3: Telestial Kingdom — deep starfield */
+.arena-3 #arena{background:linear-gradient(180deg,#01010a 0%,#03031a 28%,#0d0830 28%,#080520 72%,#03031a 72%,#01010a 100%);}
+.arena-3 #arena::before{background:radial-gradient(1.5px 1.5px at 15% 20%,rgba(150,180,255,0.8) 0%,transparent 100%),radial-gradient(1px 1px at 35% 10%,rgba(255,255,255,0.6) 0%,transparent 100%),radial-gradient(2px 2px at 60% 30%,rgba(120,150,255,0.7) 0%,transparent 100%),radial-gradient(1px 1px at 80% 15%,rgba(255,255,255,0.5) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 25% 60%,rgba(150,180,255,0.6) 0%,transparent 100%),radial-gradient(1px 1px at 70% 70%,rgba(200,200,255,0.5) 0%,transparent 100%),radial-gradient(2px 2px at 45% 80%,rgba(100,130,255,0.7) 0%,transparent 100%),radial-gradient(1px 1px at 90% 55%,rgba(255,255,255,0.4) 0%,transparent 100%),repeating-linear-gradient(90deg,transparent,transparent 18px,rgba(100,120,200,0.03) 18px,rgba(100,120,200,0.03) 19px);}
+.arena-3 .lane-label{color:rgba(150,180,255,0.7);border-color:rgba(100,130,255,0.3);background:rgba(1,1,15,0.8);}
+
+/* Arena 4: Spirit Prison — dark stone fog */
+.arena-4 #arena{background:linear-gradient(180deg,#0e0d0d 0%,#1a1818 28%,#3a3535 28%,#322e2e 72%,#1a1818 72%,#0e0d0d 100%);}
+.arena-4 #arena::before{background:radial-gradient(ellipse 100% 30% at 50% 28%,rgba(80,60,60,0.4) 0%,transparent 100%),radial-gradient(ellipse 100% 30% at 50% 72%,rgba(80,60,60,0.3) 0%,transparent 100%),repeating-linear-gradient(90deg,transparent,transparent 18px,rgba(100,80,80,0.05) 18px,rgba(100,80,80,0.05) 19px);}
+.arena-4 .lane-label{color:rgba(180,160,160,0.6);border-color:rgba(150,130,130,0.2);background:rgba(10,8,8,0.8);}
+.arena-4 #enemy-elixir-bar,.arena-4 #elixir-bar{background:linear-gradient(180deg,#1a0a0a,#140808);}
+
+/* Arena 5: Spirit Paradise — warm amber glow */
+.arena-5 #arena{background:linear-gradient(180deg,#2a1400 0%,#4a2800 28%,#9a7020 28%,#8a6010 72%,#4a2800 72%,#2a1400 100%);}
+.arena-5 #arena::before{background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(255,200,80,0.15) 0%,transparent 70%),repeating-linear-gradient(90deg,transparent,transparent 18px,rgba(255,200,80,0.04) 18px,rgba(255,200,80,0.04) 19px);}
+.arena-5 .lane-label{color:rgba(255,220,120,0.8);border-color:rgba(255,200,80,0.3);background:rgba(30,15,0,0.7);}
+
+/* Arena 6: Terrestrial Kingdom — moonlit silver */
+.arena-6 #arena{background:linear-gradient(180deg,#06101e 0%,#0e1e30 28%,#2e3848 28%,#262e3e 72%,#0e1e30 72%,#06101e 100%);}
+.arena-6 #arena::before{background:radial-gradient(ellipse 60% 80% at 50% -10%,rgba(180,200,255,0.2) 0%,transparent 60%),repeating-linear-gradient(90deg,transparent,transparent 18px,rgba(160,180,220,0.04) 18px,rgba(160,180,220,0.04) 19px);}
+.arena-6 .lane-label{color:rgba(180,200,240,0.7);border-color:rgba(160,180,220,0.3);background:rgba(5,10,20,0.7);}
+
+/* Arena 7: Celestial Kingdom — blazing gold glory */
+.arena-7 #arena{background:linear-gradient(180deg,#2a1000 0%,#5a2a00 28%,#c06800 28%,#d07800 72%,#5a2a00 72%,#2a1000 100%);}
+.arena-7 #arena::before{background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(255,220,80,0.25) 0%,transparent 70%),radial-gradient(ellipse 40% 100% at 50% 50%,rgba(255,180,0,0.1) 0%,transparent 100%),repeating-linear-gradient(90deg,transparent,transparent 18px,rgba(255,220,80,0.06) 18px,rgba(255,220,80,0.06) 19px);}
+.arena-7 .lane-label{color:rgba(255,240,150,0.9);border-color:rgba(255,220,80,0.4);background:rgba(30,10,0,0.7);}
+.arena-7 #enemy-elixir-bar{background:linear-gradient(180deg,#1a0800,#220f00);}
+
+/* Arena 8: Exaltation — divine radiant white/gold */
+.arena-8 #arena{background:linear-gradient(180deg,#c8b860 0%,#e8d880 28%,#fffce0 28%,#fff8d0 72%,#e8d880 72%,#c8b860 100%);}
+.arena-8 #arena::before{background:radial-gradient(ellipse 100% 80% at 50% 50%,rgba(255,255,220,0.5) 0%,transparent 70%),repeating-linear-gradient(90deg,transparent,transparent 18px,rgba(255,255,200,0.06) 18px,rgba(255,255,200,0.06) 19px);}
+.arena-8 .lane-label{color:rgba(120,80,0,0.9);border-color:rgba(200,160,0,0.5);background:rgba(255,248,200,0.7);}
+.arena-8 #enemy-elixir-bar,.arena-8 #elixir-bar{background:linear-gradient(180deg,#2a1800,#1a0e00);}
+.arena-8 .tower.player .tower-body{background:linear-gradient(160deg,#ffd700,#c8a000,#a07800);}
+.arena-8 #hud .crown-count{border-color:rgba(200,160,0,0.5);}

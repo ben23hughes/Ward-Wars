@@ -303,11 +303,28 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
 .cd-stat{background:rgba(0,0,0,.35);border-radius:10px;padding:8px 4px;text-align:center;}
 .cd-stat-val{font-size:14px;font-weight:bold;color:#fff;}
 .cd-stat-lbl{font-size:8px;color:rgba(255,255,255,.4);margin-top:2px;}
+#cd-rarity{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:-6px;}
+#cd-rarity.common{color:#aaa;}
+#cd-rarity.rare{color:#7eb8f7;}
+#cd-rarity.epic{color:#c080ff;}
+.cd-level-row{display:flex;align-items:center;gap:10px;width:100%;background:rgba(0,0,0,.25);border-radius:12px;padding:10px 12px;}
+.cd-level-badge{font-size:11px;font-weight:bold;color:var(--gold);background:rgba(245,200,66,.15);border:1px solid rgba(245,200,66,.3);border-radius:8px;padding:4px 10px;white-space:nowrap;}
+.cd-level-progress{flex:1;display:flex;flex-direction:column;gap:4px;}
+.cd-level-bar{height:6px;background:rgba(0,0,0,.4);border-radius:3px;overflow:hidden;}
+.cd-level-fill{height:100%;background:linear-gradient(90deg,var(--gold),#ff8c00);border-radius:3px;transition:width .4s ease;}
+.cd-level-text{font-size:9px;color:rgba(255,255,255,.4);}
+.cd-next-level{font-size:10px;color:rgba(126,184,247,.8);text-align:center;min-height:14px;}
+#cd-deck-btn{
+  width:100%;padding:12px;border:none;border-radius:14px;
+  font-family:'Cinzel',serif;font-size:13px;cursor:pointer;
+  transition:opacity .15s;
+}
+#cd-deck-btn.in-deck{background:rgba(192,57,43,.25);border:1px solid rgba(192,57,43,.4);color:#ff8080;}
+#cd-deck-btn.add-deck{background:linear-gradient(180deg,rgba(46,204,113,.3),rgba(46,204,113,.15));border:1px solid rgba(46,204,113,.4);color:var(--green);}
+#cd-deck-btn.deck-full{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.3);cursor:default;}
 #cd-close{
-  background:linear-gradient(180deg,var(--gold),var(--dark-gold));
-  border:none;border-radius:20px;padding:10px 32px;
-  font-family:'Cinzel Decorative',serif;font-size:13px;color:#1a0f00;
-  cursor:pointer;margin-top:4px;
+  background:none;border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:9px 32px;
+  font-family:'Cinzel',serif;font-size:12px;color:rgba(255,255,255,.4);cursor:pointer;
 }
 
 /* ─────────────────────────────────────────
@@ -521,6 +538,12 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
 .ach-name{font-size:7px;color:rgba(255,255,255,.5);text-align:center;line-height:1.2;}
 .achievement.unlocked{border-color:rgba(245,200,66,.3);}
 .achievement.locked{opacity:.4;}
+.card-deck-check{
+  position:absolute;top:5px;right:5px;
+  background:var(--green);color:#fff;
+  font-size:8px;font-weight:bold;width:14px;height:14px;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+}
 
 /* ── BATTLE MODE MODAL ── */
 #battle-modal{
@@ -619,6 +642,96 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
   padding:8px 28px;cursor:pointer;margin-top:8px;
 }
 
+
+/* ── ARENA SECTION ── */
+#arena-section{margin:10px 12px 0;flex-shrink:0;}
+.arena-card{
+  background:linear-gradient(135deg,rgba(10,20,40,0.92),rgba(5,12,25,0.95));
+  border:1.5px solid var(--arena-color,var(--gold));
+  border-radius:16px;padding:14px;
+  display:flex;align-items:center;gap:12px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.5), 0 0 16px var(--arena-glow,rgba(245,200,66,0.2));
+  position:relative;overflow:hidden;
+}
+.arena-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 90% 50%,var(--arena-glow,rgba(245,200,66,0.08)) 0%,transparent 70%);
+  pointer-events:none;
+}
+.arena-left{flex:1;display:flex;flex-direction:column;gap:5px;}
+.arena-num{font-size:8px;color:var(--arena-color,var(--gold));text-transform:uppercase;letter-spacing:2px;opacity:0.7;}
+.arena-name{font-family:'Cinzel Decorative',serif;font-size:14px;color:#fff;line-height:1.2;}
+.arena-desc{font-size:9px;color:rgba(255,255,255,0.4);line-height:1.4;}
+.arena-progress-wrap{display:flex;flex-direction:column;gap:3px;}
+.arena-progress-bar{height:5px;background:rgba(0,0,0,0.4);border-radius:3px;overflow:hidden;}
+.arena-progress-fill{height:100%;border-radius:3px;background:var(--arena-color,var(--gold));box-shadow:0 0 6px var(--arena-color,var(--gold));transition:width 0.8s ease-out;}
+.arena-trophy-row{display:flex;justify-content:space-between;font-size:9px;}
+.arena-cur{color:var(--gold);font-weight:bold;}
+.arena-next-val{color:rgba(255,255,255,0.35);}
+.arena-next-hint{font-size:8px;color:rgba(255,255,255,0.3);}
+.arena-emoji-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;}
+.arena-emoji{
+  font-size:40px;line-height:1;
+  filter:drop-shadow(0 0 12px var(--arena-color,var(--gold)));
+  animation:arenaFloat 3s ease-in-out infinite alternate;
+}
+@keyframes arenaFloat{from{transform:translateY(0)}to{transform:translateY(-4px)}}
+.arena-badge{
+  font-size:8px;font-weight:bold;
+  background:var(--arena-color,var(--gold));color:#0a0e1a;
+  padding:2px 6px;border-radius:8px;
+}
+
+/* Arena path map button */
+#arena-path-btn{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  margin:8px 12px 0;
+  background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.08);
+  border-radius:10px;padding:7px;cursor:pointer;
+  font-size:9px;color:rgba(255,255,255,0.35);letter-spacing:1px;text-transform:uppercase;
+  flex-shrink:0;
+}
+#arena-path-btn:active{background:rgba(255,255,255,0.05);}
+
+/* Arena path modal */
+#arena-path-modal{
+  position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0);
+  display:none;align-items:flex-end;justify-content:center;
+}
+#arena-path-modal.open{display:flex;background:rgba(0,0,0,0.82);}
+#arena-path-box{
+  width:100%;max-width:420px;
+  background:linear-gradient(180deg,#0d1a30,#080f1c);
+  border:1px solid rgba(245,200,66,0.2);border-radius:24px 24px 0 0;
+  padding:20px 16px 36px;
+  animation:slideUp .25s ease-out;
+  max-height:85dvh;overflow-y:auto;
+}
+#arena-path-title{font-family:'Cinzel Decorative',serif;font-size:15px;color:var(--gold);text-align:center;margin-bottom:16px;}
+.path-row{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 12px;border-radius:12px;margin-bottom:6px;
+  background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.05);
+  position:relative;
+}
+.path-row.current{border-color:rgba(245,200,66,0.35);background:rgba(245,200,66,0.07);}
+.path-row.unlocked{opacity:1;}
+.path-row.locked{opacity:0.4;}
+.path-row-emoji{font-size:26px;line-height:1;width:32px;text-align:center;}
+.path-row-info{flex:1;}
+.path-row-name{font-size:11px;color:#fff;font-weight:600;}
+.path-row-range{font-size:9px;color:rgba(255,255,255,0.35);margin-top:1px;}
+.path-row-desc{font-size:8px;color:rgba(255,255,255,0.3);margin-top:2px;line-height:1.3;}
+.path-current-badge{font-size:8px;color:var(--gold);background:rgba(245,200,66,0.15);padding:2px 7px;border-radius:8px;}
+.path-locked-icon{font-size:14px;color:rgba(255,255,255,0.2);}
+.path-connector{width:2px;height:10px;background:rgba(255,255,255,0.08);margin:0 auto 0 29px;}
+#arena-path-close{
+  display:block;margin:12px auto 0;
+  background:none;border:1px solid rgba(255,255,255,0.15);border-radius:20px;
+  color:rgba(255,255,255,0.4);font-family:'Cinzel',serif;font-size:11px;
+  padding:8px 28px;cursor:pointer;
+}
+
 </style>
 </head>
 <body>
@@ -689,6 +802,13 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
             <div class="chest-timer">🔒</div>
           </div>
         </div>
+      </div>
+
+
+      <!-- ARENA SECTION -->
+      <div id="arena-section"></div>
+      <div id="arena-path-btn" onclick="openArenaPath()">
+        <span>🗺️</span><span>View Plan of Salvation Path</span><span>›</span>
       </div>
 
       <div id="battle-area">
@@ -901,18 +1021,132 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
   <div id="card-detail-box">
     <div id="cd-emoji"></div>
     <div id="cd-name"></div>
+    <div id="cd-rarity"></div>
     <div id="cd-ability"></div>
+
+    <div class="cd-level-row">
+      <div class="cd-level-badge" id="cd-level">Lv 1</div>
+      <div class="cd-level-progress">
+        <div class="cd-level-bar"><div class="cd-level-fill" id="cd-level-fill"></div></div>
+        <div class="cd-level-text" id="cd-level-text"></div>
+      </div>
+    </div>
+
     <div class="cd-stats">
       <div class="cd-stat"><div class="cd-stat-val" id="cd-hp"></div><div class="cd-stat-lbl">HP</div></div>
       <div class="cd-stat"><div class="cd-stat-val" id="cd-atk"></div><div class="cd-stat-lbl">Damage</div></div>
       <div class="cd-stat"><div class="cd-stat-val" id="cd-cost"></div><div class="cd-stat-lbl">Cost</div></div>
     </div>
+
+    <div id="cd-next-level" class="cd-next-level"></div>
+
+    <button id="cd-deck-btn" onclick="toggleDeck()"></button>
     <button id="cd-close" onclick="document.getElementById('card-detail').classList.remove('open')">Close</button>
   </div>
 </div>
 
 <script>
 // ── DATA ──
+
+// ── ARENAS — Plan of Salvation ──
+const ARENAS = [
+  { id:1, name:'Pre-Mortal Life',       emoji:'🌌', min:0,    max:299,  desc:'Where spirits awaited their earthly journey',        path:'🌿 Garden of Eden at 300 trophies',              color:'#9b59b6', glow:'rgba(155,89,182,0.4)' },
+  { id:2, name:'Garden of Eden',         emoji:'🌿', min:300,  max:599,  desc:'Paradise on earth, walking with God',                path:'⭐ Telestial Kingdom at 600 trophies',           color:'#27ae60', glow:'rgba(39,174,96,0.4)' },
+  { id:3, name:'Telestial Kingdom',      emoji:'⭐', min:600,  max:999,  desc:'Glory of the stars — for the wicked redeemed',       path:'⛓️ Spirit Prison at 1,000 trophies',            color:'#3498db', glow:'rgba(52,152,219,0.4)' },
+  { id:4, name:'Spirit Prison',          emoji:'⛓️',min:1000, max:1399, desc:'Awaiting the preaching of the gospel',               path:'✨ Spirit Paradise at 1,400 trophies',          color:'#7f8c8d', glow:'rgba(127,140,141,0.3)' },
+  { id:5, name:'Spirit Paradise',        emoji:'✨', min:1400, max:1799, desc:'Rest and peace for the righteous departed',           path:'🌙 Terrestrial Kingdom at 1,800 trophies',      color:'#e67e22', glow:'rgba(230,126,34,0.4)' },
+  { id:6, name:'Terrestrial Kingdom',    emoji:'🌙', min:1800, max:2299, desc:'Glory of the moon — for the honorable of earth',     path:'☀️ Celestial Kingdom at 2,300 trophies',        color:'#95a5a6', glow:'rgba(149,165,166,0.4)' },
+  { id:7, name:'Celestial Kingdom',      emoji:'☀️', min:2300, max:2999, desc:'The highest glory — to dwell with God forever',      path:'👑 Exaltation at 3,000 trophies',               color:'#f5c842', glow:'rgba(245,200,66,0.5)' },
+  { id:8, name:'Exaltation',             emoji:'👑', min:3000, max:null, desc:'Eternal life — to become as God, eternal families',  path:'You have reached the pinnacle.',                color:'#ffffff', glow:'rgba(255,255,255,0.5)' },
+];
+
+function getCurrentArena(trophies) {
+  for (let i = ARENAS.length - 1; i >= 0; i--) {
+    if (trophies >= ARENAS[i].min) return ARENAS[i];
+  }
+  return ARENAS[0];
+}
+
+function renderArenaSection(trophies) {
+  const arena = getCurrentArena(trophies);
+  localStorage.setItem('cc_arena', arena.id);
+  const pct = arena.max
+    ? Math.min(100, Math.round((trophies - arena.min) / (arena.max - arena.min) * 100))
+    : 100;
+  const el = document.getElementById('arena-section');
+  if (!el) return;
+  el.innerHTML = `
+    <div class="arena-card" style="--arena-color:${arena.color};--arena-glow:${arena.glow}">
+      <div class="arena-left">
+        <div class="arena-num">Arena ${arena.id}</div>
+        <div class="arena-name">${arena.name}</div>
+        <div class="arena-desc">${arena.desc}</div>
+        <div class="arena-progress-wrap">
+          <div class="arena-progress-bar">
+            <div class="arena-progress-fill" style="width:${pct}%"></div>
+          </div>
+          <div class="arena-trophy-row">
+            <span class="arena-cur">🏆 ${trophies.toLocaleString()}</span>
+            ${arena.max ? `<span class="arena-next-val">${arena.max.toLocaleString()}</span>` : '<span class="arena-next-val">MAX</span>'}
+          </div>
+        </div>
+        ${arena.max ? `<div class="arena-next-hint">Next: ${arena.path}</div>` : '<div class="arena-next-hint" style="color:var(--gold)">✦ Pinnacle Reached ✦</div>'}
+      </div>
+      <div class="arena-emoji-wrap">
+        <div class="arena-emoji">${arena.emoji}</div>
+        <div class="arena-badge">A${arena.id}</div>
+      </div>
+    </div>
+  `;
+  updateArenaPreview(arena);
+}
+
+function updateArenaPreview(arena) {
+  const preview = document.getElementById('arena-preview');
+  if (!preview) return;
+  const themes = {
+    1:'linear-gradient(180deg,#1a0838 0%,#2e1060 30%,#7a3aaa 30%,#6a2a9a 70%,#2e1060 70%,#1a0838 100%)',
+    2:'linear-gradient(180deg,#062210 0%,#0d4a1a 30%,#7a5a10 30%,#8a6a18 70%,#0d4a1a 70%,#062210 100%)',
+    3:'linear-gradient(180deg,#01010a 0%,#03031a 30%,#0d0830 30%,#080520 70%,#03031a 70%,#01010a 100%)',
+    4:'linear-gradient(180deg,#0e0d0d 0%,#1a1818 30%,#3a3535 30%,#322e2e 70%,#1a1818 70%,#0e0d0d 100%)',
+    5:'linear-gradient(180deg,#2a1400 0%,#4a2800 30%,#9a7020 30%,#8a6010 70%,#4a2800 70%,#2a1400 100%)',
+    6:'linear-gradient(180deg,#06101e 0%,#0e1e30 30%,#2e3848 30%,#262e3e 70%,#0e1e30 70%,#06101e 100%)',
+    7:'linear-gradient(180deg,#2a1000 0%,#5a2a00 30%,#c06800 30%,#d07800 70%,#5a2a00 70%,#2a1000 100%)',
+    8:'linear-gradient(180deg,#c8b860 0%,#e8d880 30%,#fffce0 30%,#fff8d0 70%,#e8d880 70%,#c8b860 100%)',
+  };
+  preview.style.background = themes[arena.id] || themes[1];
+  preview.style.borderColor = arena.color;
+  preview.style.boxShadow = `0 8px 32px rgba(0,0,0,0.6), 0 0 20px ${arena.glow}`;
+}
+
+function openArenaPath() {
+  const user = JSON.parse(localStorage.getItem('cc_user') || '{}');
+  const trophies = user.trophies || 0;
+  const current = getCurrentArena(trophies);
+  document.getElementById('arena-path-list').innerHTML = ARENAS.map((a, i) => {
+    const isUnlocked = trophies >= a.min;
+    const isCurrent = a.id === current.id;
+    const rangeText = a.max ? `${a.min.toLocaleString()} – ${a.max.toLocaleString()} 🏆` : `${a.min.toLocaleString()}+ 🏆`;
+    const connector = i < ARENAS.length - 1 ? '<div class="path-connector"></div>' : '';
+    return `
+      <div class="path-row ${isCurrent ? 'current' : ''} ${isUnlocked ? 'unlocked' : 'locked'}">
+        <div class="path-row-emoji">${a.emoji}</div>
+        <div class="path-row-info">
+          <div class="path-row-name">${a.name}</div>
+          <div class="path-row-range">${rangeText}</div>
+          <div class="path-row-desc">${a.desc}</div>
+        </div>
+        ${isCurrent ? '<span class="path-current-badge">YOU ARE HERE</span>' : ''}
+        ${!isUnlocked ? '<span class="path-locked-icon">🔒</span>' : ''}
+      </div>${connector}
+    `;
+  }).join('');
+  document.getElementById('arena-path-modal').classList.add('open');
+}
+function closeArenaPath() {
+  document.getElementById('arena-path-modal').classList.remove('open');
+}
+
 const ALL_CARDS = [
   {id:'missionary', name:'Missionary',   emoji:'🧑‍⚕️', cost:3, hp:240, atk:75,  ability:'Converts on death', rarity:'common', inDeck:true,  level:1, have:0, need:50},
   {id:'scriptures', name:'Scriptures',   emoji:'📖',   cost:2, hp:140, atk:50,  ability:'Freezes target',    rarity:'common', inDeck:true,  level:1, have:0, need:50},
@@ -954,26 +1188,78 @@ function navTo(tab) {
   page.scrollTop = 0;
 }
 
+// ── CARD LEVEL SYSTEM ──
+const LEVEL_THRESHOLDS = [0, 10, 30, 60, 100]; // uses needed for Lv 1-5
+function getCardLevel(uses) {
+  for (let i = LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
+    if (uses >= LEVEL_THRESHOLDS[i]) return i + 1;
+  }
+  return 1;
+}
+function getLevelProgress(uses) {
+  const lv = getCardLevel(uses);
+  if (lv >= 5) return { pct: 100, text: 'Max Level', usesLeft: 0 };
+  const min = LEVEL_THRESHOLDS[lv - 1];
+  const max = LEVEL_THRESHOLDS[lv];
+  const pct = Math.round((uses - min) / (max - min) * 100);
+  return { pct, text: `${uses - min} / ${max - min} uses to Lv ${lv + 1}`, usesLeft: max - uses };
+}
+function levelMultiplier(level) { return 1 + (level - 1) * 0.15; }
+
 // ── CARDS SCREEN ──
+let userCardData = {}; // card_id → {uses, in_deck}
+let currentFilter = 'all';
+let openCardId = null;
+
+async function loadUserCards() {
+  const token = localStorage.getItem('cc_token');
+  if (!token) return;
+  try {
+    const res = await fetch('/api/cards', { headers: { Authorization: 'Bearer ' + token } });
+    if (!res.ok) return;
+    const data = await res.json();
+    userCardData = {};
+    data.forEach(row => { userCardData[row.card_id] = row; });
+    localStorage.setItem('cc_cards', JSON.stringify(data));
+    renderCards(currentFilter);
+    updateBattlePageDeck();
+  } catch(e) {}
+}
+
 function renderCards(filter) {
+  currentFilter = filter;
   const grid = document.getElementById('cards-grid');
+  const deckIds = getDeckIds();
   const list = filter === 'all' ? ALL_CARDS
-    : filter === 'deck' ? ALL_CARDS.filter(c => c.inDeck)
+    : filter === 'deck' ? ALL_CARDS.filter(c => deckIds.includes(c.id))
     : ALL_CARDS.filter(c => c.rarity === filter);
-  grid.innerHTML = list.map(c => `
-    <div class="card-item ${c.inDeck ? 'in-deck' : ''}" onclick="showCardDetail('${c.id}')">
-      <span class="card-cost-badge">${c.cost}</span>
-      <div class="card-emoji-lg">${c.emoji}</div>
-      <div class="card-name-sm">${c.name}</div>
-      <div class="card-level">Lv ${c.level}</div>
-      <div class="card-upgrade-bar"><div class="card-upgrade-fill" style="width:${Math.round(c.have/c.need*100)}%"></div></div>
-      <div class="card-upgrade-text">${c.have}/${c.need}</div>
-    </div>
-  `).join('');
-  // Update subtitle with real counts
-  const avgCost = (ALL_CARDS.reduce((s,c) => s + c.cost, 0) / ALL_CARDS.length).toFixed(1);
+
+  grid.innerHTML = list.map(c => {
+    const ud = userCardData[c.id] || { uses: 0, in_deck: false };
+    const inDeck = deckIds.includes(c.id);
+    const lv = getCardLevel(ud.uses);
+    const prog = getLevelProgress(ud.uses);
+    const mult = levelMultiplier(lv);
+    return `
+      <div class="card-item ${inDeck ? 'in-deck' : ''}" onclick="showCardDetail('${c.id}')">
+        <span class="card-cost-badge">${c.cost}</span>
+        ${inDeck ? '<span class="card-deck-check">✓</span>' : ''}
+        <div class="card-emoji-lg">${c.emoji}</div>
+        <div class="card-name-sm">${c.name}</div>
+        <div class="card-level">Lv ${lv}</div>
+        <div class="card-upgrade-bar"><div class="card-upgrade-fill" style="width:${prog.pct}%"></div></div>
+        <div class="card-upgrade-text">${ud.uses} uses</div>
+      </div>`;
+  }).join('');
+
+  const deckCount = deckIds.length;
+  const avgCost = (ALL_CARDS.reduce((s, c) => s + c.cost, 0) / ALL_CARDS.length).toFixed(1);
   const sub = document.getElementById('cards-subtitle');
-  if (sub) sub.textContent = `${ALL_CARDS.length} cards · Avg cost ${avgCost} 💧`;
+  if (sub) sub.textContent = `${ALL_CARDS.length} cards · ${deckCount}/4 in deck · Avg ${avgCost} 💧`;
+}
+
+function getDeckIds() {
+  return ALL_CARDS.filter(c => userCardData[c.id]?.in_deck).map(c => c.id);
 }
 
 function filterCards(filter, btn) {
@@ -985,16 +1271,92 @@ function filterCards(filter, btn) {
 function showCardDetail(id) {
   const c = ALL_CARDS.find(x => x.id === id);
   if (!c) return;
+  openCardId = id;
+  const ud = userCardData[id] || { uses: 0, in_deck: false };
+  const deckIds = getDeckIds();
+  const inDeck = deckIds.includes(id);
+  const lv = getCardLevel(ud.uses);
+  const prog = getLevelProgress(ud.uses);
+  const mult = levelMultiplier(lv);
+  const nextMult = lv < 5 ? levelMultiplier(lv + 1) : null;
+
   document.getElementById('cd-emoji').textContent = c.emoji;
   document.getElementById('cd-name').textContent = c.name;
+  const rarityEl = document.getElementById('cd-rarity');
+  rarityEl.textContent = c.rarity.toUpperCase();
+  rarityEl.className = c.rarity;
   document.getElementById('cd-ability').textContent = '✦ ' + c.ability;
-  document.getElementById('cd-hp').textContent = c.hp;
-  document.getElementById('cd-atk').textContent = c.atk;
+  document.getElementById('cd-level').textContent = lv >= 5 ? 'MAX LEVEL' : `Lv ${lv}`;
+  document.getElementById('cd-level-fill').style.width = prog.pct + '%';
+  document.getElementById('cd-level-text').textContent = prog.text;
+  document.getElementById('cd-hp').textContent = Math.round(c.hp * mult);
+  document.getElementById('cd-atk').textContent = Math.round(c.atk * mult);
   document.getElementById('cd-cost').textContent = c.cost;
+
+  if (nextMult) {
+    document.getElementById('cd-next-level').textContent =
+      `Next level: ${Math.round(c.hp * nextMult)} HP · ${Math.round(c.atk * nextMult)} Damage`;
+  } else {
+    document.getElementById('cd-next-level').textContent = '⭐ Fully maxed out!';
+  }
+
+  const btn = document.getElementById('cd-deck-btn');
+  if (inDeck) {
+    btn.textContent = '− Remove from Deck';
+    btn.className = 'in-deck';
+  } else if (deckIds.length >= 4) {
+    btn.textContent = 'Deck full — remove a card first';
+    btn.className = 'deck-full';
+  } else {
+    btn.textContent = '+ Add to Deck';
+    btn.className = 'add-deck';
+  }
+
   document.getElementById('card-detail').classList.add('open');
 }
+
 function closeCardDetail(e) {
   if (e.target.id === 'card-detail') document.getElementById('card-detail').classList.remove('open');
+}
+
+async function toggleDeck() {
+  if (!openCardId) return;
+  const deckIds = getDeckIds();
+  const inDeck = deckIds.includes(openCardId);
+  if (!inDeck && deckIds.length >= 4) return; // full
+
+  if (inDeck) {
+    userCardData[openCardId].in_deck = false;
+  } else {
+    userCardData[openCardId].in_deck = true;
+  }
+
+  const newDeck = getDeckIds();
+  renderCards(currentFilter);
+  showCardDetail(openCardId); // refresh overlay
+
+  const token = localStorage.getItem('cc_token');
+  if (token && newDeck.length === 4) {
+    await fetch('/api/deck', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ cardIds: newDeck }),
+    });
+    updateBattlePageDeck();
+  }
+}
+
+function updateBattlePageDeck() {
+  const deckIds = getDeckIds();
+  const deckCards = deckIds.map(id => ALL_CARDS.find(c => c.id === id)).filter(Boolean);
+  const row = document.querySelector('.deck-cards-row');
+  if (!row || !deckCards.length) return;
+  row.innerHTML = deckCards.map(c => `
+    <div class="deck-card" onclick="navTo('cards')">
+      <div class="deck-card-emoji">${c.emoji}</div>
+      <div class="deck-card-cost">${c.cost}</div>
+      <div class="deck-card-name">${c.name}</div>
+    </div>`).join('');
 }
 
 // ── PROFILE SCREEN ──
@@ -1124,6 +1486,7 @@ function updateProfileLeague(trophies) {
     document.getElementById('stat-winrate').textContent = winRate;
     document.getElementById('stat-trophies').textContent = user.trophies.toLocaleString();
     updateProfileLeague(user.trophies);
+    renderArenaSection(user.trophies);
   } catch(e) {
     window.location.href = 'login.html';
   }
@@ -1140,9 +1503,42 @@ async function logout() {
 
 // ── INIT ──
 renderCards('all');
+loadUserCards();
 renderProfile();
 startDealTimer();
 
+
+
+function openArenaPath() {
+  const user = JSON.parse(localStorage.getItem('cc_user') || '{}');
+  const trophies = user.trophies || 0;
+  const current = getCurrentArena(trophies);
+
+  document.getElementById('arena-path-list').innerHTML = ARENAS.map((a, i) => {
+    const isUnlocked = trophies >= a.min;
+    const isCurrent = a.id === current.id;
+    const rangeText = a.max ? `${a.min.toLocaleString()} – ${a.max.toLocaleString()} 🏆` : `${a.min.toLocaleString()}+ 🏆`;
+    const connector = i < ARENAS.length - 1 ? '<div class="path-connector"></div>' : '';
+    return `
+      <div class="path-row ${isCurrent ? 'current' : ''} ${isUnlocked ? 'unlocked' : 'locked'}">
+        <div class="path-row-emoji">${a.emoji}</div>
+        <div class="path-row-info">
+          <div class="path-row-name">${a.name}</div>
+          <div class="path-row-range">${rangeText}</div>
+          <div class="path-row-desc">${a.desc}</div>
+        </div>
+        ${isCurrent ? '<span class="path-current-badge">YOU ARE HERE</span>' : ''}
+        ${!isUnlocked ? '<span class="path-locked-icon">🔒</span>' : ''}
+      </div>
+      ${connector}
+    `;
+  }).join('');
+
+  document.getElementById('arena-path-modal').classList.add('open');
+}
+function closeArenaPath() {
+  document.getElementById('arena-path-modal').classList.remove('open');
+}
 
 // ── BATTLE MODAL ──
 const BOT_NAMES = [
@@ -1211,6 +1607,16 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
 }
 </script>
+
+
+<!-- ARENA PATH MODAL -->
+<div id="arena-path-modal" onclick="if(event.target===this)closeArenaPath()">
+  <div id="arena-path-box">
+    <div id="arena-path-title">⛪ Plan of Salvation ⛪</div>
+    <div id="arena-path-list"></div>
+    <button id="arena-path-close" onclick="closeArenaPath()">✕ Close</button>
+  </div>
+</div>
 
 <!-- BATTLE MODE MODAL -->
 <div id="battle-modal" onclick="if(event.target===this)hideBattleModal()">
