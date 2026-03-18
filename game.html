@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0d1b2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Chapel Clash">
+<meta name="description" content="A Clash Royale-style mobile game — defend the faith!">
+<title>Chapel Clash</title>
+<link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+</head>
+<body>
+<div id="game-wrapper">
+  <div id="enemy-elixir-bar">
+    <div id="enemy-elixir-label">😈 5</div>
+    <div id="enemy-elixir-track">
+      <div class="e-elixir-pip filled" id="eep0"></div><div class="e-elixir-pip filled" id="eep1"></div>
+      <div class="e-elixir-pip filled" id="eep2"></div><div class="e-elixir-pip filled" id="eep3"></div>
+      <div class="e-elixir-pip filled" id="eep4"></div><div class="e-elixir-pip" id="eep5"></div>
+      <div class="e-elixir-pip" id="eep6"></div><div class="e-elixir-pip" id="eep7"></div>
+      <div class="e-elixir-pip" id="eep8"></div><div class="e-elixir-pip" id="eep9"></div>
+    </div>
+  </div>
+
+  <div id="arena">
+    <div class="lane-label">⚔ The Iron Rod ⚔</div>
+    <div id="ability-toast"></div>
+    <div id="hud">
+      <div class="crown-count">
+        <span class="crown" id="ec0">👑</span><span class="crown" id="ec1">👑</span><span class="crown" id="ec2">👑</span>
+      </div>
+      <div id="timer">3:00</div>
+      <div class="crown-count">
+        <span class="crown" id="pc0">👑</span><span class="crown" id="pc1">👑</span><span class="crown" id="pc2">👑</span>
+      </div>
+    </div>
+
+    <!-- Enemy towers -->
+    <div class="tower enemy" id="tower-e-left">
+      <div class="tower-body">🔥<div class="tower-hp-bar"><div class="tower-hp-fill" id="ehp-left" style="width:100%"></div></div></div>
+      <div class="tower-hp-text" id="ehp-left-txt">600</div>
+    </div>
+    <div class="tower enemy" id="tower-e-right">
+      <div class="tower-body">🔥<div class="tower-hp-bar"><div class="tower-hp-fill" id="ehp-right" style="width:100%"></div></div></div>
+      <div class="tower-hp-text" id="ehp-right-txt">600</div>
+    </div>
+    <div class="tower enemy king" id="tower-e-king">
+      <div class="tower-body">😈<div class="tower-hp-bar"><div class="tower-hp-fill" id="ehp-king" style="width:100%"></div></div></div>
+      <div class="tower-hp-text" id="ehp-king-txt">1200</div>
+    </div>
+
+    <!-- Player towers -->
+    <div class="tower player" id="tower-p-left">
+      <div class="tower-body">⛪<div class="tower-hp-bar"><div class="tower-hp-fill" id="php-left" style="width:100%"></div></div></div>
+      <div class="tower-hp-text" id="php-left-txt">600</div>
+    </div>
+    <div class="tower player" id="tower-p-right">
+      <div class="tower-body">⛪<div class="tower-hp-bar"><div class="tower-hp-fill" id="php-right" style="width:100%"></div></div></div>
+      <div class="tower-hp-text" id="php-right-txt">600</div>
+    </div>
+    <div class="tower player king" id="tower-p-king">
+      <div class="tower-body">🕍<div class="tower-hp-bar"><div class="tower-hp-fill" id="php-king" style="width:100%"></div></div></div>
+      <div class="tower-hp-text" id="php-king-txt">1200</div>
+    </div>
+
+    <div id="drop-hint"><div id="player-half-hint"></div></div>
+  </div>
+
+  <div id="elixir-bar">
+    <div id="elixir-label">🙏 5</div>
+    <div id="elixir-track">
+      <div class="elixir-pip filled" id="ep0"></div><div class="elixir-pip filled" id="ep1"></div>
+      <div class="elixir-pip filled" id="ep2"></div><div class="elixir-pip filled" id="ep3"></div>
+      <div class="elixir-pip filled" id="ep4"></div><div class="elixir-pip" id="ep5"></div>
+      <div class="elixir-pip" id="ep6"></div><div class="elixir-pip" id="ep7"></div>
+      <div class="elixir-pip" id="ep8"></div><div class="elixir-pip" id="ep9"></div>
+    </div>
+  </div>
+
+  <div id="card-hand">
+    <div class="card" id="card-0" onclick="selectCard(0)">
+      <span class="card-cost">3</span><span class="card-emoji">🧑‍⚕️</span>
+      <span class="card-name">Missionary</span><span class="card-ability">Converts on death</span>
+    </div>
+    <div class="card" id="card-1" onclick="selectCard(1)">
+      <span class="card-cost">2</span><span class="card-emoji">📖</span>
+      <span class="card-name">Scriptures</span><span class="card-ability">Freezes enemy</span>
+    </div>
+    <div class="card" id="card-2" onclick="selectCard(2)">
+      <span class="card-cost">5</span><span class="card-emoji">👼</span>
+      <span class="card-name">Angel Moroni</span><span class="card-ability">Heals all allies</span>
+    </div>
+    <div class="card" id="card-3" onclick="selectCard(3)">
+      <span class="card-cost">4</span><span class="card-emoji">🏔️</span>
+      <span class="card-name">Nauvoo Guard</span><span class="card-ability">AOE charge</span>
+    </div>
+    <div id="next-card">
+      <div id="next-card-preview"><span id="next-emoji">🧓</span></div>
+      <span id="next-label">NEXT</span>
+    </div>
+  </div>
+
+  <div id="overlay">
+    <h1 id="overlay-title">⛪ Chapel Clash ⛪</h1>
+    <p id="overlay-msg">Deploy faithful troops on YOUR half to destroy the adversary!<br><br>
+      🧑‍⚕️ Missionary — Converts enemy on death<br>
+      📖 Scriptures — Freezes target solid<br>
+      👼 Angel Moroni — Heals all allies<br>
+      🏔️ Nauvoo Guard — AOE charge<br>
+      🧓 Prophet — Shields all allies<br>
+      🧒 CTR Kid — Spawns 3 at once<br>
+      🍑 Jello — Splash damage<br>
+      🐝 Beehive — Bee swarm<br><br>
+      ⛪ Chapel = 1 crown &nbsp;|&nbsp; 🕍 Temple = Victory</p>
+    <button onclick="startGame()">Go and Do!</button>
+  </div>
+</div>
+
+<script src="game.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js');
+  });
+}
+</script>
+</body>
+</html>

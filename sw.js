@@ -1,5 +1,5 @@
 const CACHE = 'chapel-clash-v1';
-const ASSETS = ['/', '/index.html', '/style.css', '/game.js', '/manifest.json'];
+const ASSETS = ['/', '/index.html', '/game.html', '/style.css', '/game.js', '/manifest.json'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
