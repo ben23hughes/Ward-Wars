@@ -16,63 +16,43 @@
 :root{
   --gold:#f5c842;--dark-gold:#c49a1a;--gold2:#ffe082;
   --crimson:#c0392b;--green:#2ecc71;--faith:#7eb8f7;
-  --bg-top:#0a0e1a;--bg-mid:#0d1b2e;--bg-bot:#111a30;
-  --card-bg:linear-gradient(160deg,#1e3a5f,#0d1b2e);
   --panel:#0f1e35;--panel2:#162840;
-  --nav-bg:#080f1c;
 }
-
-html,body{height:100%;overflow:hidden;background:var(--bg-top);}
+html,body{height:100%;overflow:hidden;background:#0a0e1a;}
 body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;align-items:center;user-select:none;}
-
 #screen{width:100%;max-width:420px;height:100dvh;display:flex;flex-direction:column;position:relative;overflow:hidden;}
 
 /* ── ANIMATED BG ── */
 #bg{
-  position:absolute;inset:0;z-index:0;
+  position:absolute;inset:0;z-index:0;pointer-events:none;
   background:
-    radial-gradient(ellipse 120% 60% at 50% 0%, #1a3a6e 0%, transparent 65%),
-    radial-gradient(ellipse 80% 50% at 20% 100%, #1a0a2e 0%, transparent 60%),
-    radial-gradient(ellipse 80% 50% at 80% 100%, #0a1a3e 0%, transparent 60%),
-    linear-gradient(180deg, #0a0e1a 0%, #0d1b2e 50%, #111a30 100%);
+    radial-gradient(ellipse 120% 60% at 50% 0%,#1a3a6e 0%,transparent 65%),
+    radial-gradient(ellipse 80% 50% at 20% 100%,#1a0a2e 0%,transparent 60%),
+    radial-gradient(ellipse 80% 50% at 80% 100%,#0a1a3e 0%,transparent 60%),
+    linear-gradient(180deg,#0a0e1a 0%,#0d1b2e 50%,#111a30 100%);
 }
-/* floating particles */
 #bg::before{
   content:'';position:absolute;inset:0;
   background-image:
-    radial-gradient(1.5px 1.5px at 15% 20%, rgba(245,200,66,0.5) 0%, transparent 100%),
-    radial-gradient(1px 1px at 75% 15%, rgba(126,184,247,0.4) 0%, transparent 100%),
-    radial-gradient(2px 2px at 40% 60%, rgba(245,200,66,0.3) 0%, transparent 100%),
-    radial-gradient(1px 1px at 85% 70%, rgba(255,255,255,0.25) 0%, transparent 100%),
-    radial-gradient(1.5px 1.5px at 25% 80%, rgba(126,184,247,0.35) 0%, transparent 100%),
-    radial-gradient(1px 1px at 60% 35%, rgba(245,200,66,0.4) 0%, transparent 100%),
-    radial-gradient(2px 2px at 90% 45%, rgba(255,255,255,0.2) 0%, transparent 100%),
-    radial-gradient(1px 1px at 10% 55%, rgba(126,184,247,0.3) 0%, transparent 100%);
+    radial-gradient(1.5px 1.5px at 15% 20%,rgba(245,200,66,.5) 0%,transparent 100%),
+    radial-gradient(1px 1px at 75% 15%,rgba(126,184,247,.4) 0%,transparent 100%),
+    radial-gradient(2px 2px at 40% 60%,rgba(245,200,66,.3) 0%,transparent 100%),
+    radial-gradient(1px 1px at 85% 70%,rgba(255,255,255,.25) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 25% 80%,rgba(126,184,247,.35) 0%,transparent 100%),
+    radial-gradient(1px 1px at 60% 35%,rgba(245,200,66,.4) 0%,transparent 100%),
+    radial-gradient(2px 2px at 90% 45%,rgba(255,255,255,.2) 0%,transparent 100%),
+    radial-gradient(1px 1px at 10% 55%,rgba(126,184,247,.3) 0%,transparent 100%);
   animation:twinkle 4s ease-in-out infinite alternate;
 }
-@keyframes twinkle{from{opacity:0.6}to{opacity:1}}
-
-/* arena glow at bottom of bg */
-#bg::after{
-  content:'';position:absolute;bottom:0;left:0;right:0;height:55%;
-  background:
-    linear-gradient(180deg,
-      transparent 0%,
-      rgba(20,60,30,0.4) 30%,
-      rgba(30,90,40,0.5) 60%,
-      rgba(196,160,96,0.25) 100%
-    );
-  pointer-events:none;
-}
+@keyframes twinkle{from{opacity:.6}to{opacity:1}}
 
 /* ── TOP BAR ── */
 #topbar{
-  position:relative;z-index:10;
+  position:relative;z-index:10;flex-shrink:0;
   display:flex;align-items:center;justify-content:space-between;
   padding:10px 12px 8px;
-  background:linear-gradient(180deg,rgba(5,10,20,0.95),rgba(8,15,28,0.9));
-  border-bottom:1px solid rgba(245,200,66,0.15);
-  flex-shrink:0;
+  background:linear-gradient(180deg,rgba(5,10,20,.97),rgba(8,15,28,.93));
+  border-bottom:1px solid rgba(245,200,66,.15);
 }
 #player-info{display:flex;align-items:center;gap:8px;}
 #avatar{
@@ -81,247 +61,466 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
   border:2px solid var(--gold);
   display:flex;align-items:center;justify-content:center;
   font-size:24px;position:relative;
-  box-shadow:0 0 12px rgba(245,200,66,0.3), inset 0 -3px 6px rgba(0,0,0,0.5);
+  box-shadow:0 0 12px rgba(245,200,66,.3),inset 0 -3px 6px rgba(0,0,0,.5);
 }
 #level-badge{
   position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);
   background:linear-gradient(180deg,var(--gold),var(--dark-gold));
   color:#1a0f00;font-size:9px;font-weight:bold;
   padding:1px 5px;border-radius:6px;white-space:nowrap;
-  font-family:'Cinzel',serif;
-  box-shadow:0 2px 4px rgba(0,0,0,0.5);
+  box-shadow:0 2px 4px rgba(0,0,0,.5);
 }
 #player-name-area{display:flex;flex-direction:column;gap:2px;}
 #player-name{font-family:'Cinzel Decorative',serif;font-size:13px;color:#fff;line-height:1;}
 #trophy-row{display:flex;align-items:center;gap:4px;}
-.trophy-icon{font-size:12px;}
 #trophy-count{font-size:11px;color:var(--gold);font-weight:bold;}
-
 #currencies{display:flex;gap:6px;align-items:center;}
 .currency{
   display:flex;align-items:center;gap:4px;
-  background:rgba(0,0,0,0.45);
-  border:1px solid rgba(255,255,255,0.1);
-  border-radius:20px;padding:4px 8px;
-  min-width:70px;
+  background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.1);
+  border-radius:20px;padding:4px 8px;min-width:70px;
 }
-.currency-icon{font-size:14px;}
-.currency-val{font-size:11px;font-weight:bold;color:#fff;}
-.currency.gold-cur .currency-val{color:var(--gold);}
-.currency.gem-cur .currency-val{color:#a0e8a0;}
+.currency-val{font-size:11px;font-weight:bold;}
+.gold-cur .currency-val{color:var(--gold);}
+.gem-cur .currency-val{color:#a0e8a0;}
 #plus-btn{
-  width:22px;height:22px;background:rgba(245,200,66,0.2);
-  border:1px solid rgba(245,200,66,0.4);border-radius:50%;
+  width:22px;height:22px;background:rgba(245,200,66,.2);
+  border:1px solid rgba(245,200,66,.4);border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  font-size:14px;color:var(--gold);cursor:pointer;
-  margin-left:-2px;
+  font-size:14px;color:var(--gold);cursor:pointer;margin-left:-2px;
 }
 
-/* ── MAIN SCROLL AREA ── */
-#main{flex:1;position:relative;z-index:5;display:flex;flex-direction:column;overflow:hidden;}
-
-/* ── SEASON BANNER ── */
-#season-banner{
-  margin:10px 12px 0;
-  background:linear-gradient(135deg,rgba(30,58,95,0.85),rgba(10,20,50,0.9));
-  border:1px solid rgba(245,200,66,0.25);
-  border-radius:14px;padding:10px 14px;
-  display:flex;align-items:center;gap:12px;
-  box-shadow:0 4px 16px rgba(0,0,0,0.4);
+/* ── PAGES ── */
+#main{flex:1;position:relative;z-index:5;overflow:hidden;}
+.page{
+  position:absolute;inset:0;
+  overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  display:none;flex-direction:column;
 }
-#season-icon{font-size:30px;filter:drop-shadow(0 0 8px rgba(245,200,66,0.6));}
-#season-text{flex:1;}
-#season-title{font-size:10px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;}
-#season-name{font-family:'Cinzel Decorative',serif;font-size:13px;color:var(--gold);margin-top:1px;}
-#season-bar-wrap{height:5px;background:rgba(0,0,0,0.4);border-radius:3px;margin-top:5px;overflow:hidden;}
-#season-bar{height:100%;width:42%;background:linear-gradient(90deg,var(--gold),var(--dark-gold));border-radius:3px;
-  box-shadow:0 0 6px var(--gold);}
-#season-reward{font-size:26px;filter:drop-shadow(0 0 6px rgba(126,184,247,0.7));}
-
-/* ── CHESTS ── */
-#chest-section{
-  margin:10px 12px 0;
-}
-#chest-label{font-size:9px;color:rgba(255,255,255,0.35);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;padding-left:2px;}
-#chest-row{display:flex;gap:7px;}
-.chest{
-  flex:1;
-  background:linear-gradient(160deg,#162840,#0d1b2e);
-  border:1.5px solid rgba(245,200,66,0.2);
-  border-radius:12px;padding:8px 4px;
-  display:flex;flex-direction:column;align-items:center;gap:4px;
-  position:relative;cursor:pointer;
-  transition:transform 0.15s,box-shadow 0.15s;
-  box-shadow:0 4px 12px rgba(0,0,0,0.4);
-}
-.chest:active{transform:scale(0.95);}
-.chest.locked{opacity:0.55;}
-.chest.ready{
-  border-color:var(--gold);
-  box-shadow:0 0 16px rgba(245,200,66,0.4), 0 4px 12px rgba(0,0,0,0.4);
-  animation:chestGlow 1.5s ease-in-out infinite alternate;
-}
-@keyframes chestGlow{from{box-shadow:0 0 10px rgba(245,200,66,0.3),0 4px 12px rgba(0,0,0,0.4)}to{box-shadow:0 0 22px rgba(245,200,66,0.7),0 4px 12px rgba(0,0,0,0.4)}}
-.chest-icon{font-size:26px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6));}
-.chest.ready .chest-icon{animation:chestBounce 0.8s ease-in-out infinite alternate;}
-@keyframes chestBounce{from{transform:translateY(0)}to{transform:translateY(-3px)}}
-.chest-type{font-size:7px;color:rgba(255,255,255,0.6);text-align:center;line-height:1.2;}
-.chest-timer{font-size:8px;color:var(--faith);font-weight:bold;}
-.chest.ready .chest-timer{color:var(--gold);}
-.chest-slot-num{
-  position:absolute;top:4px;left:6px;
-  font-size:7px;color:rgba(255,255,255,0.25);
-}
-
-/* ── BATTLE AREA ── */
-#battle-area{
-  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:0 12px;gap:14px;
-  position:relative;
-}
-
-/* arena preview */
-#arena-preview{
-  width:100%;
-  background:
-    linear-gradient(180deg,
-      #1c3a20 0%, #2a5a28 30%,
-      #c4a060 30%, #c4a060 70%,
-      #2a5a28 70%, #1c3a20 100%
-    );
-  border-radius:16px;
-  border:2px solid rgba(245,200,66,0.2);
-  box-shadow:0 8px 32px rgba(0,0,0,0.6), inset 0 0 40px rgba(0,0,0,0.2);
-  position:relative;overflow:hidden;
-  height:100px;
-  display:flex;align-items:center;justify-content:center;
-}
-#arena-preview::before{
-  content:'';position:absolute;inset:0;
-  background:repeating-linear-gradient(90deg,transparent,transparent 18px,rgba(0,0,0,0.04) 18px,rgba(0,0,0,0.04) 19px);
-}
-#arena-towers{display:flex;justify-content:space-between;align-items:center;width:100%;padding:0 16px;position:relative;z-index:2;}
-.mini-tower{display:flex;flex-direction:column;align-items:center;gap:2px;}
-.mini-tower-body{
-  width:28px;height:34px;border-radius:4px 4px 2px 2px;
-  display:flex;align-items:center;justify-content:center;font-size:14px;
-  border:1px solid rgba(255,255,255,0.2);
-  box-shadow:0 3px 8px rgba(0,0,0,0.5);
-}
-.mini-tower-body.player-t{background:linear-gradient(160deg,#3a6fbe,#1a3a8e,#0f2460);}
-.mini-tower-body.enemy-t{background:linear-gradient(160deg,#8a2a2a,#5a1010,#3a0808);}
-.mini-tower-body.king{width:36px;height:42px;font-size:18px;}
-#arena-label{
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.15);
-  padding:2px 10px;font-size:8px;border-radius:10px;color:rgba(255,255,255,0.5);
-  white-space:nowrap;z-index:3;
-}
-
-/* battle button */
-#battle-btn{
-  width:100%;
-  background:linear-gradient(180deg,#ff8c00,#e65c00,#c24000);
-  border:none;border-radius:18px;
-  padding:0;cursor:pointer;
-  box-shadow:0 6px 0 #8b2a00, 0 8px 24px rgba(230,92,0,0.5);
-  position:relative;overflow:hidden;
-  transition:transform 0.1s,box-shadow 0.1s;
-  text-decoration:none;display:block;
-}
-#battle-btn:active{
-  transform:translateY(4px);
-  box-shadow:0 2px 0 #8b2a00, 0 4px 12px rgba(230,92,0,0.4);
-}
-#battle-btn::before{
-  content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent);
-  animation:btnShine 2.5s ease-in-out infinite;
-}
-@keyframes btnShine{0%{left:-60%}60%,100%{left:120%}}
-#battle-btn-inner{
-  padding:16px;
-  display:flex;align-items:center;justify-content:center;gap:10px;
-}
-#battle-swords{font-size:26px;animation:swordWiggle 2s ease-in-out infinite;}
-@keyframes swordWiggle{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
-#battle-text{
-  font-family:'Cinzel Decorative',serif;font-size:22px;color:#fff;
-  text-shadow:0 2px 8px rgba(0,0,0,0.5), 0 0 20px rgba(255,200,0,0.3);
-  letter-spacing:1px;
-}
-
-/* deck preview */
-#deck-preview{width:100%;display:flex;flex-direction:column;gap:6px;}
-#deck-label{font-size:9px;color:rgba(255,255,255,0.35);letter-spacing:1.5px;text-transform:uppercase;padding-left:2px;}
-#deck-cards{display:flex;gap:6px;}
-.deck-card{
-  flex:1;
-  background:var(--card-bg);
-  border:1.5px solid rgba(245,200,66,0.25);
-  border-radius:10px;
-  padding:6px 2px;
-  display:flex;flex-direction:column;align-items:center;gap:3px;
-  box-shadow:0 3px 10px rgba(0,0,0,0.4);
-  cursor:pointer;
-  transition:transform 0.15s;
-}
-.deck-card:active{transform:scale(0.93);}
-.deck-card-emoji{font-size:20px;line-height:1;}
-.deck-card-name{font-size:6px;color:rgba(255,255,255,0.7);text-align:center;line-height:1.2;}
-.deck-card-cost{
-  font-size:10px;font-weight:bold;color:var(--faith);
-  text-shadow:0 0 4px var(--faith);
-}
+.page.active{display:flex;}
+.page-fade{animation:fadeIn .18s ease-out;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── BOTTOM NAV ── */
 #bottom-nav{
-  position:relative;z-index:10;
-  background:linear-gradient(180deg,rgba(5,10,20,0.97),rgba(8,12,22,0.99));
-  border-top:1px solid rgba(245,200,66,0.15);
+  position:relative;z-index:10;flex-shrink:0;
+  background:linear-gradient(180deg,rgba(5,10,20,.97),rgba(8,12,22,.99));
+  border-top:1px solid rgba(245,200,66,.15);
   display:flex;align-items:stretch;
-  flex-shrink:0;
   padding-bottom:env(safe-area-inset-bottom);
 }
 .nav-tab{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:3px;padding:10px 4px 8px;cursor:pointer;
-  position:relative;
-  transition:background 0.15s;
-  border:none;background:transparent;color:rgba(255,255,255,0.4);
-  font-family:'Cinzel',serif;
+  position:relative;border:none;background:transparent;
+  color:rgba(255,255,255,.4);font-family:'Cinzel',serif;
+  transition:background .15s;
 }
-.nav-tab:active{background:rgba(255,255,255,0.05);}
+.nav-tab:active{background:rgba(255,255,255,.05);}
 .nav-tab.active{color:#fff;}
 .nav-tab.active::after{
   content:'';position:absolute;top:0;left:20%;right:20%;height:2px;
-  background:var(--gold);border-radius:0 0 2px 2px;
-  box-shadow:0 0 6px var(--gold);
+  background:var(--gold);border-radius:0 0 2px 2px;box-shadow:0 0 6px var(--gold);
 }
 .nav-icon{font-size:22px;line-height:1;}
-.nav-label{font-size:7px;letter-spacing:0.5px;text-transform:uppercase;}
-.nav-tab.active .nav-icon{filter:drop-shadow(0 0 4px rgba(245,200,66,0.6));}
-
-/* battle tab is special — bigger */
-#tab-battle{
-  flex:1.3;
-}
+.nav-label{font-size:7px;letter-spacing:.5px;text-transform:uppercase;}
+.nav-tab.active .nav-icon{filter:drop-shadow(0 0 4px rgba(245,200,66,.6));}
+#tab-battle{flex:1.3;}
 #tab-battle .nav-icon{font-size:28px;}
-#tab-battle.active .nav-icon{animation:battleTabPulse 1.5s ease-in-out infinite alternate;}
-@keyframes battleTabPulse{from{filter:drop-shadow(0 0 2px rgba(245,200,66,0.4))}to{filter:drop-shadow(0 0 8px rgba(245,200,66,0.9))}}
-
-/* notification badge */
+#tab-battle.active .nav-icon{animation:battlePulse 1.5s ease-in-out infinite alternate;}
+@keyframes battlePulse{from{filter:drop-shadow(0 0 2px rgba(245,200,66,.4))}to{filter:drop-shadow(0 0 8px rgba(245,200,66,.9))}}
 .badge{
   position:absolute;top:6px;right:calc(50% - 16px);
-  background:#e74c3c;color:#fff;
-  font-size:8px;font-weight:bold;
+  background:#e74c3c;color:#fff;font-size:8px;font-weight:bold;
   width:14px;height:14px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  border:1.5px solid rgba(8,12,22,0.99);
+  border:1.5px solid rgba(8,12,22,.99);
 }
 
-/* ── MISC ── */
-.hidden{display:none!important;}
+/* ─────────────────────────────────────────
+   BATTLE SCREEN
+───────────────────────────────────────── */
+#season-banner{
+  margin:10px 12px 0;
+  background:linear-gradient(135deg,rgba(30,58,95,.85),rgba(10,20,50,.9));
+  border:1px solid rgba(245,200,66,.25);border-radius:14px;padding:10px 14px;
+  display:flex;align-items:center;gap:12px;box-shadow:0 4px 16px rgba(0,0,0,.4);
+  flex-shrink:0;
+}
+#season-icon{font-size:30px;filter:drop-shadow(0 0 8px rgba(245,200,66,.6));}
+#season-text{flex:1;}
+#season-title{font-size:10px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px;}
+#season-name{font-family:'Cinzel Decorative',serif;font-size:13px;color:var(--gold);margin-top:1px;}
+#season-bar-wrap{height:5px;background:rgba(0,0,0,.4);border-radius:3px;margin-top:5px;overflow:hidden;}
+#season-bar{height:100%;width:42%;background:linear-gradient(90deg,var(--gold),var(--dark-gold));border-radius:3px;box-shadow:0 0 6px var(--gold);}
+#season-reward{font-size:26px;filter:drop-shadow(0 0 6px rgba(126,184,247,.7));}
+
+#chest-section{margin:10px 12px 0;flex-shrink:0;}
+.section-label{font-size:9px;color:rgba(255,255,255,.35);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;padding-left:2px;}
+#chest-row{display:flex;gap:7px;}
+.chest{
+  flex:1;background:linear-gradient(160deg,#162840,#0d1b2e);
+  border:1.5px solid rgba(245,200,66,.2);border-radius:12px;padding:8px 4px;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  position:relative;cursor:pointer;transition:transform .15s;
+  box-shadow:0 4px 12px rgba(0,0,0,.4);
+}
+.chest:active{transform:scale(.95);}
+.chest.locked{opacity:.55;}
+.chest.ready{
+  border-color:var(--gold);
+  animation:chestGlow 1.5s ease-in-out infinite alternate;
+}
+@keyframes chestGlow{from{box-shadow:0 0 10px rgba(245,200,66,.3)}to{box-shadow:0 0 22px rgba(245,200,66,.7)}}
+.chest-icon{font-size:26px;line-height:1;}
+.chest.ready .chest-icon{animation:chestBounce .8s ease-in-out infinite alternate;}
+@keyframes chestBounce{from{transform:translateY(0)}to{transform:translateY(-3px)}}
+.chest-type{font-size:7px;color:rgba(255,255,255,.6);text-align:center;}
+.chest-timer{font-size:8px;color:var(--faith);font-weight:bold;}
+.chest.ready .chest-timer{color:var(--gold);}
+.chest-slot-num{position:absolute;top:4px;left:6px;font-size:7px;color:rgba(255,255,255,.25);}
+
+#battle-area{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:12px 12px;gap:14px;
+}
+#arena-preview{
+  width:100%;height:100px;border-radius:16px;
+  background:linear-gradient(180deg,#1c3a20 0%,#2a5a28 30%,#c4a060 30%,#c4a060 70%,#2a5a28 70%,#1c3a20 100%);
+  border:2px solid rgba(245,200,66,.2);
+  box-shadow:0 8px 32px rgba(0,0,0,.6);
+  position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;
+}
+#arena-preview::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 18px,rgba(0,0,0,.04) 18px,rgba(0,0,0,.04) 19px);}
+#arena-towers{display:flex;justify-content:space-between;align-items:center;width:100%;padding:0 16px;position:relative;z-index:2;}
+.mini-tower-body{width:28px;height:34px;border-radius:4px 4px 2px 2px;display:flex;align-items:center;justify-content:center;font-size:14px;border:1px solid rgba(255,255,255,.2);box-shadow:0 3px 8px rgba(0,0,0,.5);}
+.player-t{background:linear-gradient(160deg,#3a6fbe,#1a3a8e,#0f2460);}
+.enemy-t{background:linear-gradient(160deg,#8a2a2a,#5a1010,#3a0808);}
+.mini-king{width:36px;height:42px;font-size:18px;}
+#arena-label{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.15);padding:2px 10px;font-size:8px;border-radius:10px;color:rgba(255,255,255,.5);white-space:nowrap;z-index:3;}
+
+#battle-btn{
+  width:100%;background:linear-gradient(180deg,#ff8c00,#e65c00,#c24000);
+  border:none;border-radius:18px;cursor:pointer;
+  box-shadow:0 6px 0 #8b2a00,0 8px 24px rgba(230,92,0,.5);
+  position:relative;overflow:hidden;transition:transform .1s,box-shadow .1s;
+  text-decoration:none;display:block;
+}
+#battle-btn:active{transform:translateY(4px);box-shadow:0 2px 0 #8b2a00,0 4px 12px rgba(230,92,0,.4);}
+#battle-btn::before{content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);animation:btnShine 2.5s ease-in-out infinite;}
+@keyframes btnShine{0%{left:-60%}60%,100%{left:120%}}
+#battle-btn-inner{padding:16px;display:flex;align-items:center;justify-content:center;gap:10px;}
+.battle-swords{font-size:26px;animation:swordWiggle 2s ease-in-out infinite;}
+@keyframes swordWiggle{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+#battle-text{font-family:'Cinzel Decorative',serif;font-size:22px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.5);letter-spacing:1px;}
+
+#deck-preview{width:100%;display:flex;flex-direction:column;gap:6px;}
+.deck-cards-row{display:flex;gap:6px;}
+.deck-card{
+  flex:1;background:linear-gradient(160deg,#1e3a5f,#0d1b2e);
+  border:1.5px solid rgba(245,200,66,.25);border-radius:10px;
+  padding:6px 2px;display:flex;flex-direction:column;align-items:center;gap:3px;
+  box-shadow:0 3px 10px rgba(0,0,0,.4);cursor:pointer;transition:transform .15s;
+}
+.deck-card:active{transform:scale(.93);}
+.deck-card-emoji{font-size:20px;line-height:1;}
+.deck-card-name{font-size:6px;color:rgba(255,255,255,.7);text-align:center;}
+.deck-card-cost{font-size:10px;font-weight:bold;color:var(--faith);text-shadow:0 0 4px var(--faith);}
+
+/* ─────────────────────────────────────────
+   CARDS SCREEN
+───────────────────────────────────────── */
+.screen-header{
+  flex-shrink:0;padding:14px 14px 10px;
+  display:flex;flex-direction:column;gap:10px;
+}
+.screen-title{font-family:'Cinzel Decorative',serif;font-size:16px;color:var(--gold);text-shadow:0 0 16px rgba(245,200,66,.4);}
+.screen-subtitle{font-size:10px;color:rgba(255,255,255,.4);margin-top:2px;}
+
+.filter-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;}
+.filter-tabs::-webkit-scrollbar{display:none;}
+.filter-tab{
+  flex-shrink:0;padding:5px 12px;border-radius:20px;font-size:9px;
+  border:1.5px solid rgba(255,255,255,.15);background:transparent;
+  color:rgba(255,255,255,.5);cursor:pointer;font-family:'Cinzel',serif;
+  white-space:nowrap;transition:all .15s;
+}
+.filter-tab.active{
+  background:linear-gradient(180deg,var(--gold),var(--dark-gold));
+  border-color:var(--gold);color:#1a0f00;font-weight:bold;
+}
+
+.cards-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+  padding:0 12px 12px;
+}
+.card-item{
+  background:linear-gradient(160deg,#1e3a5f,#0d1b2e);
+  border:1.5px solid rgba(245,200,66,.2);border-radius:12px;
+  padding:10px 6px 8px;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  position:relative;cursor:pointer;transition:transform .15s,box-shadow .15s;
+  box-shadow:0 3px 10px rgba(0,0,0,.4);
+}
+.card-item:active{transform:scale(.95);}
+.card-item.in-deck{border-color:var(--gold);box-shadow:0 0 10px rgba(245,200,66,.3);}
+.card-item.in-deck::after{content:'✓';position:absolute;top:4px;right:6px;font-size:9px;color:var(--gold);}
+.card-emoji-lg{font-size:28px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));}
+.card-name-sm{font-size:8px;color:rgba(255,255,255,.85);text-align:center;line-height:1.2;}
+.card-level{
+  background:linear-gradient(180deg,var(--gold),var(--dark-gold));
+  color:#1a0f00;font-size:8px;font-weight:bold;
+  padding:1px 6px;border-radius:8px;
+}
+.card-upgrade-bar{width:100%;height:4px;background:rgba(0,0,0,.4);border-radius:2px;overflow:hidden;}
+.card-upgrade-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--green),#1a8a4a);}
+.card-upgrade-text{font-size:7px;color:rgba(255,255,255,.35);text-align:center;}
+.card-cost-badge{
+  position:absolute;top:6px;left:7px;
+  font-size:10px;font-weight:bold;color:var(--faith);text-shadow:0 0 4px var(--faith);
+}
+
+/* card detail overlay */
+#card-detail{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,.85);
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px;
+}
+#card-detail.open{display:flex;}
+#card-detail-box{
+  background:linear-gradient(160deg,#1e3a5f,#0d1b2e);
+  border:2px solid var(--gold);border-radius:20px;
+  padding:24px 20px;width:100%;max-width:320px;
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+  box-shadow:0 0 40px rgba(245,200,66,.2);
+}
+#cd-emoji{font-size:52px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.6));}
+#cd-name{font-family:'Cinzel Decorative',serif;font-size:18px;color:var(--gold);}
+#cd-ability{font-size:11px;color:#ffe082;font-style:italic;}
+.cd-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;width:100%;}
+.cd-stat{background:rgba(0,0,0,.35);border-radius:10px;padding:8px 4px;text-align:center;}
+.cd-stat-val{font-size:14px;font-weight:bold;color:#fff;}
+.cd-stat-lbl{font-size:8px;color:rgba(255,255,255,.4);margin-top:2px;}
+#cd-close{
+  background:linear-gradient(180deg,var(--gold),var(--dark-gold));
+  border:none;border-radius:20px;padding:10px 32px;
+  font-family:'Cinzel Decorative',serif;font-size:13px;color:#1a0f00;
+  cursor:pointer;margin-top:4px;
+}
+
+/* ─────────────────────────────────────────
+   WARD (CLAN) SCREEN
+───────────────────────────────────────── */
+.ward-header{
+  margin:12px;background:linear-gradient(135deg,rgba(30,58,95,.85),rgba(10,20,50,.9));
+  border:1px solid rgba(245,200,66,.25);border-radius:16px;padding:14px;
+  display:flex;align-items:center;gap:14px;box-shadow:0 4px 20px rgba(0,0,0,.4);
+  flex-shrink:0;
+}
+.ward-icon{font-size:40px;filter:drop-shadow(0 0 10px rgba(245,200,66,.4));}
+.ward-info{flex:1;}
+.ward-name{font-family:'Cinzel Decorative',serif;font-size:15px;color:var(--gold);}
+.ward-tag{font-size:9px;color:rgba(255,255,255,.35);margin-top:1px;}
+.ward-meta{display:flex;gap:10px;margin-top:6px;}
+.ward-meta-item{display:flex;align-items:center;gap:3px;font-size:9px;color:rgba(255,255,255,.6);}
+.ward-join-btn{
+  background:linear-gradient(180deg,#ff8c00,#c24000);
+  border:none;border-radius:12px;padding:8px 14px;
+  font-family:'Cinzel',serif;font-size:10px;color:#fff;cursor:pointer;
+}
+.ward-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:0 12px;flex-shrink:0;}
+.ward-stat-box{
+  background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;padding:10px 6px;text-align:center;
+}
+.ward-stat-val{font-size:15px;font-weight:bold;color:var(--gold);}
+.ward-stat-lbl{font-size:8px;color:rgba(255,255,255,.35);margin-top:2px;}
+.members-section{margin:10px 12px 0;flex:1;}
+.member-row{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 10px;border-radius:12px;
+  background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);
+  margin-bottom:6px;cursor:pointer;transition:background .15s;
+}
+.member-row:active{background:rgba(255,255,255,.06);}
+.member-avatar{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;border:1.5px solid rgba(245,200,66,.2);
+  background:linear-gradient(135deg,#1e3a5f,#0a1830);
+  flex-shrink:0;
+}
+.member-info{flex:1;}
+.member-name{font-size:11px;color:#fff;font-weight:600;}
+.member-role{font-size:8px;margin-top:1px;}
+.role-bishop{color:#f5c842;}
+.role-elder{color:#7eb8f7;}
+.role-member{color:rgba(255,255,255,.4);}
+.member-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
+.member-trophies{font-size:10px;color:var(--gold);font-weight:bold;}
+.member-donations{font-size:8px;color:rgba(255,255,255,.35);}
+.me-indicator{font-size:8px;color:var(--green);margin-top:1px;}
+.rank-num{font-size:11px;color:rgba(255,255,255,.25);width:16px;text-align:center;flex-shrink:0;}
+
+/* ─────────────────────────────────────────
+   SHOP SCREEN
+───────────────────────────────────────── */
+.shop-deal-banner{
+  margin:12px 12px 0;
+  background:linear-gradient(135deg,#4a1a6a,#1a0a3a);
+  border:1px solid rgba(160,80,255,.4);border-radius:16px;
+  padding:14px;display:flex;align-items:center;gap:12px;
+  box-shadow:0 0 20px rgba(120,0,255,.2);flex-shrink:0;
+}
+.deal-icon{font-size:36px;animation:dealFloat 2s ease-in-out infinite alternate;}
+@keyframes dealFloat{from{transform:translateY(0)}to{transform:translateY(-4px)}}
+.deal-text{flex:1;}
+.deal-title{font-family:'Cinzel Decorative',serif;font-size:13px;color:#c480ff;}
+.deal-sub{font-size:9px;color:rgba(255,255,255,.5);margin-top:3px;}
+.deal-timer{font-size:10px;color:#ff8080;font-weight:bold;margin-top:4px;}
+.deal-btn{
+  background:linear-gradient(180deg,#9b30ff,#6010c0);
+  border:none;border-radius:12px;padding:8px 14px;
+  font-family:'Cinzel',serif;font-size:10px;color:#fff;cursor:pointer;
+  box-shadow:0 4px 12px rgba(100,0,200,.4);
+}
+
+.shop-section{margin:12px 12px 0;}
+.shop-section-title{font-size:9px;color:rgba(255,255,255,.35);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;padding-left:2px;}
+.packs-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.pack-card{
+  background:linear-gradient(160deg,#162840,#0d1b2e);
+  border-radius:14px;border:1.5px solid rgba(255,255,255,.1);
+  padding:12px 6px 10px;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  cursor:pointer;transition:transform .15s,box-shadow .15s;
+  box-shadow:0 4px 12px rgba(0,0,0,.4);
+  position:relative;overflow:hidden;
+}
+.pack-card:active{transform:scale(.95);}
+.pack-card.featured{border-color:var(--gold);box-shadow:0 0 16px rgba(245,200,66,.25);}
+.pack-card.featured::before{
+  content:'BEST';position:absolute;top:0;right:0;
+  background:var(--gold);color:#1a0f00;font-size:7px;font-weight:bold;
+  padding:2px 6px;border-radius:0 12px 0 8px;
+}
+.pack-icon{font-size:32px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.6));}
+.pack-name{font-size:9px;color:rgba(255,255,255,.8);text-align:center;}
+.pack-desc{font-size:7px;color:rgba(255,255,255,.35);text-align:center;line-height:1.3;}
+.pack-cost{
+  background:rgba(0,0,0,.35);border-radius:20px;
+  padding:3px 10px;font-size:10px;font-weight:bold;color:var(--gold);
+  display:flex;align-items:center;gap:3px;
+}
+.gold-packs{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.gold-card{
+  background:linear-gradient(135deg,rgba(40,25,5,.9),rgba(20,12,2,.9));
+  border:1px solid rgba(245,200,66,.25);border-radius:14px;
+  padding:12px;display:flex;align-items:center;gap:10px;
+  cursor:pointer;transition:transform .15s;
+}
+.gold-card:active{transform:scale(.96);}
+.gold-card-icon{font-size:26px;}
+.gold-card-info{flex:1;}
+.gold-card-amount{font-size:13px;font-weight:bold;color:var(--gold);}
+.gold-card-price{font-size:8px;color:rgba(255,255,255,.4);margin-top:2px;}
+.buy-btn{
+  background:linear-gradient(180deg,var(--gold),var(--dark-gold));
+  border:none;border-radius:10px;padding:5px 10px;
+  font-size:9px;font-weight:bold;color:#1a0f00;cursor:pointer;
+}
+
+/* ─────────────────────────────────────────
+   PROFILE SCREEN
+───────────────────────────────────────── */
+.profile-hero{
+  margin:12px;
+  background:linear-gradient(135deg,rgba(30,58,95,.85),rgba(10,20,50,.9));
+  border:1px solid rgba(245,200,66,.2);border-radius:20px;
+  padding:18px;display:flex;flex-direction:column;align-items:center;gap:10px;
+  box-shadow:0 4px 20px rgba(0,0,0,.5);flex-shrink:0;
+}
+.profile-avatar{
+  width:72px;height:72px;border-radius:18px;
+  background:linear-gradient(135deg,#1e3a5f,#0a1830);
+  border:3px solid var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  font-size:38px;position:relative;
+  box-shadow:0 0 20px rgba(245,200,66,.4);
+}
+.profile-level{
+  position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(180deg,var(--gold),var(--dark-gold));
+  color:#1a0f00;font-size:9px;font-weight:bold;
+  padding:2px 8px;border-radius:8px;white-space:nowrap;
+}
+.profile-name{font-family:'Cinzel Decorative',serif;font-size:16px;color:#fff;}
+.profile-tag{font-size:10px;color:rgba(255,255,255,.3);}
+.profile-league{display:flex;align-items:center;gap:6px;}
+.league-badge{font-size:18px;}
+.league-name{font-size:11px;color:var(--gold);}
+.trophy-progress{width:100%;display:flex;flex-direction:column;gap:4px;}
+.tp-row{display:flex;justify-content:space-between;font-size:9px;}
+.tp-cur{color:var(--gold);font-weight:bold;}
+.tp-next{color:rgba(255,255,255,.4);}
+.tp-bar{height:6px;background:rgba(0,0,0,.4);border-radius:3px;overflow:hidden;}
+.tp-fill{height:100%;width:68%;background:linear-gradient(90deg,var(--gold),#ff8c00);border-radius:3px;box-shadow:0 0 6px var(--gold);}
+
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:0 12px;flex-shrink:0;}
+.stat-box{
+  background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;padding:10px 4px;text-align:center;
+}
+.stat-val{font-size:16px;font-weight:bold;color:#fff;}
+.stat-lbl{font-size:7px;color:rgba(255,255,255,.35);margin-top:2px;line-height:1.2;}
+.stat-box.green .stat-val{color:var(--green);}
+.stat-box.red .stat-val{color:#ff6666;}
+.stat-box.gold .stat-val{color:var(--gold);}
+
+.profile-section{margin:10px 12px 0;}
+.favorite-card-row{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;padding:10px 12px;
+}
+.fav-emoji{font-size:28px;}
+.fav-info{flex:1;}
+.fav-label{font-size:8px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;}
+.fav-name{font-size:12px;color:#fff;margin-top:2px;}
+.fav-uses{font-size:8px;color:rgba(255,255,255,.35);margin-top:1px;}
+
+.battle-log{display:flex;flex-direction:column;gap:5px;padding-bottom:12px;}
+.log-row{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 10px;border-radius:10px;
+  background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.05);
+}
+.log-result{
+  width:28px;height:28px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:bold;flex-shrink:0;
+}
+.log-result.win{background:rgba(46,204,113,.25);color:var(--green);border:1px solid rgba(46,204,113,.3);}
+.log-result.loss{background:rgba(192,57,43,.25);color:#ff6666;border:1px solid rgba(192,57,43,.3);}
+.log-info{flex:1;}
+.log-opp{font-size:10px;color:rgba(255,255,255,.8);}
+.log-detail{font-size:8px;color:rgba(255,255,255,.35);margin-top:1px;}
+.log-crowns{font-size:12px;}
+.log-time{font-size:8px;color:rgba(255,255,255,.25);}
+
+.achievements{display:flex;gap:8px;flex-wrap:wrap;padding-bottom:12px;}
+.achievement{
+  background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;padding:8px 10px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  min-width:64px;
+}
+.ach-icon{font-size:20px;}
+.ach-name{font-size:7px;color:rgba(255,255,255,.5);text-align:center;line-height:1.2;}
+.achievement.unlocked{border-color:rgba(245,200,66,.3);}
+.achievement.locked{opacity:.4;}
 </style>
 </head>
 <body>
@@ -331,142 +530,269 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
   <!-- TOP BAR -->
   <div id="topbar">
     <div id="player-info">
-      <div id="avatar">
-        ⛪
-        <div id="level-badge">Lv 8</div>
-      </div>
+      <div id="avatar">⛪<div id="level-badge">Lv 8</div></div>
       <div id="player-name-area">
         <div id="player-name">Elder Player</div>
-        <div id="trophy-row">
-          <span class="trophy-icon">🏆</span>
-          <span id="trophy-count">1,842</span>
-        </div>
+        <div id="trophy-row"><span>🏆</span><span id="trophy-count">1,842</span></div>
       </div>
     </div>
     <div id="currencies">
       <div class="currency gold-cur">
-        <span class="currency-icon">💰</span>
-        <span class="currency-val">12,450</span>
+        <span>💰</span><span class="currency-val">12,450</span>
         <div id="plus-btn">+</div>
       </div>
       <div class="currency gem-cur">
-        <span class="currency-icon">💎</span>
-        <span class="currency-val">88</span>
+        <span>💎</span><span class="currency-val">88</span>
       </div>
     </div>
   </div>
 
-  <!-- MAIN -->
+  <!-- PAGES -->
   <div id="main">
 
-    <!-- SEASON BANNER -->
-    <div id="season-banner">
-      <div id="season-icon">🕍</div>
-      <div id="season-text">
-        <div id="season-title">Season 3</div>
-        <div id="season-name">Year of Jubilee</div>
-        <div id="season-bar-wrap"><div id="season-bar"></div></div>
+    <!-- ══ BATTLE ══ -->
+    <div class="page active page-fade" id="page-battle">
+      <div id="season-banner">
+        <div id="season-icon">🕍</div>
+        <div id="season-text">
+          <div id="season-title">Season 3</div>
+          <div id="season-name">Year of Jubilee</div>
+          <div id="season-bar-wrap"><div id="season-bar"></div></div>
+        </div>
+        <div id="season-reward">👑</div>
       </div>
-      <div id="season-reward">👑</div>
+
+      <div id="chest-section">
+        <div class="section-label">Scripture Cases</div>
+        <div id="chest-row">
+          <div class="chest ready" onclick="openChest(this)">
+            <span class="chest-slot-num">1</span>
+            <div class="chest-icon">📦</div>
+            <div class="chest-type">Silver</div>
+            <div class="chest-timer">Open!</div>
+          </div>
+          <div class="chest" onclick="openChest(this)">
+            <span class="chest-slot-num">2</span>
+            <div class="chest-icon">📫</div>
+            <div class="chest-type">Golden</div>
+            <div class="chest-timer">2:14:30</div>
+          </div>
+          <div class="chest locked">
+            <span class="chest-slot-num">3</span>
+            <div class="chest-icon">🗃️</div>
+            <div class="chest-type">Crystal</div>
+            <div class="chest-timer">🔒</div>
+          </div>
+          <div class="chest locked">
+            <span class="chest-slot-num">4</span>
+            <div class="chest-icon">📦</div>
+            <div class="chest-type">Silver</div>
+            <div class="chest-timer">🔒</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="battle-area">
+        <div id="arena-preview">
+          <div id="arena-towers">
+            <div><div class="mini-tower-body enemy-t">🔥</div></div>
+            <div><div class="mini-tower-body enemy-t mini-king">😈</div></div>
+            <div><div class="mini-tower-body enemy-t">🔥</div></div>
+          </div>
+          <div id="arena-label">⚔ The Iron Rod ⚔</div>
+        </div>
+        <a id="battle-btn" href="game.html">
+          <div id="battle-btn-inner">
+            <span class="battle-swords">⚔️</span>
+            <span id="battle-text">Battle!</span>
+            <span class="battle-swords">⚔️</span>
+          </div>
+        </a>
+        <div id="deck-preview">
+          <div class="section-label">My Deck</div>
+          <div class="deck-cards-row">
+            <div class="deck-card" onclick="navTo('cards')"><div class="deck-card-emoji">🧑‍⚕️</div><div class="deck-card-cost">3</div><div class="deck-card-name">Missionary</div></div>
+            <div class="deck-card" onclick="navTo('cards')"><div class="deck-card-emoji">📖</div><div class="deck-card-cost">2</div><div class="deck-card-name">Scriptures</div></div>
+            <div class="deck-card" onclick="navTo('cards')"><div class="deck-card-emoji">👼</div><div class="deck-card-cost">5</div><div class="deck-card-name">Angel Moroni</div></div>
+            <div class="deck-card" onclick="navTo('cards')"><div class="deck-card-emoji">🏔️</div><div class="deck-card-cost">4</div><div class="deck-card-name">Nauvoo Guard</div></div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- CHESTS -->
-    <div id="chest-section">
-      <div id="chest-label">Scripture Cases</div>
-      <div id="chest-row">
-        <div class="chest ready" onclick="openChest(this)">
-          <span class="chest-slot-num">1</span>
-          <div class="chest-icon">📦</div>
-          <div class="chest-type">Silver</div>
-          <div class="chest-timer">Open!</div>
+    <!-- ══ CARDS ══ -->
+    <div class="page" id="page-cards">
+      <div class="screen-header">
+        <div>
+          <div class="screen-title">My Cards</div>
+          <div class="screen-subtitle">8 cards collected · Avg cost 3.5 💧</div>
         </div>
-        <div class="chest" onclick="openChest(this)">
-          <span class="chest-slot-num">2</span>
-          <div class="chest-icon">📫</div>
-          <div class="chest-type">Golden</div>
-          <div class="chest-timer">2:14:30</div>
+        <div class="filter-tabs">
+          <button class="filter-tab active" onclick="filterCards('all',this)">All</button>
+          <button class="filter-tab" onclick="filterCards('deck',this)">In Deck</button>
+          <button class="filter-tab" onclick="filterCards('common',this)">Common</button>
+          <button class="filter-tab" onclick="filterCards('rare',this)">Rare</button>
+          <button class="filter-tab" onclick="filterCards('epic',this)">Epic</button>
         </div>
-        <div class="chest locked" onclick="openChest(this)">
-          <span class="chest-slot-num">3</span>
-          <div class="chest-icon">🗃️</div>
-          <div class="chest-type">Crystal</div>
-          <div class="chest-timer">🔒</div>
+      </div>
+      <div class="cards-grid" id="cards-grid"></div>
+    </div>
+
+    <!-- ══ WARD ══ -->
+    <div class="page" id="page-ward">
+      <div class="ward-header">
+        <div class="ward-icon">🏛️</div>
+        <div class="ward-info">
+          <div class="ward-name">1st Ward</div>
+          <div class="ward-tag">#CC1STWARD</div>
+          <div class="ward-meta">
+            <div class="ward-meta-item">👥 18/20</div>
+            <div class="ward-meta-item">🏆 28,450</div>
+            <div class="ward-meta-item">⚔️ War Ready</div>
+          </div>
         </div>
-        <div class="chest locked" onclick="openChest(this)">
-          <span class="chest-slot-num">4</span>
-          <div class="chest-icon">📦</div>
-          <div class="chest-type">Silver</div>
-          <div class="chest-timer">🔒</div>
+        <button class="ward-join-btn">Invite</button>
+      </div>
+      <div class="ward-stats">
+        <div class="ward-stat-box"><div class="ward-stat-val">18</div><div class="ward-stat-lbl">Members</div></div>
+        <div class="ward-stat-box"><div class="ward-stat-val">47</div><div class="ward-stat-lbl">War Wins</div></div>
+        <div class="ward-stat-box"><div class="ward-stat-val">1,580</div><div class="ward-stat-lbl">Donations</div></div>
+      </div>
+      <div class="members-section">
+        <div class="section-label" style="margin-bottom:8px">Members</div>
+        <div id="member-list"></div>
+      </div>
+    </div>
+
+    <!-- ══ SHOP ══ -->
+    <div class="page" id="page-shop">
+      <div class="shop-deal-banner">
+        <div class="deal-icon">🎁</div>
+        <div class="deal-text">
+          <div class="deal-title">Sacred Bundle</div>
+          <div class="deal-sub">500 Gold · 30 Gems · Magical Pack</div>
+          <div class="deal-timer" id="deal-timer">Resets in 14:32:08</div>
+        </div>
+        <button class="deal-btn">$4.99</button>
+      </div>
+
+      <div class="shop-section">
+        <div class="shop-section-title">Scripture Packs</div>
+        <div class="packs-row">
+          <div class="pack-card" onclick="buyPack('silver')">
+            <div class="pack-icon">📦</div>
+            <div class="pack-name">Silver</div>
+            <div class="pack-desc">~4 cards</div>
+            <div class="pack-cost">💰 100</div>
+          </div>
+          <div class="pack-card featured" onclick="buyPack('golden')">
+            <div class="pack-icon">📫</div>
+            <div class="pack-name">Golden</div>
+            <div class="pack-desc">~10 cards</div>
+            <div class="pack-cost">💰 500</div>
+          </div>
+          <div class="pack-card" onclick="buyPack('magical')">
+            <div class="pack-icon">✨</div>
+            <div class="pack-name">Magical</div>
+            <div class="pack-desc">Rare+</div>
+            <div class="pack-cost">💎 40</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="shop-section">
+        <div class="shop-section-title">Gold</div>
+        <div class="gold-packs">
+          <div class="gold-card">
+            <div class="gold-card-icon">💰</div>
+            <div class="gold-card-info">
+              <div class="gold-card-amount">1,000</div>
+              <div class="gold-card-price">$0.99</div>
+            </div>
+            <button class="buy-btn">Buy</button>
+          </div>
+          <div class="gold-card">
+            <div class="gold-card-icon">💰</div>
+            <div class="gold-card-info">
+              <div class="gold-card-amount">10,000</div>
+              <div class="gold-card-price">$7.99</div>
+            </div>
+            <button class="buy-btn">Buy</button>
+          </div>
+          <div class="gold-card">
+            <div class="gold-card-icon">💎</div>
+            <div class="gold-card-info">
+              <div class="gold-card-amount">80 Gems</div>
+              <div class="gold-card-price">$1.99</div>
+            </div>
+            <button class="buy-btn">Buy</button>
+          </div>
+          <div class="gold-card">
+            <div class="gold-card-icon">💎</div>
+            <div class="gold-card-info">
+              <div class="gold-card-amount">500 Gems</div>
+              <div class="gold-card-price">$9.99</div>
+            </div>
+            <button class="buy-btn">Buy</button>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- BATTLE AREA -->
-    <div id="battle-area">
-
-      <!-- mini arena preview -->
-      <div id="arena-preview">
-        <div id="arena-towers">
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            <div class="mini-tower"><div class="mini-tower-body enemy-t">🔥</div></div>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-            <div class="mini-tower"><div class="mini-tower-body enemy-t king">😈</div></div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            <div class="mini-tower"><div class="mini-tower-body enemy-t">🔥</div></div>
-          </div>
-        </div>
-        <div id="arena-label">⚔ The Iron Rod ⚔</div>
-      </div>
-
-      <!-- BATTLE BUTTON -->
-      <a id="battle-btn" href="game.html">
-        <div id="battle-btn-inner">
-          <span id="battle-swords">⚔️</span>
-          <span id="battle-text">Battle!</span>
-          <span id="battle-swords">⚔️</span>
-        </div>
-      </a>
-
-      <!-- DECK PREVIEW -->
-      <div id="deck-preview">
-        <div id="deck-label">My Deck</div>
-        <div id="deck-cards">
-          <div class="deck-card">
-            <div class="deck-card-emoji">🧑‍⚕️</div>
-            <div class="deck-card-cost">3</div>
-            <div class="deck-card-name">Missionary</div>
-          </div>
-          <div class="deck-card">
-            <div class="deck-card-emoji">📖</div>
-            <div class="deck-card-cost">2</div>
-            <div class="deck-card-name">Scriptures</div>
-          </div>
-          <div class="deck-card">
-            <div class="deck-card-emoji">👼</div>
-            <div class="deck-card-cost">5</div>
-            <div class="deck-card-name">Angel Moroni</div>
-          </div>
-          <div class="deck-card">
-            <div class="deck-card-emoji">🏔️</div>
-            <div class="deck-card-cost">4</div>
-            <div class="deck-card-name">Nauvoo Guard</div>
-          </div>
+    <!-- ══ PROFILE ══ -->
+    <div class="page" id="page-profile">
+      <div class="profile-hero">
+        <div class="profile-avatar">⛪<div class="profile-level">Lv 8</div></div>
+        <div class="profile-name">Elder Player</div>
+        <div class="profile-tag">#CHAPELCLASH</div>
+        <div class="profile-league"><span class="league-badge">🥇</span><span class="league-name">Gold League III</span></div>
+        <div class="trophy-progress">
+          <div class="tp-row"><span class="tp-cur">🏆 1,842</span><span class="tp-next">Next: 2,000</span></div>
+          <div class="tp-bar"><div class="tp-fill"></div></div>
         </div>
       </div>
 
+      <div class="stats-grid">
+        <div class="stat-box green"><div class="stat-val">142</div><div class="stat-lbl">Wins</div></div>
+        <div class="stat-box red"><div class="stat-val">98</div><div class="stat-lbl">Losses</div></div>
+        <div class="stat-box gold"><div class="stat-val">59%</div><div class="stat-lbl">Win Rate</div></div>
+        <div class="stat-box"><div class="stat-val">1,980</div><div class="stat-lbl">Best Trophies</div></div>
+      </div>
+
+      <div class="profile-section">
+        <div class="section-label" style="margin-bottom:8px">Favorite Card</div>
+        <div class="favorite-card-row">
+          <div class="fav-emoji">🧑‍⚕️</div>
+          <div class="fav-info">
+            <div class="fav-label">Most Played</div>
+            <div class="fav-name">Missionary</div>
+            <div class="fav-uses">Used in 89 battles</div>
+          </div>
+          <div style="font-size:10px;color:rgba(255,255,255,.3)">Lv 3 →</div>
+        </div>
+      </div>
+
+      <div class="profile-section">
+        <div class="section-label" style="margin-bottom:8px">Recent Battles</div>
+        <div class="battle-log" id="battle-log"></div>
+      </div>
+
+      <div class="profile-section">
+        <div class="section-label" style="margin-bottom:8px">Achievements</div>
+        <div class="achievements" id="achievements"></div>
+      </div>
     </div>
-  </div>
+
+  </div><!-- /main -->
 
   <!-- BOTTOM NAV -->
   <nav id="bottom-nav">
-    <button class="nav-tab" onclick="navTo('cards')">
+    <button class="nav-tab" id="tab-cards" onclick="navTo('cards')">
       <span class="nav-icon">🃏</span>
       <span class="nav-label">Cards</span>
       <span class="badge">3</span>
     </button>
-    <button class="nav-tab" onclick="navTo('ward')">
+    <button class="nav-tab" id="tab-ward" onclick="navTo('ward')">
       <span class="nav-icon">🏛️</span>
       <span class="nav-label">Ward</span>
     </button>
@@ -474,63 +800,221 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
       <span class="nav-icon">⚔️</span>
       <span class="nav-label">Battle</span>
     </button>
-    <button class="nav-tab" onclick="navTo('shop')">
+    <button class="nav-tab" id="tab-shop" onclick="navTo('shop')">
       <span class="nav-icon">🛒</span>
       <span class="nav-label">Shop</span>
       <span class="badge">!</span>
     </button>
-    <button class="nav-tab" onclick="navTo('profile')">
+    <button class="nav-tab" id="tab-profile" onclick="navTo('profile')">
       <span class="nav-icon">👤</span>
       <span class="nav-label">Profile</span>
     </button>
   </nav>
 </div>
 
+<!-- CARD DETAIL OVERLAY -->
+<div id="card-detail" onclick="closeCardDetail(event)">
+  <div id="card-detail-box">
+    <div id="cd-emoji"></div>
+    <div id="cd-name"></div>
+    <div id="cd-ability"></div>
+    <div class="cd-stats">
+      <div class="cd-stat"><div class="cd-stat-val" id="cd-hp"></div><div class="cd-stat-lbl">HP</div></div>
+      <div class="cd-stat"><div class="cd-stat-val" id="cd-atk"></div><div class="cd-stat-lbl">Damage</div></div>
+      <div class="cd-stat"><div class="cd-stat-val" id="cd-cost"></div><div class="cd-stat-lbl">Cost</div></div>
+    </div>
+    <button id="cd-close" onclick="document.getElementById('card-detail').classList.remove('open')">Close</button>
+  </div>
+</div>
+
 <script>
-// Chest timer countdown
+// ── DATA ──
+const ALL_CARDS = [
+  {id:'missionary', name:'Missionary',   emoji:'🧑‍⚕️', cost:3, hp:240, atk:75,  ability:'Converts on death', rarity:'common', inDeck:true,  level:3, have:84,  need:100},
+  {id:'scriptures', name:'Scriptures',   emoji:'📖',   cost:2, hp:140, atk:50,  ability:'Freezes target',    rarity:'common', inDeck:true,  level:2, have:52,  need:100},
+  {id:'moroni',     name:'Angel Moroni', emoji:'👼',   cost:5, hp:380, atk:120, ability:'Heals all allies',  rarity:'epic',   inDeck:true,  level:1, have:4,   need:10},
+  {id:'nauvoo',     name:'Nauvoo Guard', emoji:'🏔️',  cost:4, hp:320, atk:90,  ability:'AOE charge',        rarity:'rare',   inDeck:true,  level:2, have:18,  need:20},
+  {id:'prophet',    name:'Prophet',      emoji:'🧓',   cost:5, hp:550, atk:55,  ability:'Shields all allies',rarity:'epic',   inDeck:false, level:1, have:2,   need:10},
+  {id:'ctrKid',     name:'CTR Kid',      emoji:'🧒',   cost:3, hp:100, atk:60,  ability:'Spawns 3 at once',  rarity:'common', inDeck:false, level:1, have:30,  need:100},
+  {id:'jello',      name:'Jello',        emoji:'🍑',   cost:3, hp:160, atk:100, ability:'Splash damage',     rarity:'rare',   inDeck:false, level:1, have:5,   need:20},
+  {id:'beehive',    name:'Beehive',      emoji:'🐝',   cost:4, hp:420, atk:45,  ability:'Sends bee swarm',   rarity:'rare',   inDeck:false, level:1, have:8,   need:20},
+];
+
+const MEMBERS = [
+  {name:'Bishop Johnson', emoji:'👨‍⚖️', role:'Bishop',  trophies:'2,450', donations:320, me:false},
+  {name:'Elder Player',   emoji:'⛪',   role:'Elder',   trophies:'1,842', donations:180, me:true},
+  {name:'Sis. Williams',  emoji:'👩',   role:'Member',  trophies:'1,650', donations:95,  me:false},
+  {name:'Bro. Smith',     emoji:'👨',   role:'Member',  trophies:'1,230', donations:72,  me:false},
+  {name:'Deacon Jones',   emoji:'🧑',   role:'Member',  trophies:'890',   donations:41,  me:false},
+  {name:'Elder Harris',   emoji:'👨‍🦱', role:'Elder',   trophies:'2,100', donations:260, me:false},
+  {name:'Sis. Baker',     emoji:'👩‍🦰', role:'Member',  trophies:'1,420', donations:58,  me:false},
+  {name:'Bro. Nelson',    emoji:'🧔',   role:'Member',  trophies:'980',   donations:33,  me:false},
+];
+
+const BATTLES = [
+  {result:'win',  opp:'ApostateKing99',  crowns:'⭐⭐⭐', detail:'3-0 · Perfect!',    time:'2h ago'},
+  {result:'loss', opp:'Gadianton_Rob',   crowns:'⭐',     detail:'1-2 · Close one',   time:'4h ago'},
+  {result:'win',  opp:'KorihorFan',      crowns:'⭐⭐',    detail:'2-1 · Nice battle', time:'5h ago'},
+  {result:'win',  opp:'LamanteBoss',     crowns:'⭐⭐⭐', detail:'3-0 · Destroyed!',  time:'7h ago'},
+  {result:'loss', opp:'AntiChrist42',    crowns:'⭐',     detail:'0-3 · Rough day',   time:'Yesterday'},
+];
+
+const ACHIEVEMENTS = [
+  {icon:'⚔️',  name:'First Blood',     unlocked:true},
+  {icon:'🏆',  name:'Trophy Hunter',   unlocked:true},
+  {icon:'👑',  name:'3-Crown Win',     unlocked:true},
+  {icon:'🧑‍⚕️',name:'Missionary Work',  unlocked:true},
+  {icon:'📖',  name:'Scripture Study', unlocked:true},
+  {icon:'🕍',  name:'Temple Builder',  unlocked:false},
+  {icon:'🌟',  name:'Perfect Season',  unlocked:false},
+  {icon:'⛪',  name:'Ward Champion',   unlocked:false},
+];
+
+// ── NAV ──
+let currentTab = 'battle';
+function navTo(tab) {
+  if (currentTab === tab) return;
+  currentTab = tab;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  const page = document.getElementById('page-' + tab);
+  page.classList.add('active');
+  page.classList.remove('page-fade');
+  void page.offsetWidth;
+  page.classList.add('page-fade');
+  document.getElementById('tab-' + tab).classList.add('active');
+  page.scrollTop = 0;
+}
+
+// ── CARDS SCREEN ──
+function renderCards(filter) {
+  const grid = document.getElementById('cards-grid');
+  const list = filter === 'all' ? ALL_CARDS
+    : filter === 'deck' ? ALL_CARDS.filter(c => c.inDeck)
+    : ALL_CARDS.filter(c => c.rarity === filter);
+  grid.innerHTML = list.map(c => `
+    <div class="card-item ${c.inDeck ? 'in-deck' : ''}" onclick="showCardDetail('${c.id}')">
+      <span class="card-cost-badge">${c.cost}</span>
+      <div class="card-emoji-lg">${c.emoji}</div>
+      <div class="card-name-sm">${c.name}</div>
+      <div class="card-level">Lv ${c.level}</div>
+      <div class="card-upgrade-bar"><div class="card-upgrade-fill" style="width:${Math.round(c.have/c.need*100)}%"></div></div>
+      <div class="card-upgrade-text">${c.have}/${c.need}</div>
+    </div>
+  `).join('');
+}
+
+function filterCards(filter, btn) {
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderCards(filter);
+}
+
+function showCardDetail(id) {
+  const c = ALL_CARDS.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('cd-emoji').textContent = c.emoji;
+  document.getElementById('cd-name').textContent = c.name;
+  document.getElementById('cd-ability').textContent = '✦ ' + c.ability;
+  document.getElementById('cd-hp').textContent = c.hp;
+  document.getElementById('cd-atk').textContent = c.atk;
+  document.getElementById('cd-cost').textContent = c.cost;
+  document.getElementById('card-detail').classList.add('open');
+}
+function closeCardDetail(e) {
+  if (e.target.id === 'card-detail') document.getElementById('card-detail').classList.remove('open');
+}
+
+// ── WARD SCREEN ──
+function renderMembers() {
+  const sorted = [...MEMBERS].sort((a,b) => parseInt(b.trophies.replace(',','')) - parseInt(a.trophies.replace(',','')));
+  document.getElementById('member-list').innerHTML = sorted.map((m, i) => `
+    <div class="member-row">
+      <div class="rank-num">${i+1}</div>
+      <div class="member-avatar">${m.emoji}</div>
+      <div class="member-info">
+        <div class="member-name">${m.name}${m.me ? ' <span style="font-size:8px;color:var(--green)">(You)</span>' : ''}</div>
+        <div class="member-role role-${m.role.toLowerCase()}">${m.role}</div>
+      </div>
+      <div class="member-right">
+        <div class="member-trophies">🏆 ${m.trophies}</div>
+        <div class="member-donations">🤝 ${m.donations} donated</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── PROFILE SCREEN ──
+function renderProfile() {
+  document.getElementById('battle-log').innerHTML = BATTLES.map(b => `
+    <div class="log-row">
+      <div class="log-result ${b.result}">${b.result === 'win' ? 'WIN' : 'LOSS'}</div>
+      <div class="log-info">
+        <div class="log-opp">vs ${b.opp}</div>
+        <div class="log-detail">${b.detail}</div>
+      </div>
+      <div class="log-crowns">${b.crowns}</div>
+      <div class="log-time">${b.time}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('achievements').innerHTML = ACHIEVEMENTS.map(a => `
+    <div class="achievement ${a.unlocked ? 'unlocked' : 'locked'}">
+      <div class="ach-icon">${a.icon}</div>
+      <div class="ach-name">${a.name}</div>
+    </div>
+  `).join('');
+}
+
+// ── CHEST TIMER ──
 function startChestTimers() {
-  const chests = document.querySelectorAll('.chest:not(.ready):not(.locked)');
-  chests.forEach(chest => {
-    const timerEl = chest.querySelector('.chest-timer');
-    if (!timerEl || timerEl.textContent === '🔒') return;
-    let [h, m, s] = timerEl.textContent.split(':').map(Number);
-    let total = h * 3600 + m * 60 + s;
-    setInterval(() => {
-      if (total <= 0) { timerEl.textContent = 'Open!'; chest.classList.add('ready'); return; }
-      total--;
-      const rh = Math.floor(total / 3600);
-      const rm = Math.floor((total % 3600) / 60);
-      const rs = total % 60;
-      timerEl.textContent = `${rh}:${String(rm).padStart(2,'0')}:${String(rs).padStart(2,'0')}`;
-    }, 1000);
-  });
+  const chest = document.querySelector('.chest:not(.ready):not(.locked)');
+  if (!chest) return;
+  const timerEl = chest.querySelector('.chest-timer');
+  let [h,m,s] = timerEl.textContent.split(':').map(Number);
+  let total = h*3600 + m*60 + s;
+  setInterval(() => {
+    if (total <= 0) { timerEl.textContent = 'Open!'; chest.classList.add('ready'); return; }
+    total--;
+    const rh = Math.floor(total/3600), rm = Math.floor((total%3600)/60), rs = total%60;
+    timerEl.textContent = `${rh}:${String(rm).padStart(2,'0')}:${String(rs).padStart(2,'0')}`;
+  }, 1000);
 }
 
 function openChest(el) {
-  if (el.classList.contains('locked')) return;
-  if (!el.classList.contains('ready')) return;
+  if (el.classList.contains('locked') || !el.classList.contains('ready')) return;
   el.classList.remove('ready');
   el.querySelector('.chest-icon').textContent = '✨';
   el.querySelector('.chest-type').textContent = 'Opened!';
   el.querySelector('.chest-timer').textContent = '—';
 }
 
-function navTo(tab) {
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  if (tab === 'battle') {
-    document.getElementById('tab-battle').classList.add('active');
-  } else {
-    // Placeholder — other tabs not yet built
-    event.currentTarget.classList.add('active');
-  }
+// ── DEAL TIMER ──
+function startDealTimer() {
+  let total = 14*3600 + 32*60 + 8;
+  setInterval(() => {
+    total = Math.max(0, total - 1);
+    const h = Math.floor(total/3600), m = Math.floor((total%3600)/60), s = total%60;
+    const el = document.getElementById('deal-timer');
+    if (el) el.textContent = `Resets in ${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }, 1000);
 }
 
-// PWA service worker
+// ── SHOP ──
+function buyPack(type) {
+  alert(`📦 Opening ${type} pack...\n(Shop coming soon!)`);
+}
+
+// ── INIT ──
+renderCards('all');
+renderMembers();
+renderProfile();
+startChestTimers();
+startDealTimer();
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
 }
-
-startChestTimers();
 </script>
 </body>
 </html>

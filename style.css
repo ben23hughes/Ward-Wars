@@ -35,6 +35,8 @@ body{background:var(--bg);color:white;font-family:'Cinzel',serif;height:100dvh;o
 .crown{font-size:14px;filter:grayscale(1) brightness(0.3);}
 .crown.earned{filter:none;}
 #timer{background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:4px 12px;font-size:14px;font-family:'Cinzel Decorative',serif;}
+#exit-btn{pointer-events:all;position:absolute;top:6px;right:10px;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:rgba(255,255,255,0.7);font-size:14px;width:28px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;font-family:sans-serif;}
+#exit-btn:active{background:rgba(180,40,40,0.6);color:white;}
 #timer.urgent{color:var(--crimson);animation:blink 0.5s infinite alternate;}
 @keyframes blink{from{opacity:1}to{opacity:0.4}}
 

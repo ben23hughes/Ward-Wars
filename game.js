@@ -595,6 +595,13 @@ function updateTowerHPs(){
 // ══════════════════════════
 //  WIN
 // ══════════════════════════
+function exitGame(){
+  if(gameStarted&&!gameOver){
+    if(!confirm('Leave the battle? The adversary will claim victory!'))return;
+  }
+  cancelAnimationFrame(animFrame);intervals.forEach(clearInterval);intervals=[];
+  window.location.href='index.html';
+}
 function checkWin(){
   if(playerCrowns>=3){endGame(true,'Righteousness triumphs!');return;}
   if(enemyCrowns>=3){endGame(false,'');return;}

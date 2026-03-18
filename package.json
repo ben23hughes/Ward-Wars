@@ -2,5 +2,15 @@
   "name": "chapel-clash",
   "version": "1.0.0",
   "description": "Chapel Clash — a Clash Royale-style LDS-themed mobile web game",
-  "private": true
+  "private": true,
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^9.4.3",
+    "express": "^4.18.3",
+    "ws": "^8.16.0"
+  }
 }
