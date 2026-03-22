@@ -89,8 +89,8 @@ app.get('/api/cards', requireAuth, async (req, res) => {
       await db.initUserCards(req.userId);
       cards = await db.getUserCards(req.userId);
     } else {
-      await db.backfillUserCards(req.userId, cards);
-      if (cards.length < 22) cards = await db.getUserCards(req.userId);
+      const backfilled = await db.backfillUserCards(req.userId, cards);
+      if (backfilled) cards = await db.getUserCards(req.userId);
     }
     res.json(cards);
   } catch (e) {
@@ -110,6 +110,18 @@ app.post('/api/deck', requireAuth, async (req, res) => {
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.post('/api/cards/upgrade', requireAuth, async (req, res) => {
+  const { cardId, goldCost, rarity } = req.body || {};
+  if (!cardId || typeof goldCost !== 'number') return res.status(400).json({ error: 'cardId and goldCost required' });
+  try {
+    const result = await db.upgradeCard(req.userId, cardId, goldCost, rarity || 'common');
+    res.json(result);
+  } catch (e) {
+    console.error(e);
+    res.status(400).json({ error: e.message });
   }
 });
 
@@ -259,7 +271,7 @@ app.post('/api/logout', requireAuth, async (req, res) => {
 });
 
 function publicUser(u) {
-  return { id: u.id, username: u.username, trophies: u.trophies, gold: u.gold, gems: u.gems, level: u.level, wins: u.wins, losses: u.losses };
+  return { id: u.id, username: u.username, trophies: u.trophies, gold: u.gold, gems: u.gems, level: u.level || 1, xp: u.xp || 0, wins: u.wins, losses: u.losses };
 }
 
 // ── WebSocket Multiplayer ────────────────────────────────────────────────────

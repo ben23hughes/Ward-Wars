@@ -53,8 +53,7 @@ if (MULTIPLAYER) {
       const msgEl   = document.getElementById('overlay-msg');
       const btn      = document.getElementById('start-btn');
       if (titleEl) titleEl.textContent = '⚔️ Opponent Found!';
-      if (msgEl) msgEl.textContent =
-        `You face: ${msg.opponentName}\n\nDeploy faithful troops on YOUR half!\n\n🧑‍⚕️ Missionary — Converts on death\n📖 Scriptures — Freezes target\n👼 Angel Moroni — Heals allies\n🏔️ Nauvoo Guard — AOE charge\n🧓 Prophet — Shields allies\n🧒 CTR Kid — Spawns 3 at once\n🍑 Jello — Splash damage\n🐝 Beehive — Bee swarm\n\n⛪ Chapel = 1 crown  |  🕍 Temple = Victory`;
+      if (msgEl) msgEl.textContent = `You face: ${msg.opponentName}\n\nDeploy your troops on YOUR half.\n⛪ Chapel = 1 crown  |  🕍 Temple = Victory`;
       if (btn) { btn.style.display = ''; }
     }
     else if (msg.type === 'opp_play') {
@@ -92,7 +91,9 @@ function receiveOpponentPlay(cardId, pct_x, pct_y) {
   // Mirror vertically: opponent's bottom half is our top half
   const x = pct_x * aw;
   const y = (1 - pct_y) * ah;
-  spawnTroop(cardIdx, x, y, 'enemy');
+  if (card.isSpell) castSpell(card, x, y, 'enemy');
+  else if (card.isBuilding) spawnBuilding(cardIdx, x, y, 'enemy');
+  else spawnTroop(cardIdx, x, y, 'enemy');
 }
 
 // buildTroopHTML is defined in sprites.js (loaded before this file)
@@ -157,7 +158,7 @@ const CARDS = [
   {id:'holyLight',   name:'Holy Light',   emoji:'✨', cost:2, hp:0,   atk:0,   spd:0, isRange:false, isSpell:true,    ability:'holyLight',   abilityTxt:'Heals allies in area'},
   {id:'restoration', name:'Restoration',  emoji:'🕊️',cost:2, hp:0,   atk:0,   spd:0, isRange:false, isSpell:true,    ability:'restoration', abilityTxt:'Clears debuffs from allies'},
   // ── Player Building (40) ──
-  {id:'meetinghouse',name:'Meetinghouse', emoji:'⛪', cost:4, hp:700, atk:65,  spd:0, isRange:true,  isBuilding:true, ability:'meetinghouse',abilityTxt:'Defensive outpost', range:130, rateMs:1400},
+  {id:'meetinghouse',name:'Meetinghouse', emoji:'⛪', cost:4, hp:700, atk:65,  spd:0, isRange:true,  isBuilding:true, ability:'meetinghouse',abilityTxt:'Defensive outpost', range:130, rateMs:1400, decayRate:14},
   // ── Enemy Spell (41) ──
   {id:'darkBlast',   name:'Dark Blast',   emoji:'💥', cost:3, hp:0,   atk:115, spd:0, isRange:false, isSpell:true,    ability:'darkBlast',   abilityTxt:'AOE dark damage'},
   // ── Enemy Building (42) ──
@@ -165,13 +166,18 @@ const CARDS = [
 ];
 const PLAYER_POOL=[0,1,2,3,4,5,6,7,16,17,18,19,20,21,22,23,24,25,26,27,28,29,37,38,39,40];
 const ENEMY_POOL =[8,9,10,11,12,13,14,15,30,31,32,33,34,35,36,41,42];
+// Player level boosts King Tower HP (+100/lv) and ATK (+5/lv) above level 1
+const _ccUser = JSON.parse(localStorage.getItem('cc_user') || '{}');
+const _playerLevel = Math.max(1, Math.min(10, _ccUser.level || 1));
+const _kingHp  = 1200 + (_playerLevel - 1) * 100;
+const _kingAtk = 100  + (_playerLevel - 1) * 5;
 const TOWER_DEF={
-  'p-left': {side:'player',hp:600, maxHp:600, atk:80, rateMs:1400},
-  'p-right':{side:'player',hp:600, maxHp:600, atk:80, rateMs:1400},
-  'p-king': {side:'player',hp:1200,maxHp:1200,atk:100,rateMs:1800,isKing:true},
-  'e-left': {side:'enemy', hp:600, maxHp:600, atk:80, rateMs:1400},
-  'e-right':{side:'enemy', hp:600, maxHp:600, atk:80, rateMs:1400},
-  'e-king': {side:'enemy', hp:1200,maxHp:1200,atk:100,rateMs:1800,isKing:true},
+  'p-left': {side:'player',hp:600,    maxHp:600,    atk:80,       rateMs:1400},
+  'p-right':{side:'player',hp:600,    maxHp:600,    atk:80,       rateMs:1400},
+  'p-king': {side:'player',hp:_kingHp,maxHp:_kingHp,atk:_kingAtk,rateMs:1800,isKing:true},
+  'e-left': {side:'enemy', hp:600,    maxHp:600,    atk:80,       rateMs:1400},
+  'e-right':{side:'enemy', hp:600,    maxHp:600,    atk:80,       rateMs:1400},
+  'e-king': {side:'enemy', hp:1200,   maxHp:1200,   atk:100,      rateMs:1800,isKing:true},
 };
 
 // ══════════════════════════
@@ -202,9 +208,9 @@ function _lvMult(cardId) { return 1 + (_cardLevel(cardId) - 1) * 0.15; }
 
 // ── Build player deck from saved deck in localStorage ──
 function buildPlayerDeck() {
-  const deckIds = _ccCards.filter(r => r.in_deck).map(r => r.card_id);
+  const deckIds = _ccCards.filter(r => r.in_deck && r.card_id).map(r => r.card_id);
   const indices = deckIds.map(id => CARDS.findIndex(c => c.id === id)).filter(i => i >= 0);
-  if (indices.length === 4) return indices;
+  if (indices.length > 0) return indices.slice(0, 4);
   // fallback: first 4 player cards
   return [0, 1, 2, 3];
 }
@@ -251,6 +257,13 @@ function loop(ts){
   if(gameOver)return;
   const dt=Math.min((ts-lastTick)/1000,0.1);lastTick=ts;
   moveTroops(dt);moveProjectiles(dt);towerShoot(ts);buildingShoot(ts);
+  for(const b of buildings){
+    if(b.alive&&b.card.decayRate){
+      b.hp=Math.max(0,b.hp-b.card.decayRate*dt);
+      updateTroopHpBar(b);
+      if(b.hp<=0)b.alive=false;
+    }
+  }
   const deadB=buildings.filter(b=>!b.alive);
   buildings=buildings.filter(b=>b.alive);
   for(const b of deadB)b.el.remove();
@@ -265,11 +278,12 @@ function spawnTroop(cardIdx,x,y,side,isMini){
   const card=CARDS[cardIdx];
   const arena=document.getElementById('arena');
   const el=document.createElement('div');
-  el.className=`troop ${side}`;
+  el.className=`troop ${side} spawning`;
   el.setAttribute('data-id',card.id);
   el.innerHTML=buildTroopHTML(card,troopId,isMini);
   el.style.cssText=`left:${x-23}px;top:${y-55}px`;
   arena.appendChild(el);
+  setTimeout(()=>el.classList.remove('spawning'),320);
 
   // Apply level multiplier for player cards
   const mult = side==='player' ? _lvMult(card.id) : 1;
@@ -287,6 +301,7 @@ function spawnTroop(cardIdx,x,y,side,isMini){
     invisible:false,invisibleUntil:0,
     speedBoosted:false,speedBoostedUntil:0,
     tauntedTo:null,isMoving:false,
+    firstHitImmune:false,reflectDamage:false,
   };
   troops.push(t);
 
@@ -302,9 +317,20 @@ function spawnTroop(cardIdx,x,y,side,isMini){
       }
     }
     else if(a==='beehive')  setTimeout(()=>ability_beehive(t),300);
-    else if(a==='deceiver'){ t.invisible=true;t.invisibleUntil=performance.now()+2200;t.el.style.opacity='0.2';showToast('🐍 Deceiver goes invisible!');}
+    else if(a==='deceiver'){ t.invisible=true;t.invisibleUntil=performance.now()+2200;showToast('🐍 Deceiver goes invisible!');}
     else if(a==='antiChrist')setTimeout(()=>ability_antiChristAOE(t),100);
     else if(a==='nehor')    setTimeout(()=>ability_nehorTaunt(t),200);
+    // Arena 3-8 player abilities
+    else if(a==='samuelLamanite'){t.firstHitImmune=true;showToast('🏹 Samuel is immune to first hit!');}
+    else if(a==='titleOfLiberty')setTimeout(()=>ability_titleOfLiberty(t),200);
+    else if(a==='antiNephiLehi'){t.reflectDamage=true;showToast('🕊️ Anti-Nephi-Lehi will reflect damage!');}
+    else if(a==='josephSmith')  setTimeout(()=>ability_josephSmith(t),200);
+    else if(a==='destroyingAngel')setTimeout(()=>ability_destroyingAngel(t),150);
+    // Arena 2-8 enemy abilities
+    else if(a==='rameumptom')   setTimeout(()=>ability_rameumptom(t),200);
+    else if(a==='secretCombination')setTimeout(()=>ability_secretCombination(t),200);
+    else if(a==='kishkumen'){t.invisible=true;t.invisibleUntil=performance.now()+2500;showToast('🥷 Kishkumen vanishes!');}
+    else if(a==='amlici')       setTimeout(()=>ability_amlici(t),200);
   }
   return t;
 }
@@ -371,6 +397,82 @@ function addShieldOrb(tr){
   tr.el.appendChild(s);
 }
 
+// ── Mini-troop helper ──────────────────────────────────────────────────────
+function _spawnMiniTroop(miniCard,x,y,side){
+  const arena=document.getElementById('arena');
+  const el=document.createElement('div');
+  el.className=`troop ${side} spawning`;
+  el.setAttribute('data-id',miniCard.id);
+  setTimeout(()=>el.classList.remove('spawning'),320);
+  el.innerHTML=buildTroopHTML(miniCard,troopId,true);
+  el.style.cssText=`left:${x-23}px;top:${y-55}px`;
+  arena.appendChild(el);
+  const t={id:troopId++,el,side,card:{...miniCard},
+    hp:miniCard.hp,maxHp:miniCard.hp,x,y,lastAtk:0,target:null,alive:true,
+    frozen:false,frozenUntil:0,slowed:false,slowedUntil:0,
+    shielded:false,shieldHp:0,cursed:false,cursedUntil:0,
+    invisible:false,invisibleUntil:0,speedBoosted:false,speedBoostedUntil:0,
+    tauntedTo:null,isMoving:false,firstHitImmune:false,reflectDamage:false};
+  troops.push(t);
+  return t;
+}
+
+// ── Arena 3-8 player abilities ─────────────────────────────────────────────
+function ability_titleOfLiberty(t){
+  showAOERing(t.x,t.y,100,'rgba(180,120,50,0.9)');showToast('🏴 Title of Liberty rallies allies!');
+  for(const tr of troops){
+    if(!tr.alive||tr.side!==t.side||dist(t,tr)>100)continue;
+    tr.card.atk=Math.round(tr.card.atk*1.2);
+    showDmgText(tr.x,tr.y,'ATK+','ability');
+    tr.el.classList.add('atk-boosted');
+    setTimeout(()=>tr.el.classList.remove('atk-boosted'),560);
+  }
+}
+function ability_josephSmith(t){
+  showToast('📜 Joseph Smith summons disciples!');
+  const miniCard={id:'miniDisciple',name:'Disciple',emoji:'🧑',cost:0,hp:80,atk:40,spd:1.1,isRange:false,ability:'',abilityTxt:''};
+  [-38,38].forEach((ox,i)=>{
+    setTimeout(()=>{
+      const mx=Math.max(23,Math.min(arenaW()-23,t.x+ox));
+      const my=Math.max(55,Math.min(arenaH()-10,t.y));
+      _spawnMiniTroop(miniCard,mx,my,t.side);
+    },i*100);
+  });
+}
+function ability_destroyingAngel(t){
+  showAOERing(t.x,t.y,155,'rgba(255,240,80,0.9)');showToast('⚡ Destroying Angel strikes!');
+  for(const tr of troops){if(!tr.alive||tr.side===t.side)continue;if(dist(t,tr)<155)dealDamage(tr,200,t.side==='player');}
+}
+
+// ── Arena 2-8 enemy abilities ──────────────────────────────────────────────
+function ability_rameumptom(t){
+  showAOERing(t.x,t.y,135,'rgba(100,80,180,0.75)');showToast('🏛️ Rameumptom taunts all foes!');
+  for(const tr of troops){if(!tr.alive||tr.side===t.side)continue;tr.tauntedTo=t;}
+  setTimeout(()=>{for(const tr of troops){if(tr.tauntedTo===t)tr.tauntedTo=null;}},3500);
+}
+function ability_secretCombination(t){
+  showToast('🤫 Secret Combination spawns hidden agents!');
+  const miniCard={id:'miniAgent',name:'Secret Agent',emoji:'🕵️',cost:0,hp:70,atk:50,spd:1.4,isRange:false,ability:'',abilityTxt:''};
+  [-32,32].forEach((ox,i)=>{
+    setTimeout(()=>{
+      const mx=Math.max(23,Math.min(arenaW()-23,t.x+ox));
+      const my=Math.max(55,Math.min(arenaH()-10,t.y));
+      const agent=_spawnMiniTroop(miniCard,mx,my,t.side);
+      agent.invisible=true;agent.invisibleUntil=performance.now()+3500;
+    },i*120);
+  });
+}
+function ability_amlici(t){
+  showAOERing(t.x,t.y,100,'rgba(180,50,200,0.75)');showToast('👑 Amlici buffs nearby allies!');
+  for(const tr of troops){
+    if(!tr.alive||tr.side!==t.side||tr===t||dist(t,tr)>100)continue;
+    tr.card.atk=Math.round(tr.card.atk*1.25);
+    showDmgText(tr.x,tr.y,'ATK+','ability');
+    tr.el.classList.add('atk-boosted');
+    setTimeout(()=>tr.el.classList.remove('atk-boosted'),560);
+  }
+}
+
 // ══════════════════════════
 //  RIVER / BRIDGES
 // ══════════════════════════
@@ -432,16 +534,32 @@ function moveTroops(dt){
     if(t.slowed&&now>t.slowedUntil)t.slowed=false;
     if(t.speedBoosted&&now>t.speedBoostedUntil)t.speedBoosted=false;
     if(t.cursed&&now>t.cursedUntil)t.cursed=false;
-    if(t.invisible&&now>t.invisibleUntil){t.invisible=false;t.el.style.opacity='1';}
+    if(t.invisible&&now>t.invisibleUntil){t.invisible=false;}
     if(t.frozen)continue;
 
     if(t.tauntedTo&&t.tauntedTo.alive)t.target=t.tauntedTo;
-    else if(t.card.ability==='gadianton')t.target=findTowerTarget(t);
+    else if(t.card.ability==='gadianton'||t.card.ability==='teancum')t.target=findTowerTarget(t);
     else t.target=findTarget(t);
+
+    // Morianton flees when below 30% HP
+    let fleeing=false;
+    if(t.card.ability==='morianton'&&t.hp/t.maxHp<0.3){
+      let nearestEnemy=null,nearestDist=Infinity;
+      for(const e of troops){if(!e.alive||e.side===t.side)continue;const d=dist(t,e);if(d<nearestDist){nearestDist=d;nearestEnemy=e;}}
+      if(nearestEnemy){
+        const dx=t.x-nearestEnemy.x,dy=t.y-nearestEnemy.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+        const spd=(t.slowed?0.5:t.speedBoosted?1.6:1)*56*t.card.spd;
+        t.x=Math.max(23,Math.min(aw-23,t.x+(dx/d)*spd*dt));
+        t.y=Math.max(55,Math.min(ah-10,t.y+(dy/d)*spd*dt));
+        fleeing=true;
+      }
+    }
 
     let moving=false;
     const wp=_bridgeWaypoint(t,aw,ah);
-    if(t.target){
+    if(fleeing){
+      moving=true;
+    } else if(t.target){
       const tgtX=wp?wp.x:t.target.x, tgtY=wp?wp.y:t.target.y;
       const dx=tgtX-t.x, dy=tgtY-t.y;
       const d=Math.sqrt(dx*dx+dy*dy);
@@ -452,7 +570,8 @@ function moveTroops(dt){
           t.lastAtk=now;
           triggerAtkAnim(t);
           if(t.card.isRange)fireProjectile(t,t.target);
-          else dealDamage(t.target,effectiveAtk(t),t.side==='player');
+          else if(t.target.towerKey)dealDamageTower(t.target.towerKey,effectiveAtk(t),t.side==='player');
+          else dealDamage(t.target,effectiveAtk(t),t.side==='player',t);
         }
       } else if(d>0.5){
         const spd=(t.slowed?0.5:t.speedBoosted?1.6:1)*56*t.card.spd;
@@ -484,12 +603,45 @@ function moveTroops(dt){
     }
 
     const depthScale=0.7+0.6*(t.y/ah);
-    t.el.style.cssText=`left:${t.x-23}px;top:${t.y-55}px;transform:scale(${depthScale.toFixed(2)});transform-origin:bottom center;z-index:${Math.round(t.y+10)};`;
+    const opa=t.invisible?'0.2':'1';
+    t.el.style.cssText=`left:${t.x-23}px;top:${t.y-55}px;transform:scale(${depthScale.toFixed(2)});transform-origin:bottom center;z-index:${Math.round(t.y+10)};opacity:${opa};transition:opacity 0.35s;`;
   }
 
   const dead=troops.filter(tr=>!tr.alive);
   troops=troops.filter(tr=>tr.alive);
-  for(const t of dead){onTroopDeath(t);t.el.remove();}
+  for(const t of dead){onTroopDeath(t);playDeathAnim(t);}
+}
+
+function triggerScreenShake(big){
+  const w=document.getElementById('game-wrapper');
+  w.classList.remove('shake','shake-big');
+  void w.offsetWidth;
+  w.classList.add(big?'shake-big':'shake');
+  setTimeout(()=>w.classList.remove('shake','shake-big'),big?600:400);
+}
+
+function spawnDeathParticles(x,y,side){
+  const arena=document.getElementById('arena');
+  const colors=side==='player'?['#5dade2','#85c1e9','#aed6f1']:['#e74c3c','#f1948a','#fadbd8'];
+  const count=6;
+  for(let i=0;i<count;i++){
+    const p=document.createElement('div');
+    p.className='death-particle';
+    const angle=(i/count)*Math.PI*2;
+    const r=22+Math.random()*18;
+    const tx=Math.cos(angle)*r, ty=Math.sin(angle)*r;
+    p.style.cssText=`left:${x-4}px;top:${y-4}px;background:${colors[i%colors.length]};--tx:${tx.toFixed(1)}px;--ty:${ty.toFixed(1)}px;`;
+    arena.appendChild(p);
+    setTimeout(()=>p.remove(),480);
+  }
+}
+
+function playDeathAnim(t){
+  const el=t.el;
+  // Lock position so moveTroops no longer updates this element
+  el.classList.add('dying');
+  spawnDeathParticles(t.x,t.y,t.side);
+  setTimeout(()=>el.remove(),450);
 }
 
 function triggerAtkAnim(t){
@@ -500,10 +652,12 @@ function triggerAtkAnim(t){
 }
 
 function effectiveAtk(t){
+  let atk=t.card.atk;
+  if(t.cursed)atk=Math.round(atk*0.75);
   if(t.side==='player'){
-    for(const k of troops){if(k.alive&&k.side==='enemy'&&k.card.ability==='korihor'&&dist(t,k)<115)return Math.round(t.card.atk*0.7);}
+    for(const k of troops){if(k.alive&&k.side==='enemy'&&k.card.ability==='korihor'&&dist(t,k)<115)atk=Math.round(atk*0.7);}
   }
-  return t.card.atk;
+  return atk;
 }
 
 // ══════════════════════════
@@ -544,6 +698,13 @@ function onTroopDeath(t){
       });
     }
     showToast('😠 Laman splits!');
+  }
+  // Zerahemnah gains power whenever any troop falls (capped at 10 stacks)
+  for(const z of troops){
+    if(z.alive&&z.card.ability==='zerahemnah'){
+      if(!z.killStacks)z.killStacks=0;
+      if(z.killStacks<10){z.killStacks++;z.card.atk+=12;showDmgText(z.x,z.y,'⚔️+12','ability');}
+    }
   }
 }
 
@@ -597,6 +758,7 @@ function getProjClass(t){
   if(a==='jello')return'proj-jello';
   if(a==='temptation')return'proj-tempt';
   if(a==='deceiver'||a==='gadianton')return'proj-snake';
+  if(a==='darkAltar')return'proj-dark';
   return t.side==='player'?'proj-normal':'proj-enemy';
 }
 function fireProjectile(from,to){
@@ -634,14 +796,24 @@ function onProjectileHit(p){
     dealDamage(p.target,p.atk,ip);
     p.target.slowed=true;p.target.slowedUntil=performance.now()+2500;
     showDmgText(p.target.x,p.target.y,'SLOWED','ability');
+  } else if(p.type==='sherem'){
+    dealDamage(p.target,p.atk,ip);
+    if(p.target.alive){p.target.cursed=true;p.target.cursedUntil=performance.now()+3000;showDmgText(p.target.x,p.target.y,'WEAK','ability');showToast('🧑‍💼 Sherem weakens target!');}
   } else{dealDamage(p.target,p.atk,ip);}
 }
 
 // ══════════════════════════
 //  DAMAGE
 // ══════════════════════════
-function dealDamage(troop,dmg,isPlayerAtk){
+function dealDamage(troop,dmg,isPlayerAtk,attacker=null){
   if(!troop.alive)return;
+  // Samuel the Lamanite: immune to first hit
+  if(troop.firstHitImmune){
+    troop.firstHitImmune=false;
+    showDmgText(troop.x,troop.y,'IMMUNE','ability');
+    showToast('🏹 Samuel deflects the first blow!');
+    return;
+  }
   if(troop.shielded&&troop.shieldHp>0){
     const ab=Math.min(troop.shieldHp,dmg);troop.shieldHp-=ab;dmg-=ab;
     if(troop.shieldHp<=0){troop.shielded=false;const s=troop.el.querySelector('.shield-orb');if(s)s.remove();}
@@ -651,6 +823,13 @@ function dealDamage(troop,dmg,isPlayerAtk){
   troop.hp=Math.max(0,troop.hp-dmg);updateTroopHpBar(troop);
   showDmgText(troop.x,troop.y,dmg,'dmg');
   if(troop.hp<=0)troop.alive=false;
+  // Anti-Nephi-Lehi: reflect 50% damage back to attacker
+  if(troop.reflectDamage&&dmg>0){
+    const reflected=Math.round(dmg*0.5);
+    let rfl=attacker;
+    if(!rfl){let nd=Infinity;for(const e of troops){if(!e.alive||e.side===troop.side)continue;const d=dist(troop,e);if(d<nd){nd=d;rfl=e;}}}
+    if(rfl&&rfl.alive){rfl.hp=Math.max(0,rfl.hp-reflected);updateTroopHpBar(rfl);showDmgText(rfl.x,rfl.y,reflected,'dmg');if(rfl.hp<=0)rfl.alive=false;showToast('🕊️ Damage reflected!');}
+  }
 }
 function _hpColor(pct){return pct>0.5?'#2ecc71':pct>0.25?'#f39c12':'#e74c3c';}
 function updateTroopHpBar(t){
@@ -667,6 +846,7 @@ function dealDamageTower(key,dmg,isPlayerAtk){
   const c=getTowerCenter(key);showDmgText(c.x,c.y,dmg,'dmg');
   if(t.hp<=0){
     t.alive=false;if(el)el.style.opacity='0.2';
+    triggerScreenShake(t.isKing);
     isPlayerAtk?(playerCrowns+=t.isKing?3:1):(enemyCrowns+=t.isKing?3:1);updateCrowns();
   }
 }
@@ -698,26 +878,73 @@ function towerShoot(ts){
 // ══════════════════════════
 //  SPELLS
 // ══════════════════════════
+function launchFireball(fromX,fromY,toX,toY,onImpact){
+  const arena=document.getElementById('arena');
+  const fb=document.createElement('div');
+  fb.className='fireball-proj';
+  arena.appendChild(fb);
+  const dx=toX-fromX,dy=toY-fromY;
+  const flightDist=Math.sqrt(dx*dx+dy*dy);
+  const duration=Math.max(280,flightDist*0.7);
+  const arcH=Math.min(130,flightDist*0.45);
+  const angle=Math.atan2(dy,dx)*(180/Math.PI);
+  let lastEmber=0;
+  const start=performance.now();
+  function step(ts){
+    const t=Math.min(1,(ts-start)/duration);
+    const ease=t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2; // ease-in-out
+    const cx=fromX+dx*ease;
+    const cy=fromY+dy*ease-arcH*Math.sin(t*Math.PI);
+    const scale=0.55+ease*0.7;
+    fb.style.cssText=`left:${cx-11}px;top:${cy-11}px;transform:scale(${scale.toFixed(2)}) rotate(${angle}deg);position:absolute;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 32%,#fff7b0 10%,#ff8800 45%,#cc2200 80%,#660000);box-shadow:0 0 14px #ff6600,0 0 28px rgba(255,80,0,0.7),0 0 50px rgba(255,40,0,0.3);pointer-events:none;z-index:200;animation:fireballPulse 0.08s ease-in-out infinite alternate;`;
+    // Spawn ember trail every ~40ms
+    if(ts-lastEmber>40){
+      lastEmber=ts;
+      const em=document.createElement('div');
+      em.className='fireball-ember';
+      const jx=(Math.random()-0.5)*10,jy=(Math.random()-0.5)*10;
+      em.style.cssText=`left:${cx-3+jx}px;top:${cy-3+jy}px;position:absolute;width:6px;height:6px;border-radius:50%;background:radial-gradient(circle,#ffcc00,#ff4400);pointer-events:none;z-index:199;animation:emberFade 0.35s ease-out forwards;`;
+      arena.appendChild(em);
+      setTimeout(()=>em.remove(),400);
+    }
+    if(t<1){requestAnimationFrame(step);}
+    else{fb.remove();onImpact();}
+  }
+  requestAnimationFrame(step);
+}
+
 function castSpell(card,x,y,side){
   const ip=side==='player';
-  if(card.ability==='firePrayer'||card.ability==='darkBlast'){
-    const color=ip?'rgba(255,100,50,0.9)':'rgba(150,50,220,0.9)';
-    showAOERing(x,y,88,color);
-    showToast(ip?'🔥 Fire Prayer!':'💥 Dark Blast!');
+  if(card.ability==='firePrayer'){
+    showToast('🔥 Fire Prayer!');
+    const kingKey=ip?'p-king':'e-king';
+    const kc=getTowerCenter(kingKey);
+    launchFireball(kc.x,kc.y,x,y,()=>{
+      showAOERing(x,y,88,'rgba(255,100,50,0.9)');
+      showAOERing(x,y,50,'rgba(255,200,50,0.7)');
+      for(const t of troops){if(!t.alive||t.side===side)continue;if(dist({x,y},t)<88)dealDamage(t,card.atk,ip);}
+      for(const b of buildings){if(!b.alive||b.side===side)continue;if(dist({x,y},b)<88)dealDamage(b,card.atk,ip);}
+      const tks=ip?['e-left','e-right','e-king']:['p-left','p-right','p-king'];
+      for(const k of tks){if(!towers[k]?.alive)continue;const tc=getTowerCenter(k);if(dist({x,y},tc)<88)dealDamageTower(k,Math.round(card.atk*0.6),ip);}
+    });
+  } else if(card.ability==='darkBlast'){
+    showAOERing(x,y,88,'rgba(130,30,220,0.9)');
+    showAOERing(x,y,55,'rgba(60,0,120,0.7)');
+    showToast('💥 Dark Blast!');
     for(const t of troops){if(!t.alive||t.side===side)continue;if(dist({x,y},t)<88)dealDamage(t,card.atk,ip);}
     for(const b of buildings){if(!b.alive||b.side===side)continue;if(dist({x,y},b)<88)dealDamage(b,card.atk,ip);}
     const tks=ip?['e-left','e-right','e-king']:['p-left','p-right','p-king'];
     for(const k of tks){if(!towers[k]?.alive)continue;const tc=getTowerCenter(k);if(dist({x,y},tc)<88)dealDamageTower(k,Math.round(card.atk*0.6),ip);}
   } else if(card.ability==='holyLight'){
     showAOERing(x,y,95,'rgba(255,255,150,0.85)');showHealBurst(x,y,90);
-    showToast('✨ Holy Light heals allies!');
+    showToast(`${card.emoji} ${card.name}!`);
     for(const t of troops){
       if(!t.alive||t.side!==side)continue;
       if(dist({x,y},t)<95){const h=Math.min(160,t.maxHp-t.hp);if(h>0){t.hp+=h;updateTroopHpBar(t);showDmgText(t.x,t.y,'+'+h,'heal');}}
     }
   } else if(card.ability==='restoration'){
     showAOERing(x,y,95,'rgba(100,255,200,0.85)');showHealBurst(x,y,90);
-    showToast('🕊️ Restoration! Debuffs cleared!');
+    showToast(`${card.emoji} ${card.name}! Debuffs cleared!`);
     for(const t of troops){
       if(!t.alive||t.side!==side)continue;
       if(dist({x,y},t)<95){
@@ -736,7 +963,7 @@ function spawnBuilding(cardIdx,x,y,side){
   const card=CARDS[cardIdx];
   const arena=document.getElementById('arena');
   const el=document.createElement('div');
-  el.className=`troop ${side}`;
+  el.className=`troop ${side} spawning`;
   el.setAttribute('data-id',card.id);
   const id=troopId++;
   el.innerHTML=`<div style="font-size:26px;text-align:center;padding:2px 0;line-height:1">${card.emoji}</div>`+
@@ -744,13 +971,14 @@ function spawnBuilding(cardIdx,x,y,side){
     `<div id="thp-${id}" style="height:100%;width:100%;border-radius:2px;background:#2ecc71;transition:width 0.15s,background 0.4s"></div></div>`;
   el.style.cssText=`left:${x-23}px;top:${y-55}px;z-index:${Math.round(y+10)}`;
   arena.appendChild(el);
+  setTimeout(()=>el.classList.remove('spawning'),320);
   const mult=side==='player'?_lvMult(card.id):1;
   buildings.push({
     id,el,side,card:{...card,atk:Math.round(card.atk*mult)},
     x,y,hp:Math.round(card.hp*mult),maxHp:Math.round(card.hp*mult),
     alive:true,lastAtk:0,shielded:false,shieldHp:0,isBuilding:true,
   });
-  showToast(side==='player'?'⛪ Meetinghouse deployed!':'🕯️ Dark Altar rises!');
+  showToast(`${card.emoji} ${card.name} ${side==='player'?'deployed!':'rises!'}`);
 }
 
 function buildingShoot(ts){
@@ -893,6 +1121,8 @@ function renderHand(){
     el.querySelector('.card-cost').textContent=card.cost;
     el.classList.toggle('cant-afford',card.cost>elixir);
     el.classList.toggle('selected',selectedCard===slot);
+    el.classList.toggle('is-spell',!!card.isSpell);
+    el.classList.toggle('is-building',!!card.isBuilding);
   });
 }
 function renderNextCard(){
@@ -903,7 +1133,9 @@ function renderNextCard(){
 function selectCard(slot){
   if(CARDS[hand[slot]].cost>elixir)return;
   selectedCard=(selectedCard===slot)?null:slot;
-  document.getElementById('drop-hint').classList.toggle('active',selectedCard!==null);
+  const hint=document.getElementById('drop-hint');
+  hint.classList.toggle('active',selectedCard!==null);
+  hint.classList.toggle('spell-hint',selectedCard!==null&&!!CARDS[hand[selectedCard]].isSpell);
   renderHand();
 }
 function cycleCard(slot){
@@ -958,7 +1190,9 @@ function _startDrag(slot, clientX, clientY) {
   dragGhost.innerHTML = _cardSvg(CARDS[hand[slot]], 52, 68);
   document.getElementById('game-wrapper').appendChild(dragGhost);
   _moveDrag(clientX, clientY);
-  document.getElementById('drop-hint').classList.add('active');
+  const hint = document.getElementById('drop-hint');
+  hint.classList.add('active');
+  hint.classList.toggle('spell-hint', !!CARDS[hand[slot]].isSpell);
 }
 
 function _moveDrag(clientX, clientY) {
@@ -966,17 +1200,19 @@ function _moveDrag(clientX, clientY) {
   dragMoved = true;
   dragGhost.style.left = (clientX - 32) + 'px';
   dragGhost.style.top  = (clientY - 72) + 'px';
-  // tint based on valid zone
   const arena = document.getElementById('arena');
   const rect = arena.getBoundingClientRect();
+  const isSpell = dragSlot !== null && CARDS[hand[dragSlot]]?.isSpell;
+  const inArena = clientY > rect.top && clientY < rect.bottom && clientX > rect.left && clientX < rect.right;
   const inPlayerHalf = clientY > rect.top + arena.offsetHeight / 2 && clientY < rect.bottom;
-  dragGhost.classList.toggle('drag-valid', inPlayerHalf);
-  dragGhost.classList.toggle('drag-invalid', !inPlayerHalf);
+  const valid = isSpell ? inArena : inPlayerHalf;
+  dragGhost.classList.toggle('drag-valid', valid);
+  dragGhost.classList.toggle('drag-invalid', !valid);
 }
 
 function _endDrag(clientX, clientY) {
   if (dragSlot === null) return;
-  document.getElementById('drop-hint').classList.remove('active');
+  document.getElementById('drop-hint').classList.remove('active', 'spell-hint');
   if (dragGhost) { dragGhost.remove(); dragGhost = null; }
   if (dragMoved) {
     _deployAt(dragSlot, clientX, clientY);
@@ -1036,14 +1272,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (selectedCard === null || !gameStarted || gameOver) return;
     const rect = this.getBoundingClientRect();
     const x = e.clientX - rect.left, y = e.clientY - rect.top;
-    if (y < this.offsetHeight / 2) {
+    const card = CARDS[hand[selectedCard]];
+    // Non-spell clicked in enemy half: cancel selection
+    if (!card.isSpell && y < this.offsetHeight / 2) {
       selectedCard = null;
-      document.getElementById('drop-hint').classList.remove('active');
+      document.getElementById('drop-hint').classList.remove('active','spell-hint');
       renderHand(); return;
     }
     if (!_deployAt(selectedCard, e.clientX, e.clientY)) return;
     selectedCard = null;
-    document.getElementById('drop-hint').classList.remove('active');
+    document.getElementById('drop-hint').classList.remove('active','spell-hint');
     renderHand();
   });
 });
@@ -1080,6 +1318,10 @@ function sendEmote(filename){
   showEmoteBubble('player',filename);
   if(MULTIPLAYER&&mpWs&&mpWs.readyState===1){
     mpWs.send(JSON.stringify({type:'emote',filename}));
+  } else {
+    const emotes=['emote.png','emote2.png'];
+    const botEmote=emotes[Math.floor(Math.random()*emotes.length)];
+    setTimeout(()=>showEmoteBubble('opp',botEmote),700+Math.random()*1200);
   }
 }
 function showEmoteBubble(side,filename){

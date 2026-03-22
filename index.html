@@ -238,6 +238,23 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
 .card-item:active{transform:scale(.95);}
 .card-item.in-deck{border-color:var(--gold);box-shadow:0 0 10px rgba(245,200,66,.3);}
 .card-item.in-deck::after{content:'✓';position:absolute;top:4px;right:6px;font-size:9px;color:var(--gold);}
+/* rarity colors */
+.card-item.rarity-common{background:linear-gradient(160deg,#1e2a22,#0d150f);border-color:rgba(160,160,160,.45);}
+.card-item.rarity-rare{background:linear-gradient(160deg,#0e2f62,#081628);border-color:#4a8fd9;box-shadow:0 3px 10px rgba(74,143,217,.25);}
+.card-item.rarity-epic{background:linear-gradient(160deg,#2d1b4e,#120830);border-color:#9b59b6;box-shadow:0 3px 12px rgba(155,89,182,.3);}
+.card-item.rarity-legendary{background:linear-gradient(160deg,#3d2600,#1a1000);border-color:#f5a623;box-shadow:0 3px 14px rgba(245,166,35,.4);}
+/* type overrides background but keeps rarity border */
+.card-item.is-spell{background:linear-gradient(160deg,#200d40 0%,#0e0520 100%);}
+.card-item.is-building{background:linear-gradient(160deg,#3d2008 0%,#180a02 100%);}
+/* rarity gem dot */
+.card-item::before{content:'';position:absolute;bottom:24px;left:50%;transform:translateX(-50%);width:6px;height:6px;border-radius:50%;opacity:.7;}
+.card-item.rarity-common::before{background:#aaa;}
+.card-item.rarity-rare::before{background:#4a8fd9;}
+.card-item.rarity-epic::before{background:#c080ff;}
+.card-item.rarity-legendary::before{background:#f5a623;box-shadow:0 0 4px #f5a623;}
+.card-type-badge{font-size:6px;font-weight:bold;padding:1px 5px;border-radius:3px;pointer-events:none;white-space:nowrap;}
+.card-type-badge.spell{background:#6c3483;color:#e8a9f7;}
+.card-type-badge.building{background:#784212;color:#f0a96e;}
 .card-emoji-lg{font-size:28px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));}
 .card-art{display:flex;align-items:center;justify-content:center;height:68px;filter:drop-shadow(0 2px 5px rgba(0,0,0,.6));}
 .card-item.locked{opacity:0.55;filter:grayscale(0.7);}
@@ -282,10 +299,17 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
 .cd-stat{background:rgba(0,0,0,.35);border-radius:10px;padding:8px 4px;text-align:center;}
 .cd-stat-val{font-size:14px;font-weight:bold;color:#fff;}
 .cd-stat-lbl{font-size:8px;color:rgba(255,255,255,.4);margin-top:2px;}
-#cd-rarity{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:-6px;}
+#cd-rarity{font-size:9px;letter-spacing:1.5px;font-weight:bold;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:-6px;}
 #cd-rarity.common{color:#aaa;}
 #cd-rarity.rare{color:#7eb8f7;}
 #cd-rarity.epic{color:#c080ff;}
+#cd-rarity.legendary{color:#f5a623;text-shadow:0 0 8px rgba(245,166,35,.6);}
+#cd-type{font-size:9px;color:rgba(255,255,255,.4);letter-spacing:1px;margin-top:-4px;}
+#cd-description{font-size:10px;color:rgba(255,255,255,.6);text-align:center;line-height:1.6;padding:0 4px;font-style:italic;}
+#cd-meta-row{display:flex;gap:10px;width:100%;}
+.cd-meta-pill{flex:1;background:rgba(0,0,0,.3);border-radius:8px;padding:6px 4px;text-align:center;}
+.cd-meta-pill-val{font-size:11px;font-weight:bold;color:#fff;}
+.cd-meta-pill-lbl{font-size:7px;color:rgba(255,255,255,.35);margin-top:2px;}
 .cd-level-row{display:flex;align-items:center;gap:10px;width:100%;background:rgba(0,0,0,.25);border-radius:12px;padding:10px 12px;}
 .cd-level-badge{font-size:11px;font-weight:bold;color:var(--gold);background:rgba(245,200,66,.15);border:1px solid rgba(245,200,66,.3);border-radius:8px;padding:4px 10px;white-space:nowrap;}
 .cd-level-progress{flex:1;display:flex;flex-direction:column;gap:4px;}
@@ -293,6 +317,17 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
 .cd-level-fill{height:100%;background:linear-gradient(90deg,var(--gold),#ff8c00);border-radius:3px;transition:width .4s ease;}
 .cd-level-text{font-size:9px;color:rgba(255,255,255,.4);}
 .cd-next-level{font-size:10px;color:rgba(126,184,247,.8);text-align:center;min-height:14px;}
+#cd-upgrade-btn{
+  width:100%;padding:12px;border:none;border-radius:14px;
+  font-family:'Cinzel',serif;font-size:13px;cursor:pointer;
+  transition:opacity .15s;
+}
+#cd-upgrade-btn.can-upgrade{background:linear-gradient(180deg,#27ae60,#1a7a42);color:#fff;font-weight:bold;box-shadow:0 4px 14px rgba(39,174,96,.35);}
+#cd-upgrade-btn.cant-afford{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.35);cursor:default;}
+#cd-upgrade-btn.hidden{display:none;}
+/* upgrade-ready glow on card grid */
+.card-item.upgrade-ready::after{content:'UPGRADE';position:absolute;bottom:6px;left:50%;transform:translateX(-50%);font-size:6px;font-weight:bold;color:#27ae60;letter-spacing:0.5px;background:rgba(39,174,96,.15);border:1px solid rgba(39,174,96,.4);border-radius:4px;padding:1px 5px;white-space:nowrap;}
+.card-item.upgrade-ready{box-shadow:0 0 12px rgba(39,174,96,.4)!important;}
 #cd-deck-btn{
   width:100%;padding:12px;border:none;border-radius:14px;
   font-family:'Cinzel',serif;font-size:13px;cursor:pointer;
@@ -515,6 +550,9 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
 .tp-next{color:rgba(255,255,255,.4);}
 .tp-bar{height:6px;background:rgba(0,0,0,.4);border-radius:3px;overflow:hidden;}
 .tp-fill{height:100%;width:68%;background:linear-gradient(90deg,var(--gold),#ff8c00);border-radius:3px;box-shadow:0 0 6px var(--gold);}
+.xp-progress{width:100%;display:flex;flex-direction:column;gap:4px;margin-top:6px;}
+.xp-label{font-size:9px;color:rgba(255,255,255,.4);}
+.xp-fill{height:100%;width:0%;background:linear-gradient(90deg,#a78bfa,#7c3aed);border-radius:3px;box-shadow:0 0 6px #7c3aed;}
 
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:0 12px;flex-shrink:0;}
 .stat-box{
@@ -978,6 +1016,10 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
           <div class="tp-row"><span class="tp-cur" id="tp-cur">🏆 0</span><span class="tp-next" id="tp-next">Next: 300</span></div>
           <div class="tp-bar"><div class="tp-fill" id="tp-fill" style="width:0%"></div></div>
         </div>
+        <div class="xp-progress">
+          <div class="tp-row"><span style="font-size:11px;color:rgba(255,255,255,0.6)">⭐ XP</span><span class="xp-label" id="xp-label">0 / 50</span></div>
+          <div class="tp-bar"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div>
+        </div>
       </div>
 
       <div class="stats-grid">
@@ -1012,7 +1054,6 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
     <button class="nav-tab" id="tab-cards" onclick="navTo('cards')">
       <span class="nav-icon">🃏</span>
       <span class="nav-label">Cards</span>
-      <span class="badge">3</span>
     </button>
     <button class="nav-tab" id="tab-ward" onclick="navTo('ward')">
       <span class="nav-icon">🏛️</span>
@@ -1025,7 +1066,6 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
     <button class="nav-tab" id="tab-shop" onclick="navTo('shop')">
       <span class="nav-icon">🛒</span>
       <span class="nav-label">Shop</span>
-      <span class="badge">!</span>
     </button>
     <button class="nav-tab" id="tab-profile" onclick="navTo('profile')">
       <span class="nav-icon">👤</span>
@@ -1040,7 +1080,13 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
     <div id="cd-emoji"></div>
     <div id="cd-name"></div>
     <div id="cd-rarity"></div>
+    <div id="cd-type"></div>
     <div id="cd-ability"></div>
+    <div id="cd-description"></div>
+    <div id="cd-meta-row">
+      <div class="cd-meta-pill"><div class="cd-meta-pill-val" id="cd-speed"></div><div class="cd-meta-pill-lbl">Speed</div></div>
+      <div class="cd-meta-pill"><div class="cd-meta-pill-val" id="cd-range"></div><div class="cd-meta-pill-lbl">Range</div></div>
+    </div>
 
     <div class="cd-level-row">
       <div class="cd-level-badge" id="cd-level">Lv 1</div>
@@ -1058,6 +1104,7 @@ body{font-family:'Cinzel',serif;color:#fff;display:flex;flex-direction:column;al
 
     <div id="cd-next-level" class="cd-next-level"></div>
 
+    <button id="cd-upgrade-btn" onclick="doUpgradeCard()"></button>
     <button id="cd-deck-btn" onclick="toggleDeck()"></button>
     <button id="cd-close" onclick="document.getElementById('card-detail').classList.remove('open')">Close</button>
   </div>
@@ -1147,35 +1194,41 @@ function closeArenaPath() {
 }
 
 const ALL_CARDS = [
-  {id:'missionary', name:'Missionary',   emoji:'🧑‍⚕️', cost:3, hp:240, atk:75,  ability:'Converts on death', rarity:'common', inDeck:true,  level:1, have:0, need:50},
-  {id:'scriptures', name:'Scriptures',   emoji:'📖',   cost:2, hp:140, atk:50,  ability:'Freezes target',    rarity:'common', inDeck:true,  level:1, have:0, need:50},
-  {id:'moroni',     name:'Angel Moroni', emoji:'👼',   cost:5, hp:380, atk:120, ability:'Heals all allies',  rarity:'epic',   inDeck:true,  level:1, have:0, need:10},
-  {id:'nauvoo',     name:'Nauvoo Guard', emoji:'🏔️',  cost:4, hp:320, atk:90,  ability:'AOE charge',        rarity:'rare',   inDeck:true,  level:1, have:0, need:20},
-  {id:'prophet',    name:'Prophet',      emoji:'🧓',   cost:5, hp:550, atk:55,  ability:'Shields all allies',rarity:'epic',   inDeck:false, level:1, have:0, need:10},
-  {id:'ctrKid',     name:'CTR Kid',      emoji:'🧒',   cost:3, hp:100, atk:60,  ability:'Spawns 3 at once',  rarity:'common', inDeck:false, level:1, have:0, need:50},
-  {id:'jello',      name:'Jello',        emoji:'🍑',   cost:3, hp:160, atk:100, ability:'Splash damage',     rarity:'rare',   inDeck:false, level:1, have:0, need:20},
-  {id:'beehive',    name:'Beehive',      emoji:'🐝',   cost:4, hp:420, atk:45,  ability:'Sends bee swarm',   rarity:'rare',   inDeck:false, level:1, have:0, need:20},
+  {id:'missionary', name:'Missionary',   emoji:'🧑‍⚕️', cost:3, hp:240, atk:75,  ability:'Converts on death', rarity:'common',    speed:'Medium', range:'Melee',  desc:'A tireless servant of the faith. When he falls, he may convert one fallen enemy to the cause.',                                    inDeck:true,  level:1, have:0, need:50},
+  {id:'scriptures', name:'Scriptures',   emoji:'📖',   cost:2, hp:140, atk:50,  ability:'Freezes target',    rarity:'common',    speed:'Medium', range:'Melee',  desc:'The iron rod, wielded as a weapon. Strikes with truth — leaving enemies frozen solid in their tracks.',                            inDeck:true,  level:1, have:0, need:50},
+  {id:'moroni',     name:'Angel Moroni', emoji:'👼',   cost:5, hp:380, atk:120, ability:'Heals all allies',  rarity:'epic',      speed:'Medium', range:'Melee',  desc:'The heavenly herald descends to restore the faithful. His trumpet call heals all allied troops on the field.',                       inDeck:true,  level:1, have:0, need:10},
+  {id:'nauvoo',     name:'Nauvoo Guard', emoji:'🏔️',  cost:4, hp:320, atk:90,  ability:'AOE charge',        rarity:'rare',      speed:'Fast',   range:'Melee',  desc:'Defenders of the covenant. They charge forward with righteous fury, knocking back all enemies in their path.',                      inDeck:true,  level:1, have:0, need:20},
+  {id:'prophet',    name:'Prophet',      emoji:'🧓',   cost:5, hp:550, atk:55,  ability:'Shields all allies',rarity:'epic',      speed:'Slow',   range:'Melee',  desc:"A pillar of the faith. The Prophet's presence raises a divine shield over every allied troop on the field.",                        inDeck:false, level:1, have:0, need:10},
+  {id:'ctrKid',     name:'CTR Kid',      emoji:'🧒',   cost:3, hp:100, atk:60,  ability:'Spawns 3 at once',  rarity:'common',    speed:'Fast',   range:'Melee',  desc:'Chose the right — and chose to charge. Three CTR Kids deploy for the price of one. Small but full of spirit.',                      inDeck:false, level:1, have:0, need:50},
+  {id:'jello',      name:'Jello',        emoji:'🍑',   cost:3, hp:160, atk:100, ability:'Splash damage',     rarity:'rare',      speed:'Medium', range:'Ranged', desc:'A sacred tradition, weaponized. Wobbles forward and explodes in a sticky splash dealing damage to all nearby enemies.',             inDeck:false, level:1, have:0, need:20},
+  {id:'beehive',    name:'Beehive',      emoji:'🐝',   cost:4, hp:420, atk:45,  ability:'Sends bee swarm',   rarity:'rare',      speed:'Slow',   range:'Ranged', desc:'Industrious and dangerous. Plants itself on the field and unleashes a relentless swarm on anyone who dares approach.',              inDeck:false, level:1, have:0, need:20},
+  // ── Spells ──
+  {id:'firePrayer',  name:'Fire Prayer',  emoji:'🔥', cost:3, hp:0,   atk:110, ability:'AOE fire damage anywhere', rarity:'rare',      speed:'—', range:'Spell', desc:'A fervent prayer answered with fire. Can be placed anywhere on the battlefield for devastating area-of-effect damage.',           inDeck:false, level:1, have:0, need:20, isSpell:true},
+  {id:'holyLight',   name:'Holy Light',   emoji:'✨', cost:2, hp:0,   atk:0,   ability:'Heals allies in area',     rarity:'common',    speed:'—', range:'Spell', desc:'A gentle benediction from above. Restores the health of all faithful troops within the targeted area.',                            inDeck:false, level:1, have:0, need:50, isSpell:true},
+  {id:'restoration', name:'Restoration',  emoji:'🕊️',cost:2, hp:0,   atk:0,   ability:'Clears debuffs + heals',   rarity:'rare',      speed:'—', range:'Spell', desc:'Divine healing that cleanses as well as restores. Removes all debuffs from allies and tops up their health.',                      inDeck:false, level:1, have:0, need:20, isSpell:true},
+  // ── Buildings ──
+  {id:'meetinghouse',name:'Meetinghouse', emoji:'⛪', cost:4, hp:700, atk:65,  ability:'Defensive outpost',        rarity:'epic',      speed:'—', range:'Ranged', desc:'A house of faith, repurposed for battle. Stands firm on the field and fires upon all enemies who dare approach.',                inDeck:false, level:1, have:0, need:10, isBuilding:true},
   // ── Arena 2 ──
-  {id:'holyGhost',        name:'Holy Ghost',         emoji:'🕊️', cost:3, hp:180, atk:55,  ability:'Goes invisible briefly', rarity:'rare',      unlockArena:2, inDeck:false, level:1, have:0, need:50},
-  {id:'striplingWarrior', name:'Stripling Warrior',  emoji:'⚔️', cost:2, hp:160, atk:70,  ability:'Revives once on death',  rarity:'rare',      unlockArena:2, inDeck:false, level:1, have:0, need:50},
+  {id:'holyGhost',        name:'Holy Ghost',         emoji:'🕊️', cost:3, hp:180, atk:55,  ability:'Goes invisible briefly', rarity:'rare',      speed:'Fast',   range:'Melee',  desc:'Present but unseen. Phases in and out of visibility, confounding enemies before striking from the shadows.',                  unlockArena:2, inDeck:false, level:1, have:0, need:50},
+  {id:'striplingWarrior', name:'Stripling Warrior',  emoji:'⚔️', cost:2, hp:160, atk:70,  ability:'Revives once on death',  rarity:'rare',      speed:'Medium', range:'Melee',  desc:"Valiant and fearless, their mothers' faith carries them back from the brink of death — but only once.",                       unlockArena:2, inDeck:false, level:1, have:0, need:50},
   // ── Arena 3 ──
-  {id:'captainMoroni',    name:'Captain Moroni',     emoji:'🚩', cost:5, hp:500, atk:100, ability:'Buffs all allies',       rarity:'epic',      unlockArena:3, inDeck:false, level:1, have:0, need:10},
-  {id:'liahona',          name:'Liahona',            emoji:'🧭', cost:3, hp:120, atk:40,  ability:'Speeds up allies',       rarity:'rare',      unlockArena:3, inDeck:false, level:1, have:0, need:50},
+  {id:'captainMoroni',    name:'Captain Moroni',     emoji:'🚩', cost:5, hp:500, atk:100, ability:'Buffs all allies',       rarity:'epic',      speed:'Medium', range:'Melee',  desc:'The Title of Liberty incarnate. His presence on the field inspires all allies, raising their attack and resolve.',             unlockArena:3, inDeck:false, level:1, have:0, need:10},
+  {id:'liahona',          name:'Liahona',            emoji:'🧭', cost:3, hp:120, atk:40,  ability:'Speeds up allies',       rarity:'rare',      speed:'Fast',   range:'Melee',  desc:'A divine compass that guides the righteous. Its spin accelerates all nearby allied troops to move at double speed.',           unlockArena:3, inDeck:false, level:1, have:0, need:50},
   // ── Arena 4 ──
-  {id:'brotherOfJared',   name:'Brother of Jared',   emoji:'💎', cost:4, hp:300, atk:80,  ability:'Blinds enemies',         rarity:'epic',      unlockArena:4, inDeck:false, level:1, have:0, need:10},
-  {id:'ammon',            name:'Ammon',              emoji:'🗡️',cost:4, hp:280, atk:130, ability:'Stuns on hit',           rarity:'epic',      unlockArena:4, inDeck:false, level:1, have:0, need:10},
+  {id:'brotherOfJared',   name:'Brother of Jared',   emoji:'💎', cost:4, hp:300, atk:80,  ability:'Blinds enemies',         rarity:'epic',      speed:'Medium', range:'Ranged', desc:'His faith moved a mountain — his light blinds all who oppose him, leaving enemies unable to target accurately.',                unlockArena:4, inDeck:false, level:1, have:0, need:10},
+  {id:'ammon',            name:'Ammon',              emoji:'🗡️',cost:4, hp:280, atk:130, ability:'Stuns on hit',           rarity:'epic',      speed:'Fast',   range:'Melee',  desc:'The great missionary-warrior. Each devastating strike has a chance to stun the target completely in their tracks.',            unlockArena:4, inDeck:false, level:1, have:0, need:10},
   // ── Arena 5 ──
-  {id:'threeNephites',    name:'Three Nephites',     emoji:'👥', cost:4, hp:150, atk:65,  ability:'Respawns once',          rarity:'legendary', unlockArena:5, inDeck:false, level:1, have:0, need:4},
-  {id:'seersStone',       name:"Seer's Stone",       emoji:'🔮', cost:2, hp:100, atk:35,  ability:'Reveals invisible',      rarity:'rare',      unlockArena:5, inDeck:false, level:1, have:0, need:50},
+  {id:'threeNephites',    name:'Three Nephites',     emoji:'👥', cost:4, hp:150, atk:65,  ability:'Respawns once',          rarity:'legendary', speed:'Medium', range:'Melee',  desc:'They cannot die. Defeat them once and they rise again — more determined and more righteous than before.',                      unlockArena:5, inDeck:false, level:1, have:0, need:4},
+  {id:'seersStone',       name:"Seer's Stone",       emoji:'🔮', cost:2, hp:100, atk:35,  ability:'Reveals invisible',      rarity:'rare',      speed:'Slow',   range:'Ranged', desc:'Sees what cannot be seen. Exposes invisible enemies and deals light damage to all it reveals in the targeted area.',            unlockArena:5, inDeck:false, level:1, have:0, need:50},
   // ── Arena 6 ──
-  {id:'samuelLamanite',   name:'Samuel the Lamanite',emoji:'🏹', cost:3, hp:200, atk:85,  ability:'Immune to first hit',    rarity:'epic',      unlockArena:6, inDeck:false, level:1, have:0, need:10},
-  {id:'titleOfLiberty',   name:'Title of Liberty',   emoji:'🏴', cost:4, hp:350, atk:75,  ability:'Rallies nearby allies',  rarity:'epic',      unlockArena:6, inDeck:false, level:1, have:0, need:10},
+  {id:'samuelLamanite',   name:'Samuel the Lamanite',emoji:'🏹', cost:3, hp:200, atk:85,  ability:'Immune to first hit',    rarity:'epic',      speed:'Medium', range:'Ranged', desc:'The prophet on the wall. Stands tall against the first blow — the very first hit simply cannot touch him.',                     unlockArena:6, inDeck:false, level:1, have:0, need:10},
+  {id:'titleOfLiberty',   name:'Title of Liberty',   emoji:'🏴', cost:4, hp:350, atk:75,  ability:'Rallies nearby allies',  rarity:'epic',      speed:'Medium', range:'Melee',  desc:'Raised in defense of freedom and faith. Allies nearby rally to the banner, gaining increased attack power.',                   unlockArena:6, inDeck:false, level:1, have:0, need:10},
   // ── Arena 7 ──
-  {id:'teancum',          name:'Teancum',            emoji:'🎯', cost:3, hp:180, atk:150, ability:'Targets towers',         rarity:'legendary', unlockArena:7, inDeck:false, level:1, have:0, need:4},
-  {id:'antiNephiLehi',    name:'Anti-Nephi-Lehi',    emoji:'🕊️',cost:3, hp:450, atk:0,   ability:'Reflects damage',        rarity:'rare',      unlockArena:7, inDeck:false, level:1, have:0, need:50},
+  {id:'teancum',          name:'Teancum',            emoji:'🎯', cost:3, hp:180, atk:150, ability:'Targets towers',         rarity:'legendary', speed:'Fast',   range:'Ranged', desc:'The elite assassin of the Nephite army. Bypasses troops entirely to strike enemy towers directly.',                              unlockArena:7, inDeck:false, level:1, have:0, need:4},
+  {id:'antiNephiLehi',    name:'Anti-Nephi-Lehi',    emoji:'🕊️',cost:3, hp:450, atk:0,   ability:'Reflects damage',        rarity:'rare',      speed:'Slow',   range:'Melee',  desc:'They buried their weapons and chose peace. Any damage dealt to them is reflected back upon the attacker.',                    unlockArena:7, inDeck:false, level:1, have:0, need:50},
   // ── Arena 8 ──
-  {id:'josephSmith',      name:'Joseph Smith',        emoji:'📜', cost:6, hp:600, atk:90,  ability:'Summons extras on spawn',rarity:'legendary', unlockArena:8, inDeck:false, level:1, have:0, need:4},
-  {id:'destroyingAngel',  name:'Destroying Angel',   emoji:'⚡', cost:5, hp:250, atk:200, ability:'Huge AoE strike',        rarity:'legendary', unlockArena:8, inDeck:false, level:1, have:0, need:4},
+  {id:'josephSmith',      name:'Joseph Smith',        emoji:'📜', cost:6, hp:600, atk:90,  ability:'Summons extras on spawn',rarity:'legendary', speed:'Medium', range:'Melee',  desc:'The Prophet of the Restoration. Summons additional troops upon entering the field and leads them fearlessly into battle.',    unlockArena:8, inDeck:false, level:1, have:0, need:4},
+  {id:'destroyingAngel',  name:'Destroying Angel',   emoji:'⚡', cost:5, hp:250, atk:200, ability:'Huge AoE strike',        rarity:'legendary', speed:'Fast',   range:'Ranged', desc:'The angel of judgment descends with catastrophic force, striking all enemies in a massive area of effect.',                    unlockArena:8, inDeck:false, level:1, have:0, need:4},
 ];
 
 
@@ -1206,6 +1259,9 @@ function navTo(tab) {
   page.classList.add('page-fade');
   document.getElementById('tab-' + tab).classList.add('active');
   page.scrollTop = 0;
+  if (tab === 'battle') {
+    updateBattlePageDeck();
+  }
   if (tab === 'ward') {
     _wardTab = 'friends';
     ['friends','requests','search'].forEach(t => {
@@ -1229,19 +1285,26 @@ async function wardLoadRequestsBadge() {
 // ── CARD LEVEL SYSTEM ──
 // Copies needed to reach each level: Lv1=0, Lv2=2, Lv3=6, Lv4=16, Lv5=36
 const LEVEL_THRESHOLDS = [0, 2, 6, 16, 36];
+// Gold cost to upgrade from level N to N+1 (index = current level - 1)
+const UPGRADE_GOLD_COST = {
+  common:    [50,  150,  400,  1000],
+  rare:      [150, 400,  1000, 2000],
+  epic:      [400, 1000, 2000, 5000],
+  legendary: [1000,2000, 5000, 10000],
+};
 function getCardLevel(copies) {
   for (let i = LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
     if (copies >= LEVEL_THRESHOLDS[i]) return i + 1;
   }
   return 1;
 }
-function getLevelProgress(copies) {
-  const lv = getCardLevel(copies);
+function getLevelProgress(copies, storedLevel) {
+  const lv = storedLevel || 1;
   if (lv >= 5) return { pct: 100, text: 'Max Level', copiesLeft: 0 };
-  const min = LEVEL_THRESHOLDS[lv - 1];
-  const max = LEVEL_THRESHOLDS[lv];
-  const pct = Math.round((copies - min) / (max - min) * 100);
-  return { pct, text: `${copies - min} / ${max - min} copies to Lv ${lv + 1}`, copiesLeft: max - copies };
+  const needed = LEVEL_THRESHOLDS[lv];
+  const prev = LEVEL_THRESHOLDS[lv - 1];
+  const pct = Math.min(100, Math.round(((copies || 0) - prev) / (needed - prev) * 100));
+  return { pct: Math.max(0, pct), text: `${copies || 0} / ${needed} copies`, copiesLeft: Math.max(0, needed - (copies || 0)) };
 }
 function levelMultiplier(level) { return 1 + (level - 1) * 0.15; }
 
@@ -1258,7 +1321,7 @@ async function loadUserCards() {
     if (!res.ok) return;
     const data = await res.json();
     userCardData = {};
-    data.forEach(row => { userCardData[row.card_id] = row; });
+    data.forEach(row => { userCardData[row.card_id] = { ...row, level: row.level || 1 }; });
     localStorage.setItem('cc_cards', JSON.stringify(data));
     renderCards(currentFilter);
     updateBattlePageDeck();
@@ -1274,24 +1337,28 @@ function renderCards(filter) {
     : ALL_CARDS.filter(c => c.rarity === filter);
 
   grid.innerHTML = list.map(c => {
-    const ud = userCardData[c.id] || { copies: 0, in_deck: false };
+    const ud = userCardData[c.id] || { copies: 0, in_deck: false, level: 1 };
     const inDeck = deckIds.includes(c.id);
-    const lv = getCardLevel(ud.copies);
-    const prog = getLevelProgress(ud.copies);
+    const lv = ud.level || 1;
+    const prog = getLevelProgress(ud.copies, lv);
     const mult = levelMultiplier(lv);
+    const upgradeReady = lv < 5 && (ud.copies || 0) >= LEVEL_THRESHOLDS[lv];
     const arenaId = parseInt(localStorage.getItem('cc_arena') || '1');
     const isLocked = c.unlockArena && c.unlockArena > arenaId;
     const lockArena = isLocked ? ARENAS.find(a => a.id === c.unlockArena) : null;
+    const typeClass = c.isSpell ? 'is-spell' : c.isBuilding ? 'is-building' : '';
+    const typeBadge = c.isSpell ? '<span class="card-type-badge spell">SPELL</span>' : c.isBuilding ? '<span class="card-type-badge building">BLDG</span>' : '';
     return `
-      <div class="card-item ${inDeck ? 'in-deck' : ''} ${isLocked ? 'locked' : ''}" onclick="${isLocked ? `showLockedCard('${c.id}')` : `showCardDetail('${c.id}')`}">
+      <div class="card-item rarity-${c.rarity} ${inDeck ? 'in-deck' : ''} ${isLocked ? 'locked' : ''} ${typeClass} ${upgradeReady && !isLocked ? 'upgrade-ready' : ''}" onclick="${isLocked ? `showLockedCard('${c.id}')` : `showCardDetail('${c.id}')`}">
         <span class="card-cost-badge">${c.cost}</span>
         ${inDeck ? '<span class="card-deck-check">✓</span>' : ''}
         ${isLocked ? `<div class="card-lock-overlay"><div class="card-lock-icon">🔒</div><div class="card-lock-arena">${lockArena ? lockArena.emoji : ''} Arena ${c.unlockArena}</div></div>` : ''}
         <div class="card-art">${(typeof CHAR_SVGS !== 'undefined' && CHAR_SVGS[c.id]) ? CHAR_SVGS[c.id].replace('<svg ', '<svg width="52" height="68" ') : `<span style="font-size:28px;line-height:1">${c.emoji}</span>`}</div>
         <div class="card-name-sm">${c.name}</div>
+        ${typeBadge}
         ${isLocked ? `<div class="card-unlock-label">${lockArena ? lockArena.name : ''}</div>` : `<div class="card-level">Lv ${lv}</div>`}
         ${isLocked ? '' : `<div class="card-upgrade-bar"><div class="card-upgrade-fill" style="width:${prog.pct}%"></div></div>
-        <div class="card-upgrade-text">${lv >= 5 ? 'MAX' : `${ud.copies} copies`}</div>`}
+        <div class="card-upgrade-text">${lv >= 5 ? 'MAX' : upgradeReady ? `Ready!` : `${ud.copies||0}/${LEVEL_THRESHOLDS[lv]}`}</div>`}
       </div>`;
   }).join('');
 
@@ -1302,7 +1369,7 @@ function renderCards(filter) {
 }
 
 function getDeckIds() {
-  return ALL_CARDS.filter(c => userCardData[c.id]?.in_deck).map(c => c.id);
+  return ALL_CARDS.filter(c => userCardData[c.id]?.in_deck).map(c => c.id).slice(0, 4);
 }
 
 function filterCards(filter, btn) {
@@ -1322,11 +1389,11 @@ function showCardDetail(id) {
   const c = ALL_CARDS.find(x => x.id === id);
   if (!c) return;
   openCardId = id;
-  const ud = userCardData[id] || { copies: 0, in_deck: false };
+  const ud = userCardData[id] || { copies: 0, in_deck: false, level: 1 };
   const deckIds = getDeckIds();
   const inDeck = deckIds.includes(id);
-  const lv = getCardLevel(ud.copies);
-  const prog = getLevelProgress(ud.copies);
+  const lv = ud.level || 1;
+  const prog = getLevelProgress(ud.copies, lv);
   const mult = levelMultiplier(lv);
   const nextMult = lv < 5 ? levelMultiplier(lv + 1) : null;
 
@@ -1340,19 +1407,46 @@ function showCardDetail(id) {
   const rarityEl = document.getElementById('cd-rarity');
   rarityEl.textContent = c.rarity.toUpperCase();
   rarityEl.className = c.rarity;
+  const cardType = c.isSpell ? 'Spell' : c.isBuilding ? 'Building' : 'Troop';
+  document.getElementById('cd-type').textContent = cardType.toUpperCase();
   document.getElementById('cd-ability').textContent = '✦ ' + c.ability;
+  document.getElementById('cd-description').textContent = c.desc || '';
+  document.getElementById('cd-speed').textContent = c.speed || '—';
+  document.getElementById('cd-range').textContent = c.range || '—';
+  document.getElementById('cd-meta-row').style.display = c.isSpell ? 'none' : 'flex';
   document.getElementById('cd-level').textContent = lv >= 5 ? 'MAX LEVEL' : `Lv ${lv}`;
   document.getElementById('cd-level-fill').style.width = prog.pct + '%';
   document.getElementById('cd-level-text').textContent = prog.text;
-  document.getElementById('cd-hp').textContent = Math.round(c.hp * mult);
-  document.getElementById('cd-atk').textContent = Math.round(c.atk * mult);
+  document.getElementById('cd-hp').textContent = c.isSpell ? '—' : Math.round(c.hp * mult);
+  document.getElementById('cd-atk').textContent = c.atk > 0 ? Math.round(c.atk * mult) : '—';
   document.getElementById('cd-cost').textContent = c.cost;
 
-  if (nextMult) {
+  if (nextMult && !c.isSpell) {
     document.getElementById('cd-next-level').textContent =
       `Next level: ${Math.round(c.hp * nextMult)} HP · ${Math.round(c.atk * nextMult)} Damage`;
+  } else if (c.isSpell) {
+    document.getElementById('cd-next-level').textContent = c.isSpell ? '✨ Can be placed anywhere on the arena' : '⭐ Fully maxed out!';
   } else {
     document.getElementById('cd-next-level').textContent = '⭐ Fully maxed out!';
+  }
+
+  // Upgrade button
+  const upgradeBtn = document.getElementById('cd-upgrade-btn');
+  const canUpgrade = lv < 5 && (ud.copies || 0) >= LEVEL_THRESHOLDS[lv];
+  if (lv >= 5) {
+    upgradeBtn.className = 'hidden';
+  } else {
+    const goldCost = (UPGRADE_GOLD_COST[c.rarity] || UPGRADE_GOLD_COST.common)[lv - 1];
+    const userGold = (() => { try { return JSON.parse(localStorage.getItem('cc_user') || '{}').gold || 0; } catch { return 0; } })();
+    if (canUpgrade) {
+      const canAfford = userGold >= goldCost;
+      upgradeBtn.className = canAfford ? 'can-upgrade' : 'cant-afford';
+      upgradeBtn.textContent = canAfford
+        ? `⬆ Upgrade to Lv ${lv + 1} — 💰 ${goldCost.toLocaleString()}g`
+        : `⬆ Upgrade to Lv ${lv + 1} — 💰 ${goldCost.toLocaleString()}g (need ${(goldCost - userGold).toLocaleString()} more)`;
+    } else {
+      upgradeBtn.className = 'hidden';
+    }
   }
 
   const btn = document.getElementById('cd-deck-btn');
@@ -1374,12 +1468,64 @@ function closeCardDetail(e) {
   if (e.target.id === 'card-detail') document.getElementById('card-detail').classList.remove('open');
 }
 
-async function toggleDeck() {
+async function doUpgradeCard() {
   if (!openCardId) return;
+  const c = ALL_CARDS.find(x => x.id === openCardId);
+  const ud = userCardData[openCardId];
+  if (!c || !ud) return;
+  const lv = ud.level || 1;
+  if (lv >= 5) return;
+  if ((ud.copies || 0) < LEVEL_THRESHOLDS[lv]) return;
+  const goldCost = (UPGRADE_GOLD_COST[c.rarity] || UPGRADE_GOLD_COST.common)[lv - 1];
+  const token = localStorage.getItem('cc_token');
+  if (!token) return;
+  const btn = document.getElementById('cd-upgrade-btn');
+  btn.textContent = 'Upgrading…';
+  btn.className = 'cant-afford';
+  try {
+    const res = await fetch('/api/cards/upgrade', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ cardId: openCardId, goldCost, rarity: c.rarity }),
+    });
+    const data = await res.json();
+    if (!res.ok) { btn.textContent = data.error || 'Failed'; return; }
+    // Update local state
+    userCardData[openCardId].level = data.newLevel;
+    const stored = JSON.parse(localStorage.getItem('cc_user') || '{}');
+    const prevPlayerLevel = stored.level || 1;
+    stored.gold = data.goldRemaining;
+    if (data.playerLevel) { stored.level = data.playerLevel; stored.xp = data.newXp; }
+    localStorage.setItem('cc_user', JSON.stringify(stored));
+    document.getElementById('gold-val').textContent = data.goldRemaining.toLocaleString();
+    if (data.xpGained) {
+      if (data.playerLevel > prevPlayerLevel) {
+        showToast(`⭐ Level Up! King Tower Level ${data.playerLevel}!`);
+        document.getElementById('level-badge').textContent = 'Lv ' + data.playerLevel;
+        document.getElementById('profile-level').textContent = 'Lv ' + data.playerLevel;
+      } else {
+        showToast(`+${data.xpGained} XP`);
+      }
+      updateXpBar(stored);
+    }
+    renderCards(currentFilter);
+    showCardDetail(openCardId); // refresh modal
+  } catch(e) {
+    btn.textContent = 'Error — try again';
+  }
+}
+
+let _deckToggling = false;
+async function toggleDeck() {
+  if (!openCardId || _deckToggling) return;
+  _deckToggling = true;
+  try {
   const deckIds = getDeckIds();
   const inDeck = deckIds.includes(openCardId);
-  if (!inDeck && deckIds.length >= 4) return; // full
+  if (!inDeck && deckIds.length >= 4) { _deckToggling = false; return; } // full
 
+  // Initialize entry if card not yet synced from server
+  if (!userCardData[openCardId]) userCardData[openCardId] = { card_id: openCardId, copies: 0, in_deck: false };
   if (inDeck) {
     userCardData[openCardId].in_deck = false;
   } else {
@@ -1387,6 +1533,8 @@ async function toggleDeck() {
   }
 
   const newDeck = getDeckIds();
+  // Persist deck change to localStorage so game.js picks it up
+  localStorage.setItem('cc_cards', JSON.stringify(Object.values(userCardData)));
   renderCards(currentFilter);
   showCardDetail(openCardId); // refresh overlay
   updateBattlePageDeck();
@@ -1399,13 +1547,15 @@ async function toggleDeck() {
       body: JSON.stringify({ cardIds: newDeck }),
     });
   }
+  } finally { _deckToggling = false; }
 }
 
 function updateBattlePageDeck() {
   const deckIds = getDeckIds();
   const deckCards = deckIds.map(id => ALL_CARDS.find(c => c.id === id)).filter(Boolean);
   const row = document.querySelector('.deck-cards-row');
-  if (!row || !deckCards.length) return;
+  if (!row) return;
+  if (!deckCards.length) { row.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:11px;padding:8px 0">No cards in deck — go to Cards to add some!</div>'; return; }
   row.innerHTML = deckCards.map(c => `
     <div class="deck-card" onclick="navTo('cards')">
       <div class="deck-card-emoji">${c.emoji}</div>
@@ -1544,24 +1694,109 @@ function _ensureCardsMap() {
 function showChestRewardModal(type, rewards) {
   _ensureCardsMap();
   const m = CHEST_META[type] || CHEST_META.wood;
-  document.getElementById('crm-icon').textContent = m.icon;
-  document.getElementById('crm-title').textContent = m.label + ' Chest Opened!';
-  document.getElementById('crm-rewards').innerHTML = (rewards || []).map(r => {
+  const overlay = document.getElementById('chest-open-overlay');
+
+  // Reset to phase 1
+  document.getElementById('coo-phase1').style.display = 'flex';
+  document.getElementById('coo-phase2').style.display = 'none';
+  document.getElementById('coo-chest-icon').textContent = m.icon;
+  document.getElementById('coo-chest-icon').style.animation = 'cooFloat 1.6s ease-in-out infinite';
+  document.getElementById('coo-chest-lbl').textContent = m.label + ' Chest';
+  document.getElementById('coo-claim-btn').style.display = 'none';
+
+  overlay.classList.add('coo-active');
+  overlay._cooOpened = false;
+
+  document.getElementById('coo-phase1').onclick = function() {
+    if (overlay._cooOpened) return;
+    overlay._cooOpened = true;
+    _cooOpenAnimation(rewards, m);
+  };
+}
+
+function _cooOpenAnimation(rewards, m) {
+  const chestIcon = document.getElementById('coo-chest-icon');
+  const overlay = document.getElementById('chest-open-overlay');
+
+  // Shake the chest
+  chestIcon.style.animation = 'cooShake 0.55s ease';
+
+  setTimeout(() => {
+    // White flash burst
+    const flash = document.createElement('div');
+    flash.style.cssText = 'position:absolute;inset:0;background:white;pointer-events:none;z-index:10;border-radius:0;';
+    overlay.appendChild(flash);
+    flash.animate([{opacity:0},{opacity:0.95},{opacity:0}], {duration:280, easing:'ease-out'}).onfinish = () => flash.remove();
+
+    // Particles
+    _cooParticles(overlay);
+
+    // Transition to card reveal
+    document.getElementById('coo-phase1').style.display = 'none';
+    setTimeout(() => _cooRevealCards(rewards, m), 150);
+  }, 550);
+}
+
+function _cooParticles(overlay) {
+  const colors = ['#f5c842','#ff6b35','#00bcd4','#e91e63','#76ff03','#9c27b0','#fff'];
+  const cx = overlay.offsetWidth / 2;
+  const cy = overlay.offsetHeight / 2;
+  for (let i = 0; i < 28; i++) {
+    const p = document.createElement('div');
+    const angle = (i / 28) * Math.PI * 2 + Math.random() * 0.3;
+    const dist = 90 + Math.random() * 160;
+    const dx = Math.cos(angle) * dist;
+    const dy = Math.sin(angle) * dist;
+    const size = 5 + Math.random() * 9;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const isCircle = Math.random() > 0.4;
+    p.style.cssText = `position:absolute;left:${cx}px;top:${cy}px;width:${size}px;height:${size}px;border-radius:${isCircle?'50%':'3px'};background:${color};pointer-events:none;z-index:9;`;
+    overlay.appendChild(p);
+    p.animate([
+      {transform:'translate(-50%,-50%) scale(1) rotate(0deg)', opacity:1},
+      {transform:`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) scale(0.2) rotate(${Math.random()*540}deg)`, opacity:0}
+    ], {duration: 550 + Math.random()*350, easing:'cubic-bezier(0,0,0.3,1)', fill:'forwards'}).onfinish = () => p.remove();
+  }
+}
+
+function _cooRevealCards(rewards, m) {
+  const phase2 = document.getElementById('coo-phase2');
+  const row = document.getElementById('coo-cards-row');
+  document.getElementById('coo-reveal-title').textContent = m.label + ' Chest Opened!';
+  row.innerHTML = '';
+
+  const inners = (rewards || []).map((r, idx) => {
     const card = _allCardsMap[r.cardId];
-    return `<div class="crm-reward-row">
-      <span style="font-size:22px">${card ? card.emoji : '🃏'}</span>
-      <div>
-        <div style="font-size:11px;color:#fff;font-weight:600">${card ? card.name : r.cardId}</div>
-        <div style="font-size:10px;color:var(--gold)">+${r.amount} ${r.amount === 1 ? 'copy' : 'copies'}</div>
+    const wrap = document.createElement('div');
+    wrap.className = 'coo-card';
+    wrap.style.animationDelay = (idx * 80) + 'ms';
+    wrap.innerHTML = `<div class="coo-card-inner">
+      <div class="coo-card-back">⛪</div>
+      <div class="coo-card-face">
+        <div class="coo-emoji">${card ? card.emoji : '🃏'}</div>
+        <div class="coo-name">${card ? card.name : r.cardId}</div>
+        <div class="coo-amt">+${r.amount}</div>
       </div>
     </div>`;
-  }).join('');
-  const modal = document.getElementById('chest-reward-modal');
-  modal.style.display = 'flex';
+    row.appendChild(wrap);
+    return wrap.querySelector('.coo-card-inner');
+  });
+
+  phase2.style.display = 'flex';
+
+  // Flip cards one by one
+  inners.forEach((inner, i) => {
+    setTimeout(() => {
+      inner.classList.add('flipped');
+      if (i === inners.length - 1) {
+        setTimeout(() => { document.getElementById('coo-claim-btn').style.display = ''; }, 350);
+      }
+    }, 300 + i * 380);
+  });
 }
 
 function closeChestRewardModal() {
-  document.getElementById('chest-reward-modal').style.display = 'none';
+  document.getElementById('chest-open-overlay').classList.remove('coo-active');
 }
 
 function showComingSoon(feature) {
@@ -1777,6 +2012,25 @@ function getLeague(trophies) {
   return LEAGUES[0];
 }
 
+const XP_THRESHOLDS = [0, 50, 150, 300, 500, 800, 1200, 1700, 2400, 3200];
+function updateXpBar(user) {
+  const lv = Math.max(1, Math.min(10, user.level || 1));
+  const xp = user.xp || 0;
+  const curThresh = XP_THRESHOLDS[lv - 1] || 0;
+  const nextThresh = XP_THRESHOLDS[lv];
+  const xpEl = document.getElementById('xp-label');
+  const fillEl = document.getElementById('xp-fill');
+  if (!xpEl || !fillEl) return;
+  if (!nextThresh) {
+    xpEl.textContent = 'MAX';
+    fillEl.style.width = '100%';
+  } else {
+    xpEl.textContent = `${xp - curThresh} / ${nextThresh - curThresh}`;
+    const pct = Math.min(100, Math.round((xp - curThresh) / (nextThresh - curThresh) * 100));
+    fillEl.style.width = pct + '%';
+  }
+}
+
 function updateProfileLeague(trophies) {
   const league = getLeague(trophies);
   document.getElementById('league-badge').textContent = league.badge;
@@ -1816,6 +2070,7 @@ function updateProfileLeague(trophies) {
     document.getElementById('stat-winrate').textContent = winRate;
     document.getElementById('stat-trophies').textContent = user.trophies.toLocaleString();
     updateProfileLeague(user.trophies);
+    updateXpBar(user);
     renderArenaSection(user.trophies);
   } catch(e) {
     window.location.href = 'login.html';
@@ -1880,12 +2135,25 @@ function hideBattleModal() {
   document.getElementById('battle-modal').classList.remove('open');
 }
 
+function _checkDeckReady() {
+  const deckIds = getDeckIds();
+  if (deckIds.length < 4) {
+    hideBattleModal();
+    showToast('⚠️ Select 4 cards in your deck before battling!');
+    navTo('cards');
+    return false;
+  }
+  return true;
+}
+
 function startLocal() {
+  if (!_checkDeckReady()) return;
   hideBattleModal();
   window.location.href = 'game.html';
 }
 
 function startOnline() {
+  if (!_checkDeckReady()) return;
   hideBattleModal();
   window.location.href = 'game.html?mode=multi';
 }
@@ -1896,13 +2164,183 @@ if ('serviceWorker' in navigator) {
 </script>
 
 
-<!-- CHEST REWARD MODAL -->
-<div id="chest-reward-modal" onclick="if(event.target===this)closeChestRewardModal()" style="display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;">
-  <div style="background:linear-gradient(135deg,#0f1e35,#1a2a50);border:1px solid rgba(245,200,66,0.4);border-radius:20px;padding:24px 20px;max-width:300px;width:90%;display:flex;flex-direction:column;align-items:center;gap:14px;box-shadow:0 8px 40px rgba(0,0,0,0.7);">
-    <div id="crm-icon" style="font-size:52px;filter:drop-shadow(0 0 16px rgba(245,200,66,0.6))"></div>
-    <div id="crm-title" style="font-family:'Cinzel Decorative',serif;font-size:14px;color:var(--gold);text-align:center;"></div>
-    <div id="crm-rewards" style="width:100%;display:flex;flex-direction:column;gap:8px;"></div>
-    <button onclick="closeChestRewardModal()" style="background:linear-gradient(180deg,var(--gold),#c8860a);border:none;border-radius:12px;padding:10px 30px;color:#0a0e1a;font-family:'Cinzel',serif;font-size:12px;font-weight:bold;cursor:pointer;margin-top:4px;">Awesome!</button>
+<!-- CHEST OPEN OVERLAY -->
+<style>
+#chest-open-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0,0,0,0.93);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+#chest-open-overlay.coo-active { display: flex; }
+
+#coo-rays {
+  position: absolute;
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg, rgba(245,200,66,0.18) 18deg, transparent 36deg,
+    transparent 54deg, rgba(245,200,66,0.18) 72deg, transparent 90deg,
+    transparent 108deg, rgba(245,200,66,0.18) 126deg, transparent 144deg,
+    transparent 162deg, rgba(245,200,66,0.18) 180deg, transparent 198deg,
+    transparent 216deg, rgba(245,200,66,0.18) 234deg, transparent 252deg,
+    transparent 270deg, rgba(245,200,66,0.18) 288deg, transparent 306deg,
+    transparent 324deg, rgba(245,200,66,0.18) 342deg, transparent 360deg
+  );
+  animation: cooRaysSpin 4s linear infinite;
+  pointer-events: none;
+}
+@keyframes cooRaysSpin { to { transform: rotate(360deg); } }
+
+#coo-phase1 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+}
+#coo-chest-icon {
+  font-size: 88px;
+  filter: drop-shadow(0 0 24px rgba(245,200,66,0.9));
+  animation: cooFloat 1.6s ease-in-out infinite;
+}
+@keyframes cooFloat {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+@keyframes cooShake {
+  0%,100% { transform: translateY(0) rotate(0); }
+  15%  { transform: translateY(-4px) rotate(-8deg); }
+  30%  { transform: translateY(-2px) rotate(8deg); }
+  45%  { transform: translateY(-6px) rotate(-6deg); }
+  60%  { transform: translateY(-2px) rotate(6deg); }
+  75%  { transform: translateY(-4px) rotate(-3deg); }
+  90%  { transform: translateY(-2px) rotate(3deg); }
+}
+#coo-chest-lbl {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 15px;
+  color: var(--gold);
+  letter-spacing: 1px;
+}
+#coo-tap-hint {
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+  animation: cooPulse 1.2s ease-in-out infinite;
+}
+@keyframes cooPulse {
+  0%,100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.06); }
+}
+
+#coo-phase2 {
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  position: relative;
+  z-index: 1;
+}
+#coo-reveal-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 14px;
+  color: var(--gold);
+  letter-spacing: 1px;
+  animation: cooFadeUp 0.4s ease;
+}
+@keyframes cooFadeUp {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+#coo-cards-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  max-width: 320px;
+}
+.coo-card {
+  width: 68px;
+  height: 96px;
+  perspective: 700px;
+  animation: cooCardDrop 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes cooCardDrop {
+  from { opacity:0; transform: translateY(-30px) scale(0.7); }
+  to   { opacity:1; transform: translateY(0) scale(1); }
+}
+.coo-card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateY(180deg);
+  transition: transform 0.55s cubic-bezier(0.4,0,0.2,1);
+}
+.coo-card-inner.flipped { transform: rotateY(0deg); }
+.coo-card-face, .coo-card-back {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+.coo-card-back {
+  background: linear-gradient(160deg,#1a237e,#283593);
+  border: 2px solid rgba(245,200,66,0.35);
+  transform: rotateY(180deg);
+  font-size: 26px;
+}
+.coo-card-face {
+  background: linear-gradient(160deg,#0f1e35,#1a3060);
+  border: 2px solid rgba(245,200,66,0.75);
+}
+.coo-card-face .coo-emoji { font-size: 26px; }
+.coo-card-face .coo-name { font-size: 8px; color:#fff; font-weight:700; text-align:center; padding:0 3px; line-height:1.2; }
+.coo-card-face .coo-amt  { font-size: 11px; color:var(--gold); font-weight:700; }
+
+#coo-claim-btn {
+  background: linear-gradient(180deg,var(--gold),#c8860a);
+  border: none;
+  border-radius: 14px;
+  padding: 12px 40px;
+  color: #0a0e1a;
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(245,200,66,0.45);
+  animation: cooPulse 1s ease-in-out infinite;
+}
+</style>
+
+<div id="chest-open-overlay">
+  <div id="coo-rays"></div>
+
+  <div id="coo-phase1">
+    <div id="coo-chest-lbl"></div>
+    <div id="coo-chest-icon"></div>
+    <div id="coo-tap-hint">Tap to Open!</div>
+  </div>
+
+  <div id="coo-phase2" style="display:none">
+    <div id="coo-reveal-title"></div>
+    <div id="coo-cards-row"></div>
+    <button id="coo-claim-btn" style="display:none" onclick="closeChestRewardModal()">Claim!</button>
   </div>
 </div>
 
