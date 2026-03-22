@@ -75,6 +75,16 @@
     </div>
 
     <div id="drop-hint"><div id="player-half-hint"></div></div>
+
+    <!-- Emote button & picker -->
+    <button id="emote-btn" onclick="toggleEmotePicker(event)">😄</button>
+    <div id="emote-picker">
+      <img src="emotes/emote.png" class="emote-option" onclick="sendEmote('emote.png')">
+      <img src="emotes/emote2.png" class="emote-option" onclick="sendEmote('emote2.png')">
+    </div>
+    <!-- Emote bubbles (appear above king towers) -->
+    <div id="emote-bubble-player" class="emote-bubble"></div>
+    <div id="emote-bubble-opp" class="emote-bubble"></div>
   </div>
 
   <div id="elixir-bar">

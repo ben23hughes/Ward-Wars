@@ -298,10 +298,11 @@ wss.on('connection', (ws) => {
         const p1 = queue.shift();
         const p2 = queue.shift();
         const roomId = crypto.randomBytes(8).toString('hex');
+        const seed = Math.floor(Math.random() * 0xFFFFFFFF);
         p1.ws.roomId = p2.ws.roomId = roomId;
         rooms.set(roomId, { p1, p2, reported: new Set() });
-        p1.ws.send(JSON.stringify({ type: 'matched', roomId, opponentName: p2.username }));
-        p2.ws.send(JSON.stringify({ type: 'matched', roomId, opponentName: p1.username }));
+        p1.ws.send(JSON.stringify({ type: 'matched', roomId, opponentName: p2.username, seed }));
+        p2.ws.send(JSON.stringify({ type: 'matched', roomId, opponentName: p1.username, seed }));
       }
     }
 
@@ -312,6 +313,16 @@ wss.on('connection', (ws) => {
       const opp = room.p1.ws === ws ? room.p2.ws : room.p1.ws;
       if (opp.readyState === 1) {
         opp.send(JSON.stringify({ type: 'opp_play', cardId: msg.cardId, pct_x: msg.pct_x, pct_y: msg.pct_y }));
+      }
+    }
+
+    else if (msg.type === 'emote') {
+      if (!ws.roomId) return;
+      const room = rooms.get(ws.roomId);
+      if (!room) return;
+      const opp = room.p1.ws === ws ? room.p2.ws : room.p1.ws;
+      if (opp.readyState === 1) {
+        opp.send(JSON.stringify({ type: 'opp_emote', filename: msg.filename }));
       }
     }
 
